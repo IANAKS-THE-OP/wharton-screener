@@ -1,0 +1,5 @@
+positive controls: 43/43 correct. wrong=[] missing=[]
+negative controls: 49/49 correct. wrongly given an industry=[] missing=[]
+must-be-absent: 28/28 correct. wrongly present=[]
+eligibility: 0 kept funds have a non-equity-looking name []
+universe: 2211 funds, 180 industry ETFs in 34 industries

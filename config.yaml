@@ -1,0 +1,20 @@
+# ============================================================
+# CONFIG FILE for the Wharton Investment Screener
+# ------------------------------------------------------------
+# Scoring weights and Laura Gao's default ranges live in code:
+#   scoring2.py / etf_scoring.py  METRICS (weights)
+#   laura.py                      LAURA_TIERS (per-industry ranges)
+# The old bucket screener (bonds / conservative / growth weights,
+# guardrails, target duration) was retired to _retired/ along with
+# the Bond ETF page and the portfolio planner.
+# ============================================================
+
+# ------------------------------------------------------------
+# SEC EDGAR (sec_edgar.py, fundamentals.py)
+# SEC requires a descriptive User-Agent identifying who's making
+# requests - replace with a real name/email before heavy use.
+# Responses are cached in sec_cache/ and refreshed after cache_days.
+# ------------------------------------------------------------
+sec_edgar:
+  user_agent: "WGHSIC Team Research research-team@example.com"
+  cache_days: 7

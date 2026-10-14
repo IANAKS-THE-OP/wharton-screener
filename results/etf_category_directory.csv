@@ -1,0 +1,125 @@
+category,etfs,group,is_bond,high_yield
+Large Blend,338,Broad market (size / style),False,False
+Large Value,174,Broad market (size / style),False,False
+Large Growth,169,Broad market (size / style),False,False
+Mid-Cap Blend,94,Broad market (size / style),False,False
+Small Blend,81,Broad market (size / style),False,False
+Mid-Cap Value,74,Broad market (size / style),False,False
+Small Value,59,Broad market (size / style),False,False
+Mid-Cap Growth,44,Broad market (size / style),False,False
+Small Growth,23,Broad market (size / style),False,False
+Foreign Large Blend,122,International / regional,False,False
+Diversified Emerging Mkts,121,International / regional,False,False
+Foreign Large Value,61,International / regional,False,False
+Global Large-Stock Blend,46,International / regional,False,False
+Foreign Large Growth,36,International / regional,False,False
+Europe Stock,27,International / regional,False,False
+Japan Stock,20,International / regional,False,False
+Focused Region,18,International / regional,False,False
+Global Small/Mid Stock,13,International / regional,False,False
+Greater China Region,13,International / regional,False,False
+Foreign Small/Mid Value,12,International / regional,False,False
+Pacific/Asia ex-Japan Stk,12,International / regional,False,False
+Foreign Small/Mid Blend,11,International / regional,False,False
+Global Large-Stock Growth,10,International / regional,False,False
+Global Large-Stock Value,9,International / regional,False,False
+India Equity,4,International / regional,False,False
+Foreign Small/Mid Growth,1,International / regional,False,False
+Technology,201,Sector,False,False
+Health,61,Sector,False,False
+Natural Resources,55,Sector,False,False
+Equity Energy,47,Sector,False,False
+Financial,47,Sector,False,False
+Real Estate,42,Sector,False,False
+Industrials,38,Sector,False,False
+Miscellaneous Sector,29,Sector,False,False
+Infrastructure,25,Sector,False,False
+Consumer Cyclical,19,Sector,False,False
+Equity Precious Metals,19,Sector,False,False
+Global Real Estate,16,Sector,False,False
+Utilities,13,Sector,False,False
+Communications,9,Sector,True,False
+Consumer Defensive,8,Sector,False,False
+High Yield Bond,84,,True,True
+Ultrashort Bond,76,,True,False
+Short-Term Bond,56,,True,False
+Multisector Bond,52,,True,False
+Corporate Bond,51,,True,False
+Muni National Interm,45,,True,False
+Intermediate Core Bond,41,,True,False
+Intermediate Core-Plus Bond,41,,True,False
+Long Government,30,,True,False
+Muni National Short,26,,True,False
+Muni Target Maturity,25,,True,False
+Securitized Bond - Focused,25,,True,False
+Emerging Markets Bond,22,,True,True
+Short Government,22,,True,False
+Nontraditional Bond,21,,True,False
+Intermediate Government,19,,True,False
+Muni National Long,19,,True,False
+High Yield Muni,18,,True,True
+Bank Loan,16,,False,True
+Securitized Bond - Diversified,15,,True,False
+Inflation-Protected Bond,13,,True,False
+Global Bond-USD Hedged,11,,True,False
+Long-Term Bond,11,,True,False
+Short-Term Inflation-Protected Bond,9,,True,False
+Emerging-Markets Local-Currency Bond,7,,True,False
+Government Mortgage-Backed Bond,7,,True,False
+Muni California Intermediate,6,,True,False
+Global Bond,5,,True,False
+Muni California Long,5,,True,False
+Muni New York Long,5,,True,False
+Muni New York Intermediate,3,,True,False
+Muni Single State Short,3,,True,False
+Muni Massachusetts,2,,True,False
+Muni Minnesota,2,,True,False
+Muni New Jersey,1,,True,False
+Muni Ohio,1,,True,False
+Muni Pennsylvania,1,,True,False
+Commodities Focused,40,,False,False
+Commodities Broad Basket,31,,False,False
+Energy Limited Partnership,18,,False,False
+Uncategorized,822,,False,False
+Defined Outcome,390,,False,False
+Tactical Allocation,53,,False,False
+Target Maturity,51,,False,False
+Equity Hedged,42,,False,False
+Preferred Stock,30,,False,False
+Moderate Allocation,19,,False,False
+Long-Short Equity,15,,False,False
+Multi-Asset Overlay,14,,False,False
+Systematic Trend,9,,False,False
+Global Moderate Allocation,7,,False,False
+Convertibles,6,,True,False
+Event Driven,5,,False,False
+Miscellaneous Allocation,4,,False,False
+Money Market-Taxable,4,,False,False
+Multistrategy,4,,False,False
+Equity Market Neutral,3,,False,False
+Global Moderately Conservative Allocation,3,,False,False
+Macro Trading,3,,False,False
+Aggressive Allocation,2,,False,False
+Global Moderately Aggressive Allocation,2,,False,False
+Moderately Conservative Allocation,2,,False,False
+Prime Money Market,2,,False,False
+Relative Value Arbitrage,2,,False,False
+Global Conservative Allocation,1,,False,False
+Moderately Aggressive Allocation,1,,False,False
+Target-Date 2030,1,,False,False
+Target-Date 2035,1,,False,False
+Target-Date 2040,1,,False,False
+Target-Date 2045,1,,False,False
+Target-Date 2050,1,,False,False
+Target-Date 2055,1,,False,False
+Target-Date Retirement,1,,False,False
+Trading--Leveraged Equity,580,,False,False
+Trading--Inverse Equity,150,,False,False
+Trading--Miscellaneous,56,,False,False
+Trading--Leveraged Commodities,12,,False,False
+Trading--Inverse Debt,9,,False,False
+Trading--Leveraged Debt,5,,False,False
+Trading--Inverse Commodities,3,,False,False
+Derivative Income,198,,False,False
+Digital Assets,98,,False,False
+Equity Digital Assets,11,,False,False

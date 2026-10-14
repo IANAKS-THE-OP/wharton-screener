@@ -1,0 +1,125 @@
+category,etfs,group,status,is_bond,high_yield
+Large Blend,338,Broad market (size / style),KEPT (equity),False,False
+Large Value,174,Broad market (size / style),KEPT (equity),False,False
+Large Growth,169,Broad market (size / style),KEPT (equity),False,False
+Mid-Cap Blend,94,Broad market (size / style),KEPT (equity),False,False
+Small Blend,81,Broad market (size / style),KEPT (equity),False,False
+Mid-Cap Value,74,Broad market (size / style),KEPT (equity),False,False
+Small Value,59,Broad market (size / style),KEPT (equity),False,False
+Mid-Cap Growth,44,Broad market (size / style),KEPT (equity),False,False
+Small Growth,23,Broad market (size / style),KEPT (equity),False,False
+Foreign Large Blend,122,International / regional,KEPT (equity),False,False
+Diversified Emerging Mkts,121,International / regional,KEPT (equity),False,False
+Foreign Large Value,61,International / regional,KEPT (equity),False,False
+Global Large-Stock Blend,46,International / regional,KEPT (equity),False,False
+Foreign Large Growth,36,International / regional,KEPT (equity),False,False
+Europe Stock,27,International / regional,KEPT (equity),False,False
+Japan Stock,20,International / regional,KEPT (equity),False,False
+Focused Region,18,International / regional,KEPT (equity),False,False
+Global Small/Mid Stock,13,International / regional,KEPT (equity),False,False
+Greater China Region,13,International / regional,KEPT (equity),False,False
+Foreign Small/Mid Value,12,International / regional,KEPT (equity),False,False
+Pacific/Asia ex-Japan Stk,12,International / regional,KEPT (equity),False,False
+Foreign Small/Mid Blend,11,International / regional,KEPT (equity),False,False
+Global Large-Stock Growth,10,International / regional,KEPT (equity),False,False
+Global Large-Stock Value,9,International / regional,KEPT (equity),False,False
+India Equity,4,International / regional,KEPT (equity),False,False
+Foreign Small/Mid Growth,1,International / regional,KEPT (equity),False,False
+Technology,201,Sector,KEPT (equity),False,False
+Health,61,Sector,KEPT (equity),False,False
+Natural Resources,55,Sector,KEPT (equity),False,False
+Equity Energy,47,Sector,KEPT (equity),False,False
+Financial,47,Sector,KEPT (equity),False,False
+Real Estate,42,Sector,KEPT (equity),False,False
+Industrials,38,Sector,KEPT (equity),False,False
+Miscellaneous Sector,29,Sector,KEPT (equity),False,False
+Infrastructure,25,Sector,KEPT (equity),False,False
+Consumer Cyclical,19,Sector,KEPT (equity),False,False
+Equity Precious Metals,19,Sector,KEPT (equity),False,False
+Global Real Estate,16,Sector,KEPT (equity),False,False
+Utilities,13,Sector,KEPT (equity),False,False
+Communications,9,Sector,KEPT (equity),True,False
+Consumer Defensive,8,Sector,KEPT (equity),False,False
+High Yield Bond,84,,removed: bond / fixed income,True,True
+Ultrashort Bond,76,,removed: bond / fixed income,True,False
+Short-Term Bond,56,,removed: bond / fixed income,True,False
+Multisector Bond,52,,removed: bond / fixed income,True,False
+Corporate Bond,51,,removed: bond / fixed income,True,False
+Muni National Interm,45,,removed: bond / fixed income,True,False
+Intermediate Core Bond,41,,removed: bond / fixed income,True,False
+Intermediate Core-Plus Bond,41,,removed: bond / fixed income,True,False
+Long Government,30,,removed: bond / fixed income,True,False
+Muni National Short,26,,removed: bond / fixed income,True,False
+Muni Target Maturity,25,,removed: bond / fixed income,True,False
+Securitized Bond - Focused,25,,removed: bond / fixed income,True,False
+Emerging Markets Bond,22,,removed: bond / fixed income,True,True
+Short Government,22,,removed: bond / fixed income,True,False
+Nontraditional Bond,21,,removed: bond / fixed income,True,False
+Intermediate Government,19,,removed: bond / fixed income,True,False
+Muni National Long,19,,removed: bond / fixed income,True,False
+High Yield Muni,18,,removed: bond / fixed income,True,True
+Bank Loan,16,,removed: bond / fixed income,False,True
+Securitized Bond - Diversified,15,,removed: bond / fixed income,True,False
+Inflation-Protected Bond,13,,removed: bond / fixed income,True,False
+Global Bond-USD Hedged,11,,removed: bond / fixed income,True,False
+Long-Term Bond,11,,removed: bond / fixed income,True,False
+Short-Term Inflation-Protected Bond,9,,removed: bond / fixed income,True,False
+Emerging-Markets Local-Currency Bond,7,,removed: bond / fixed income,True,False
+Government Mortgage-Backed Bond,7,,removed: bond / fixed income,True,False
+Muni California Intermediate,6,,removed: bond / fixed income,True,False
+Global Bond,5,,removed: bond / fixed income,True,False
+Muni California Long,5,,removed: bond / fixed income,True,False
+Muni New York Long,5,,removed: bond / fixed income,True,False
+Muni New York Intermediate,3,,removed: bond / fixed income,True,False
+Muni Single State Short,3,,removed: bond / fixed income,True,False
+Muni Massachusetts,2,,removed: bond / fixed income,True,False
+Muni Minnesota,2,,removed: bond / fixed income,True,False
+Muni New Jersey,1,,removed: bond / fixed income,True,False
+Muni Ohio,1,,removed: bond / fixed income,True,False
+Muni Pennsylvania,1,,removed: bond / fixed income,True,False
+Commodities Focused,40,,removed: commodity,False,False
+Commodities Broad Basket,31,,removed: commodity,False,False
+Energy Limited Partnership,18,,removed: commodity,False,False
+Uncategorized,822,,removed: not a pure equity category,False,False
+Defined Outcome,390,,removed: not a pure equity category,False,False
+Tactical Allocation,53,,removed: not a pure equity category,False,False
+Target Maturity,51,,removed: not a pure equity category,False,False
+Equity Hedged,42,,removed: not a pure equity category,False,False
+Preferred Stock,30,,removed: not a pure equity category,False,False
+Moderate Allocation,19,,removed: not a pure equity category,False,False
+Long-Short Equity,15,,removed: not a pure equity category,False,False
+Multi-Asset Overlay,14,,removed: not a pure equity category,False,False
+Systematic Trend,9,,removed: not a pure equity category,False,False
+Global Moderate Allocation,7,,removed: not a pure equity category,False,False
+Convertibles,6,,removed: not a pure equity category,True,False
+Event Driven,5,,removed: not a pure equity category,False,False
+Miscellaneous Allocation,4,,removed: not a pure equity category,False,False
+Money Market-Taxable,4,,removed: not a pure equity category,False,False
+Multistrategy,4,,removed: not a pure equity category,False,False
+Equity Market Neutral,3,,removed: not a pure equity category,False,False
+Global Moderately Conservative Allocation,3,,removed: not a pure equity category,False,False
+Macro Trading,3,,removed: not a pure equity category,False,False
+Aggressive Allocation,2,,removed: not a pure equity category,False,False
+Global Moderately Aggressive Allocation,2,,removed: not a pure equity category,False,False
+Moderately Conservative Allocation,2,,removed: not a pure equity category,False,False
+Prime Money Market,2,,removed: not a pure equity category,False,False
+Relative Value Arbitrage,2,,removed: not a pure equity category,False,False
+Global Conservative Allocation,1,,removed: not a pure equity category,False,False
+Moderately Aggressive Allocation,1,,removed: not a pure equity category,False,False
+Target-Date 2030,1,,removed: not a pure equity category,False,False
+Target-Date 2035,1,,removed: not a pure equity category,False,False
+Target-Date 2040,1,,removed: not a pure equity category,False,False
+Target-Date 2045,1,,removed: not a pure equity category,False,False
+Target-Date 2050,1,,removed: not a pure equity category,False,False
+Target-Date 2055,1,,removed: not a pure equity category,False,False
+Target-Date Retirement,1,,removed: not a pure equity category,False,False
+Trading--Leveraged Equity,580,,removed: trading / leveraged / inverse,False,False
+Trading--Inverse Equity,150,,removed: trading / leveraged / inverse,False,False
+Trading--Miscellaneous,56,,removed: trading / leveraged / inverse,False,False
+Trading--Leveraged Commodities,12,,removed: trading / leveraged / inverse,False,False
+Trading--Inverse Debt,9,,removed: trading / leveraged / inverse,False,False
+Trading--Leveraged Debt,5,,removed: trading / leveraged / inverse,False,False
+Trading--Inverse Commodities,3,,removed: trading / leveraged / inverse,False,False
+Derivative Income,198,,removed: volatility / currency / alternative / crypto,False,False
+Digital Assets,98,,removed: volatility / currency / alternative / crypto,False,False
+Equity Digital Assets,11,,removed: volatility / currency / alternative / crypto,False,False

@@ -1,0 +1,33 @@
+=== 1. INVENTORY: pulling every industry ===
+  ...20/145 industries
+  ...40/145 industries
+  ...60/145 industries
+  ...80/145 industries
+  ...100/145 industries
+  ...120/145 industries
+  ...140/145 industries
+  industries OK (reported == collected == unique): 145/145
+  total reported across industries : 19,152
+  total collected                  : 19,152
+  total tradeable (>=$5, NYSE/Nasdaq/NYSE American, not preferred): 4,520
+  distinct tradeable tickers: 4,520 (tickers in >1 industry: 0)
+
+=== 2. TOTALS: sum of industries vs yfinance's unfiltered US total ===
+  yfinance unfiltered US equity total: 20,261
+  sum across the 145 industries      : 19,152
+  not in any industry                : 1,109 (5.5%)
+
+=== 3. RECALL: S&P 500 stocks (industry from a different endpoint) ===
+  S&P 500 stocks tested: 502 (could not map industry name: 0)
+  found in the live pull for their industry: 501 (99.8%)
+  found, but filed under a DIFFERENT industry: 0
+  not found anywhere in the tradeable set  : 1
+    {'ticker': 'CBOE', 'cache_industry': 'Financial Data & Stock Exchanges', 'live_industries': ''}
+
+=== 4. EXTERNAL: NASDAQ Trader official listings ===
+  exchange-listed common-stock-like securities: 4,998
+  of those, in our tradeable set (any industry) : 3,436 (68.7%)
+  in our set but NOT on the exchange lists      : 1,084 (mostly ETFs/trusts/funds that yfinance calls EQUITY, or name-filter edge cases)
+  exchange-listed but NOT in our set            : 1,562
+  WHY missing (random sample of 80): {'price<5': 77, 'no industry assigned': 1, 'other region (non-US)': 0, 'not found at yfinance': 1, 'other': 1}
+    unexplained: {'ticker': 'NHIV', 'why': 'other', 'price': 10.05, 'industry': 'Shell Companies', 'country': 'United States'}

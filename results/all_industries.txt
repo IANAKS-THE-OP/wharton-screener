@@ -1,0 +1,145 @@
+Advertising Agencies	Communication Services	18
+Aerospace & Defense	Industrials	71
+Agricultural Inputs	Basic Materials	8
+Airlines	Industrials	15
+Airports & Air Services	Industrials	5
+Aluminum	Basic Materials	4
+Apparel Manufacturing	Consumer Cyclical	17
+Apparel Retail	Consumer Cyclical	22
+Asset Management	Financial Services	437
+Auto & Truck Dealerships	Consumer Cyclical	15
+Auto Manufacturers	Consumer Cyclical	10
+Auto Parts	Consumer Cyclical	38
+Banks—Diversified	Financial Services	20
+Banks—Regional	Financial Services	353
+Beverages—Brewers	Consumer Defensive	6
+Beverages—Non-Alcoholic	Consumer Defensive	15
+Beverages—Wineries & Distilleries	Consumer Defensive	5
+Biotechnology	Healthcare	281
+Broadcasting	Communication Services	7
+Building Materials	Basic Materials	15
+Building Products & Equipment	Industrials	27
+Business Equipment & Supplies	Industrials	1
+Capital Markets	Financial Services	56
+Chemicals	Basic Materials	12
+Coking Coal	Basic Materials	4
+Communication Equipment	Technology	32
+Computer Hardware	Technology	25
+Confectioners	Consumer Defensive	3
+Conglomerates	Industrials	19
+Consulting Services	Industrials	13
+Consumer Electronics	Technology	7
+Copper	Basic Materials	7
+Credit Services	Financial Services	42
+Department Stores	Consumer Cyclical	5
+Diagnostics & Research	Healthcare	36
+Discount Stores	Consumer Defensive	9
+Drug Manufacturers—General	Healthcare	17
+Drug Manufacturers—Specialty & Generic	Healthcare	46
+Education & Training Services	Consumer Defensive	23
+Electrical Equipment & Parts	Industrials	28
+Electronic Components	Technology	31
+Electronic Gaming & Multimedia	Communication Services	9
+Electronics & Computer Distribution	Technology	7
+Engineering & Construction	Industrials	38
+Entertainment	Communication Services	35
+Farm & Heavy Construction Machinery	Industrials	20
+Farm Products	Consumer Defensive	17
+Financial Conglomerates	Financial Services	8
+Financial Data & Stock Exchanges	Financial Services	13
+Food Distribution	Consumer Defensive	9
+Footwear & Accessories	Consumer Cyclical	13
+Furnishings, Fixtures & Appliances	Consumer Cyclical	22
+Gambling	Consumer Cyclical	9
+Gold	Basic Materials	37
+Grocery Stores	Consumer Defensive	9
+Health Information Services	Healthcare	28
+Healthcare Plans	Healthcare	10
+Home Improvement Retail	Consumer Cyclical	6
+Household & Personal Products	Consumer Defensive	20
+Industrial Distribution	Industrials	23
+Information Technology Services	Technology	51
+Infrastructure Operations	nan	0
+Insurance Brokers	Financial Services	18
+Insurance—Diversified	Financial Services	13
+Insurance—Life	Financial Services	20
+Insurance—Property & Casualty	Financial Services	47
+Insurance—Reinsurance	Financial Services	6
+Insurance—Specialty	Financial Services	12
+Integrated Freight & Logistics	Industrials	16
+Internet Content & Information	Communication Services	42
+Internet Retail	Consumer Cyclical	20
+Leisure	Consumer Cyclical	18
+Lodging	Consumer Cyclical	10
+Lumber & Wood Production	Basic Materials	4
+Luxury Goods	Consumer Cyclical	7
+Marine Shipping	Industrials	25
+Medical Care Facilities	Healthcare	37
+Medical Devices	Healthcare	79
+Medical Distribution	Healthcare	4
+Medical Instruments & Supplies	Healthcare	36
+Metal Fabrication	Industrials	14
+Mortgage Finance	Financial Services	8
+Oil & Gas Drilling	Energy	8
+Oil & Gas E&P	Energy	56
+Oil & Gas Equipment & Services	Energy	39
+Oil & Gas Integrated	Energy	18
+Oil & Gas Midstream	Energy	51
+Oil & Gas Refining & Marketing	Energy	17
+Other Industrial Metals & Mining	Basic Materials	24
+Other Precious Metals & Mining	Basic Materials	13
+Packaged Foods	Consumer Defensive	43
+Packaging & Containers	Consumer Cyclical	17
+Paper & Paper Products	Basic Materials	3
+Personal Services	Consumer Cyclical	9
+Pharmaceutical Retailers	nan	0
+Pollution & Treatment Controls	Industrials	6
+Publishing	Communication Services	7
+REIT—Diversified	Real Estate	16
+REIT—Healthcare Facilities	Real Estate	16
+REIT—Hotel & Motel	Real Estate	12
+REIT—Industrial	Real Estate	15
+REIT—Mortgage	Real Estate	37
+REIT—Office	Real Estate	15
+REIT—Residential	Real Estate	17
+REIT—Retail	Real Estate	28
+REIT—Specialty	Real Estate	19
+Railroads	Industrials	10
+Real Estate Services	Real Estate	30
+Real Estate—Development	Real Estate	7
+Real Estate—Diversified	Real Estate	2
+Recreational Vehicles	Consumer Cyclical	12
+Rental & Leasing Services	Industrials	17
+Residential Construction	Consumer Cyclical	19
+Resorts & Casinos	Consumer Cyclical	13
+Restaurants	Consumer Cyclical	39
+Scientific & Technical Instruments	Technology	22
+Security & Protection Services	Industrials	12
+Semiconductor Equipment & Materials	Technology	28
+Semiconductors	Technology	57
+Shell Companies	Financial Services	432
+Silver	Basic Materials	5
+Software—Application	Technology	140
+Software—Infrastructure	Technology	114
+Solar	Technology	8
+Specialty Business Services	Industrials	33
+Specialty Chemicals	Basic Materials	48
+Specialty Industrial Machinery	Industrials	58
+Specialty Retail	Consumer Cyclical	29
+Staffing & Employment Services	Industrials	14
+Steel	Basic Materials	14
+Telecom Services	Communication Services	50
+Textile Manufacturing	Consumer Cyclical	2
+Thermal Coal	Energy	5
+Tobacco	Consumer Defensive	7
+Tools & Accessories	Industrials	10
+Travel Services	Consumer Cyclical	13
+Trucking	Industrials	14
+Uranium	Energy	7
+Utilities—Diversified	Utilities	6
+Utilities—Independent Power Producers	Utilities	8
+Utilities—Regulated Electric	Utilities	41
+Utilities—Regulated Gas	Utilities	15
+Utilities—Regulated Water	Utilities	12
+Utilities—Renewable	Utilities	11
+Waste Management	Industrials	10

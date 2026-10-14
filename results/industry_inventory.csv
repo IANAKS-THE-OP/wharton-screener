@@ -1,0 +1,146 @@
+industry,reported,collected,unique,kept_tradeable,status
+Advertising Agencies,128,128,128,18,OK
+Aerospace & Defense,230,230,230,71,OK
+Agricultural Inputs,61,61,61,8,OK
+Airlines,64,64,64,15,OK
+Airports & Air Services,45,45,45,5,OK
+Aluminum,16,16,16,4,OK
+Apparel Manufacturing,71,71,71,17,OK
+Apparel Retail,72,72,72,22,OK
+Asset Management,775,775,775,437,OK
+Auto & Truck Dealerships,60,60,60,15,OK
+Auto Manufacturers,116,116,116,10,OK
+Auto Parts,184,184,184,38,OK
+Banks—Diversified,97,97,97,20,OK
+Banks—Regional,967,967,967,353,OK
+Beverages—Brewers,40,40,40,6,OK
+Beverages—Non-Alcoholic,93,93,93,15,OK
+Beverages—Wineries & Distilleries,63,63,63,5,OK
+Biotechnology,1004,1004,1004,281,OK
+Broadcasting,58,58,58,7,OK
+Building Materials,74,74,74,15,OK
+Building Products & Equipment,88,88,88,27,OK
+Business Equipment & Supplies,25,25,25,1,OK
+Capital Markets,249,249,249,56,OK
+Chemicals,82,82,82,12,OK
+Coking Coal,20,20,20,4,OK
+Communication Equipment,136,136,136,32,OK
+Computer Hardware,94,94,94,25,OK
+Confectioners,21,21,21,3,OK
+Conglomerates,222,222,222,19,OK
+Consulting Services,74,74,74,13,OK
+Consumer Electronics,60,60,60,7,OK
+Copper,58,58,58,7,OK
+Credit Services,142,142,142,42,OK
+Department Stores,43,43,43,5,OK
+Diagnostics & Research,116,116,116,36,OK
+Discount Stores,23,23,23,9,OK
+Drug Manufacturers—General,62,62,62,17,OK
+Drug Manufacturers—Specialty & Generic,481,481,481,46,OK
+Education & Training Services,86,86,86,23,OK
+Electrical Equipment & Parts,169,169,169,28,OK
+Electronic Components,141,141,141,31,OK
+Electronic Gaming & Multimedia,105,105,105,9,OK
+Electronics & Computer Distribution,21,21,21,7,OK
+Engineering & Construction,192,192,192,38,OK
+Entertainment,192,192,192,35,OK
+Farm & Heavy Construction Machinery,89,89,89,20,OK
+Farm Products,101,101,101,17,OK
+Financial Conglomerates,21,21,21,8,OK
+Financial Data & Stock Exchanges,42,42,42,13,OK
+Food Distribution,46,46,46,9,OK
+Footwear & Accessories,42,42,42,13,OK
+"Furnishings, Fixtures & Appliances",78,78,78,22,OK
+Gambling,63,63,63,9,OK
+Gold,564,564,564,37,OK
+Grocery Stores,66,66,66,9,OK
+Health Information Services,159,159,159,28,OK
+Healthcare Plans,15,15,15,10,OK
+Home Improvement Retail,19,19,19,6,OK
+Household & Personal Products,124,124,124,20,OK
+Industrial Distribution,61,61,61,23,OK
+Information Technology Services,230,230,230,51,OK
+Infrastructure Operations,18,18,18,0,OK
+Insurance Brokers,30,30,30,18,OK
+Insurance—Diversified,60,60,60,13,OK
+Insurance—Life,79,79,79,20,OK
+Insurance—Property & Casualty,97,97,97,47,OK
+Insurance—Reinsurance,25,25,25,6,OK
+Insurance—Specialty,29,29,29,12,OK
+Integrated Freight & Logistics,90,90,90,16,OK
+Internet Content & Information,192,192,192,42,OK
+Internet Retail,98,98,98,20,OK
+Leisure,108,108,108,18,OK
+Lodging,40,40,40,10,OK
+Lumber & Wood Production,22,22,22,4,OK
+Luxury Goods,58,58,58,7,OK
+Marine Shipping,116,116,116,25,OK
+Medical Care Facilities,145,145,145,37,OK
+Medical Devices,339,339,339,79,OK
+Medical Distribution,41,41,41,4,OK
+Medical Instruments & Supplies,138,138,138,36,OK
+Metal Fabrication,38,38,38,14,OK
+Mortgage Finance,75,75,75,8,OK
+Oil & Gas Drilling,40,40,40,8,OK
+Oil & Gas E&P,468,468,468,56,OK
+Oil & Gas Equipment & Services,152,152,152,39,OK
+Oil & Gas Integrated,47,47,47,18,OK
+Oil & Gas Midstream,119,119,119,51,OK
+Oil & Gas Refining & Marketing,65,65,65,17,OK
+Other Industrial Metals & Mining,987,987,987,24,OK
+Other Precious Metals & Mining,271,271,271,13,OK
+Packaged Foods,315,315,315,43,OK
+Packaging & Containers,62,62,62,17,OK
+Paper & Paper Products,34,34,34,3,OK
+Personal Services,27,27,27,9,OK
+Pharmaceutical Retailers,49,49,49,0,OK
+Pollution & Treatment Controls,85,85,85,6,OK
+Publishing,38,38,38,7,OK
+REIT—Diversified,71,71,71,16,OK
+REIT—Healthcare Facilities,27,27,27,16,OK
+REIT—Hotel & Motel,39,39,39,12,OK
+REIT—Industrial,61,61,61,15,OK
+REIT—Mortgage,98,98,98,37,OK
+REIT—Office,58,58,58,15,OK
+REIT—Residential,41,41,41,17,OK
+REIT—Retail,73,73,73,28,OK
+REIT—Specialty,35,35,35,19,OK
+Railroads,61,61,61,10,OK
+Real Estate Services,198,198,198,30,OK
+Real Estate—Development,132,132,132,7,OK
+Real Estate—Diversified,52,52,52,2,OK
+Recreational Vehicles,34,34,34,12,OK
+Rental & Leasing Services,52,52,52,17,OK
+Residential Construction,59,59,59,19,OK
+Resorts & Casinos,52,52,52,13,OK
+Restaurants,128,128,128,39,OK
+Scientific & Technical Instruments,103,103,103,22,OK
+Security & Protection Services,71,71,71,12,OK
+Semiconductor Equipment & Materials,79,79,79,28,OK
+Semiconductors,114,114,114,57,OK
+Shell Companies,850,850,850,432,OK
+Silver,39,39,39,5,OK
+Software—Application,679,679,679,140,OK
+Software—Infrastructure,372,372,372,114,OK
+Solar,70,70,70,8,OK
+Specialty Business Services,152,152,152,33,OK
+Specialty Chemicals,275,275,275,48,OK
+Specialty Industrial Machinery,321,321,321,58,OK
+Specialty Retail,129,129,129,29,OK
+Staffing & Employment Services,44,44,44,14,OK
+Steel,82,82,82,14,OK
+Telecom Services,257,257,257,50,OK
+Textile Manufacturing,22,22,22,2,OK
+Thermal Coal,41,41,41,5,OK
+Tobacco,44,44,44,7,OK
+Tools & Accessories,32,32,32,10,OK
+Travel Services,43,43,43,13,OK
+Trucking,30,30,30,14,OK
+Uranium,65,65,65,7,OK
+Utilities—Diversified,43,43,43,6,OK
+Utilities—Independent Power Producers,31,31,31,8,OK
+Utilities—Regulated Electric,143,143,143,41,OK
+Utilities—Regulated Gas,49,49,49,15,OK
+Utilities—Regulated Water,35,35,35,12,OK
+Utilities—Renewable,124,124,124,11,OK
+Waste Management,105,105,105,10,OK

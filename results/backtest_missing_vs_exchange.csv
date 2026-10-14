@@ -1,0 +1,81 @@
+ticker,why,price,industry,country
+CETX,price<5,1.85,Software - Infrastructure,United States
+RDNW,price<5,4.865,Auto & Truck Dealerships,United States
+ATPC,price<5,1.95,Packaged Foods,Malaysia
+FLNT,price<5,2.765,Advertising Agencies,United States
+BYSI,price<5,0.6067,Biotechnology,United States
+OBAI,price<5,0.1781,Software - Infrastructure,United States
+ZSTK,price<5,4.24,Asset Management,Canada
+MRKR,price<5,0.975,Biotechnology,United States
+NGEN,price<5,1.7115,Biotechnology,Canada
+SWAG,price<5,1.42,Advertising Agencies,United States
+KDK,price<5,1.77,Software - Infrastructure,United States
+DWTX,price<5,1.32,Biotechnology,United States
+BLIN,price<5,0.7606,Software - Infrastructure,United States
+NUVB,price<5,4.845,Biotechnology,United States
+AIV,price<5,1.735,REIT - Residential,United States
+KTTA,price<5,0.42,Biotechnology,United States
+MERC,price<5,0.186,Paper & Paper Products,Canada
+SGRX,price<5,0.7195,Information Technology Services,Singapore
+ZVIA,price<5,1.17,Beverages - Non-Alcoholic,United States
+ABLV,price<5,1.6338,Specialty Retail,China
+UONE,price<5,4.16,Broadcasting,United States
+MNTK,price<5,2.4,Specialty Chemicals,United States
+FURY,price<5,0.5281,Gold,Canada
+VWAV,price<5,4.34,Aerospace & Defense,United States
+ENVB,price<5,1.49,Biotechnology,United States
+SABR,price<5,1.76,Software - Infrastructure,United States
+BON,price<5,1.13,Specialty Chemicals,China
+HKPD,price<5,0.1012,Medical Distribution,Hong Kong
+ALEC,price<5,1.785,Biotechnology,United States
+AIFA,price<5,4.4999,Software - Infrastructure,United States
+AIRE,price<5,1.13,Real Estate Services,United States
+SURG,price<5,0.125,Telecom Services,United States
+PNNT,price<5,3.17,Asset Management,United States
+ACON,price<5,2.2,Health Information Services,United States
+KIDZ,price<5,1.92,Education & Training Services,United States
+TTGT,price<5,3.895,Information Technology Services,United States
+EEIQ,price<5,4.81,Education & Training Services,United States
+MAMO,price<5,0.9385,Recreational Vehicles,United States
+WETO,price<5,0.908,Software - Infrastructure,United States
+AKAN,price<5,1.46,Drug Manufacturers - Specialty & Generic,Canada
+PETS,price<5,1.295,Pharmaceutical Retailers,United States
+ELDN,price<5,2.355,Biotechnology,United States
+MINE,price<5,2.4723,Gold,Canada
+OCG,price<5,1.63,Internet Retail,Hong Kong
+PULM,price<5,1.3701,Biotechnology,United States
+EQ,price<5,1.435,Biotechnology,United States
+IMRX,price<5,3.7,Biotechnology,United States
+EOSE,price<5,2.315,Electrical Equipment & Parts,United States
+TORO,price<5,4.2,Oil & Gas Midstream,Cyprus
+EH,price<5,3.93,Aerospace & Defense,China
+MYPS,price<5,3.94,Electronic Gaming & Multimedia,United States
+GNLN,price<5,2.53,Tobacco,United States
+AIDX,price<5,0.3698,Medical Devices,United States
+LUCY,price<5,0.8703,Medical Instruments & Supplies,United States
+QCLS,price<5,0.56,Computer Hardware,United States
+SSP,price<5,2.835,Broadcasting,United States
+BNKK,price<5,1.29,Beverages - Non-Alcoholic,United States
+CYAB,price<5,0.1612,Software - Infrastructure,Israel
+SNTI,price<5,0.3056,Biotechnology,United States
+WBUY,price<5,0.9455,Internet Retail,Singapore
+GRAN,price<5,1.34,Capital Markets,Hong Kong
+CALC,price<5,1.13,Biotechnology,United States
+XPL,price<5,0.5626,Other Industrial Metals & Mining,United States
+HYFT,price<5,1.445,Biotechnology,United States
+VIVO,price<5,2.6499,Software - Infrastructure,United Kingdom
+OLB,price<5,0.4791,Software - Infrastructure,United States
+OPAL,price<5,1.67,Engineering & Construction,United States
+TLYS,price<5,4.62,Apparel Retail,United States
+DCGO,price<5,0.3258,Medical Care Facilities,United States
+GT,price<5,4.61,Auto Parts,United States
+GJS,no industry assigned,23.15,,
+RXST,price<5,4.51,Medical Devices,United States
+OIO,price<5,1.73,Waste Management,Singapore
+ONEN,price<5,1.655,Utilities - Independent Power Producers,United States
+LAES,price<5,1.935,Semiconductors,Switzerland
+RYET,price<5,0.8487,Education & Training Services,China
+ALXO,price<5,1.135,Biotechnology,United States
+NOMA,price<5,1.58,Leisure,United States
+FABC,price<5,2.145,Semiconductors,United States
+XPON,price<5,4.04,Electrical Equipment & Parts,United States

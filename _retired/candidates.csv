@@ -1,0 +1,13 @@
+ticker,bucket,sector,held,duration_years
+IEF,bonds,Treasury,no,7.3
+GOVT,bonds,Treasury,no,5.8
+BND,bonds,Aggregate,no,6.2
+VCIT,bonds,Corporate IG,no,6.3
+SCHD,conservative,Dividend,no,
+VIG,conservative,Dividend,no,
+USMV,conservative,Low volatility,no,
+QUAL,conservative,Quality,no,
+ESGU,growth,ESG,no,
+EWT,growth,Taiwan,no,
+VWO,growth,Emerging markets,no,
+VTI,growth,Broad market,no,

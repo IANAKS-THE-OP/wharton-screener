@@ -1,0 +1,11 @@
+payment_year,bond_used,yield,years,cost_2027,face_value_to_buy,price_used,yield_source,status
+2033,5.375% 2031-02-15,0.04977,6.0,38715.52,38131.63,101.53125,"treasury_price (October 8, 2026)",bridge via 5.375% 2031-02-15 then 3.00% T-bills
+2034,5.375% 2031-02-15,0.04977,7.0,37588.64,37021.75,101.53125,"treasury_price (October 8, 2026)",bridge via 5.375% 2031-02-15 then 3.00% T-bills
+2035,5.375% 2031-02-15,0.04977,8.0,36494.57,35944.17,101.53125,"treasury_price (October 8, 2026)",bridge via 5.375% 2031-02-15 then 3.00% T-bills
+2036,5.375% 2031-02-15,0.04977,9.0,35432.33,34897.96,101.53125,"treasury_price (October 8, 2026)",bridge via 5.375% 2031-02-15 then 3.00% T-bills
+2037,4.500% 2036-02-15,0.05102,10.0,30396.67,31808.16,95.5625,"treasury_price (October 8, 2026)",direct match
+2038,4.750% 2037-02-15,0.05175,11.0,28703.52,29706.11,96.625,"treasury_price (October 8, 2026)",direct match
+2039,4.500% 2038-05-15,0.0524,12.0,27089.2,28933.73,93.625,"treasury_price (October 8, 2026)",direct match
+2040,4.375% 2039-11-15,0.05388,13.0,25274.27,27908.1,90.5625,"treasury_price (October 8, 2026)",direct match
+2041,4.250% 2040-11-15,0.05452,14.0,23778.88,26935.37,88.28125,"treasury_price (October 8, 2026)",direct match
+2042,3.125% 2041-11-15,0.05541,15.0,22265.06,29490.14,75.5,"treasury_price (October 8, 2026)",direct match
