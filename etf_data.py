@@ -45,6 +45,15 @@ _OTHER_NON_EQUITY = ["uncategorized", "defined outcome", "target maturity", "equ
 _NAME_BAD = re.compile(r"(\b(2x|3x|ultra\w*|inverse|short\w*|bear)\b|[-\s][123]x\b)", re.IGNORECASE)
 
 
+# The only screener-quote fields the app reads; build_etf_universe.py stores just these (keeps etf_raw.db small).
+QUOTE_FIELDS = ("symbol", "longName", "shortName", "regularMarketPrice", "netAssets", "netExpenseRatio",
+                "averageDailyVolume3Month", "dividendYield", "quoteType", "exchange", "currency", "firstTradeDateMilliseconds")
+
+
+def slim_quote(q):
+    return {k: q[k] for k in QUOTE_FIELDS if k in q}
+
+
 def category_exclusion_reason(category):
     """None if the category is an equity ETF category we keep; otherwise a reason."""
     c = (category or "").lower()
@@ -68,7 +77,15 @@ _NAME_DERIV = re.compile(r"covered call|option income|options income|option-inco
                          r"weekly ?pay|\bphysical\b|bullion|\bspac\b|efficient .* plus|adr ?hedged|\bvolt\b", re.IGNORECASE)
 
 
+# VIX / volatility PRODUCTS (futures, premium-selling, ETNs). Deliberately narrow: "Low Volatility", "Min Vol",
+# "Managed Volatility" and "Volatility Weighted" EQUITY funds (USMV, SPLV, LGLV...) must NOT match.
+VOL_PRODUCT = re.compile(r"\bvix\b|volatility (premium|futures|index fund|etn)|volatility shares|\bvol(atility)? etn|"
+                         r"short[- ]term futures|long volatility|short volatility|\bvolt\b", re.IGNORECASE)
+
+
 def fund_exclusion_reason(name, price):
+    if name and VOL_PRODUCT.search(name):
+        return "VIX / volatility product (by name)"
     if name and _NAME_BAD.search(name):
         return "leveraged / inverse / short (by name)"
     if name and _NAME_DERIV.search(name):

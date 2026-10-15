@@ -32,7 +32,8 @@ st.set_page_config(page_title="Wharton Investment Screener", layout="wide")
 # while the ETF page is open). Re-saving these keys at the top of every run keeps the industry picks,
 # comfort ranges, weights, blend and hard limits when you switch pages or industries. (None of these
 # widgets has a value= argument, so re-saving them never conflicts with a default.)
-PERSIST_PREFIXES = ("industry_choice", "etf2_industry", "etf2_only_with", "etf2_laura_hard",
+PERSIST_PREFIXES = ("industry_choice", "etf2_industry", "etf2_mscat", "etf2_groupby", "etf2_only_with", "etf2_laura_hard",
+                    "stkcmp_", "etfcmp_",
                     "stklo|", "stkhi|", "stkext|", "etflo|", "etfhi|", "etfext|",
                     "s2w|", "etf2w|", "s2_blend", "etf2_blend", "s2h|", "etf2h|")
 for _k in [k for k in st.session_state.keys() if str(k).startswith(PERSIST_PREFIXES)]:

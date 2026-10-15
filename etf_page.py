@@ -9,7 +9,10 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
+import compare
+import compare_ui
 import etf_data as ed
+import etf_groups as eg
 import etf_holdings as eh
 import etf_scoring as es
 import laura
@@ -51,39 +54,61 @@ def render(directory_fn):
         st.warning(f"Couldn't read the industry directory ({ei.DIRECTORY_PATH}: {e}). Industry/sector labels may be incomplete; "
                    "rebuild it with `./venv/bin/python3 build_industry_directory.py`.")
         sector_of = {}
-    counts = imap["group"].value_counts().to_dict()
-    cached_t = {t for t in ed.load_all_tickers()}
-    # same list as the Stocks page (all 145 industries, with the ETF count) + a few broad entries at the end
     import industry_universe as iu
-    industries = [i for i in iu.VALID_INDUSTRIES]
-    broad = [g for g in counts if g not in sector_of]
-    wholes = sorted(g for g in broad if g.startswith(ei.WHOLE))
-    tail = wholes + [g for g in (ei.OTHER, ei.BROAD, ei.INTL) if g in counts]
-    options = industries + tail
+    ru.seed({"etf2_groupby": "industry", "etf2_only_with": True})
+    mode = st.sidebar.radio("Group ETFs by", list(eg.MODES), key="etf2_groupby", format_func=eg.MODES.get, horizontal=True,
+                            help="Industry: the same 145 industries as the Stocks page (tagged from top-10 holdings). "
+                                 "Morningstar category: yfinance's fund category (Large Blend, Large Value, Mid-Cap Blend...). "
+                                 "Both lists end with theme groups found in fund names (ESG, low volatility, dividend, quality, equal weight); "
+                                 "a fund can be in its category/industry AND a theme.")
+    mem = eg.membership(imap, mode)
+    counts = mem["group"].value_counts().to_dict()
+    cached_t = ed.load_all_tickers()
+    got = mem[mem["ticker"].isin(cached_t)]["group"].value_counts().to_dict()
+    themes = [g for g in eg.THEME_GROUPS if counts.get(g)]
+    if mode == "industry":
+        # same list as the Stocks page (all 145 industries, with the ETF count) + a few broad entries + themes at the end
+        industries = list(iu.VALID_INDUSTRIES)
+        broad = [g for g in counts if g not in sector_of and g not in eg.THEME_GROUPS]
+        wholes = sorted(g for g in broad if g.startswith(ei.WHOLE))
+        options = industries + wholes + [g for g in (ei.OTHER, ei.BROAD, ei.INTL) if g in counts] + themes
+        sel_key, title = "etf2_industry", f"Industry ({len([g for g in industries if counts.get(g, 0)])} of {len(industries)} have ETFs - click and type to search)"
+        help_ = ("The same 145 industries as the Stocks page. Sector funds are placed by a clear industry word in their name (checked against their "
+                 "top-10 holdings) or when 80%+ of the top 10 is in one industry; other funds need 60%+ of the top 10 in the industry AND a matching "
+                 "name. Diversified funds are under the entries near the end of the list; themes are last.")
+    else:
+        cats = [g for g in counts if g not in eg.THEME_GROUPS]
+        options = eg.morningstar_order(cats, counts, ed.category_group) + themes
+        sel_key, title = "etf2_mscat", f"Morningstar category ({len(cats)} categories + {len(themes)} themes - click and type to search)"
+        help_ = "yfinance's Morningstar category for each equity ETF. Peer group = the funds in that category (or theme)."
 
     def _lbl(g):
-        n = counts.get(g, 0)
-        return f"{g}  ({n} ETF{'s' if n != 1 else ''})" if n else f"{g}  (no ETFs)"
+        n, d = counts.get(g, 0), got.get(g, 0)
+        if not n:
+            return f"{g}  (no ETFs)"
+        return f"{g}  ({n} ETF{'s' if n != 1 else ''}" + ("" if d == n else f", {d} downloaded") + ")"
 
-    ru.seed({"etf2_only_with": True})
-    only_with = st.sidebar.checkbox("Hide industries with no ETFs", key="etf2_only_with")
+    only_with = st.sidebar.checkbox("Hide groups with no ETFs", key="etf2_only_with")
     shown = [g for g in options if counts.get(g, 0) > 0] if only_with else options
-    group = st.sidebar.selectbox(
-        f"Industry ({len([g for g in industries if counts.get(g, 0)])} of {len(industries)} have ETFs - click and type to search)",
-        shown, key="etf2_industry", format_func=_lbl,
-        help="The same 145 industries as the Stocks page. Sector funds are placed by a clear industry word in their name (checked against their top-10 holdings) or when 80%+ of the top 10 is in one industry; "
-             "other funds need 60%+ of the top 10 in the industry AND a matching name. Diversified funds are under the entries at the end of the list.")
-    st.sidebar.caption("Funds that hold many industries are listed under *Whole sector*, *Broad US market* or *International*.")
+    if st.session_state.get(sel_key) not in shown:
+        st.session_state[sel_key] = next((g for g in shown if got.get(g)), shown[0])
+    group = st.sidebar.selectbox(title, shown, key=sel_key, format_func=_lbl, help=help_)
+    ns = eg.ns(mode, group)
+    st.sidebar.caption("Funds that hold many industries are listed under *Whole sector*, *Broad US market* or *International*; "
+                       "themes are detected from fund names." if mode == "industry" else
+                       "Themes (ESG, low volatility, dividend, quality, equal weight) are detected from fund names.")
+    _lookup(imap, cached_t)
     with st.sidebar.expander("ETF scoring inputs", expanded=False):
         tbill = st.number_input("T-bill rate (downside-deviation MAR, %)", 0.0, 15.0, 3.0, 0.25, key="etf2_tbill") / 100
         window = st.radio("History window (years)", [5, 10], index=1, horizontal=True, key="etf2_window")
     settings = {"tbill": tbill, "window": window}
-    st.sidebar.caption("Equity ETFs only. Bond, commodity, leveraged/inverse, volatility, currency and crypto funds are never shown.")
+    st.sidebar.caption("Equity ETFs only. Bond, commodity, leveraged/inverse, VIX/volatility products, currency and crypto funds are never shown "
+                       "(low-volatility EQUITY funds are kept).")
 
-    st.title(f"ETFs: {group}")
+    st.title(f"ETFs: {group}" + ("" if mode == "industry" else "  ·  Morningstar"))
 
     # ------------------------------------------------------------------ load / pull
-    members = imap[imap["group"] == group]
+    members = mem[mem["group"] == group]
     tickers = list(members["ticker"])
     have = ed.load_funds(tickers)
     missing = [t for t in tickers if t not in have]
@@ -111,7 +136,7 @@ def render(directory_fn):
         if st.button("Retry", key="etf2_retry"):
             _pull()
     # peers = the funds tagged to this industry/group (the raw's category is overwritten with the group name)
-    raws = [{**have[t], "category": group} for t in tickers if t in have]
+    raws = eg.group_raws(tickers, have, group)
     if missing:
         c2.info(f"{len(missing)} of {len(tickers)} funds here aren't downloaded yet. Click **Pull live ETF data**.")
     else:
@@ -148,9 +173,14 @@ def render(directory_fn):
         h2.caption(f"Top-10 holdings across these funds: **{len(syms)} unique** · scored **{scored_n}** · skipped **{sum(1 for s in syms if s in hq_skips or eh.is_foreign_symbol(s))}** "
                    f"(foreign / outside the tradeable stock universe) · pending **{len(todo)}**. Holdings quality is excluded for a fund until its holdings are scored.")
 
-    tab_res, tab_tune, tab_dir, tab_how = st.tabs(["Ranked results", "Tune scoring", "Directory", "How scoring works"])
+    tab_res, tab_tune, tab_cmp, tab_dir, tab_how = st.tabs(["Ranked results", "Tune scoring", "Compare industries", "Directory", "How scoring works"])
     with tab_dir:
-        directory_fn()
+        if mode == "industry":
+            directory_fn()
+        else:
+            _morningstar_directory(mem, cached_t)
+    with tab_cmp:  # drawn BEFORE the Tune widgets so its Laura button can reset the weights in this run
+        _compare_tab(mode, mem, got, counts, settings, hq_scores, hq_skips)
     if not raws:
         with tab_how:
             _how_tab(None, None)
@@ -158,7 +188,7 @@ def render(directory_fn):
 
     # prep depends on data + settings only (never on weights or ranges); hash EVERY fund's fetch date, not just the first few
     data_sig = hashlib.sha1(repr(sorted((r["ticker"], r["fetched"]) for r in raws)).encode()).hexdigest()
-    sig = (es.PREP_VERSION, group, data_sig, len(raws), tbill, window, len(hq_scores), len(hq_skips))
+    sig = (es.PREP_VERSION, ns, data_sig, len(raws), tbill, window, len(hq_scores), len(hq_skips))
     if st.session_state.get("etf2_prep_key") != sig:
         st.session_state["etf2_prep"] = es.prepare_funds(raws, settings, hq_scores, hq_skips, all_raws=ed.load_all)
         st.session_state["etf2_prep_key"] = sig
@@ -173,8 +203,8 @@ def render(directory_fn):
         blend = t1.slider("Blend: Overall = b × Fit + (1 − b) × Composite", 0, 100, step=5, key="etf2_blend") / 100
         bench_cat = prep["bench"][group]
         linfo = laura.laura_info(bench_cat, "etf", es.METRICS)
-        ru.buttons((t2, t3), PREFIX, group, bench_cat, wdef)
-        ru.seed_laura(PREFIX, group, bench_cat, linfo)  # Laura ranges are the default (only where nothing is set yet)
+        ru.buttons((t2, t3), PREFIX, ns, bench_cat, wdef)
+        ru.seed_laura(PREFIX, ns, bench_cat, linfo)  # Laura ranges are the default (only where nothing is set yet)
         total = sum(st.session_state[k] for k in wdef)  # number of holdings is always 0
         (st.success if abs(total - 100) < 1e-9 else st.warning)(
             f"Weights total **{total:g}**" + ("" if abs(total - 100) < 1e-9 else " (not 100 - scores still calculate; the formula normalizes)")
@@ -200,14 +230,14 @@ def render(directory_fn):
                                    + ("" if b["level"] == "category" else f" · ⚠ all-equity-ETF fallback pool ({b['category_n']} in this group)"))
                         if key != "n_holdings":
                             ru.laura_caption(linfo.get(key), m["direction"], lambda v, u=m["units"]: fmt(v, u))
-                        ranges_by_cat.setdefault(group, {})[key] = ru.range_widget(PREFIX, group, key, b, fallback=(linfo.get(key) or {}).get("range"))
+                        ranges_by_cat.setdefault(group, {})[key] = ru.range_widget(PREFIX, ns, key, b, fallback=(linfo.get(key) or {}).get("range"))
                         if laura_hard and key in hl:
                             lo_, hi_ = hl[key]
                             st.checkbox(f"Must be inside: Laura hard limit {'≤ ' + fmt(hi_, m['units']) if hi_ is not None else '≥ ' + fmt(lo_, m['units'])}",
-                                        value=True, disabled=True, key=f"etf2hl|{group}|{key}")
+                                        value=True, disabled=True, key=f"etf2hl|{ns}|{key}")
                             hard[key] = True
                         else:
-                            hard[key] = st.checkbox("Must be inside range", key=f"etf2h|{group}|{key}")
+                            hard[key] = st.checkbox("Must be inside range", key=f"etf2h|{ns}|{key}")
                     else:
                         st.caption("No valid values in this group - metric excluded for everyone.")
                     if key == "n_holdings":
@@ -251,13 +281,69 @@ def render(directory_fn):
                            file_name=f"etf_score_{group}_{datetime.now():%Y%m%d_%H%M}.csv".replace(" ", "_").replace("★", ""), mime="text/csv")
 
         st.subheader("Breakdown")
-        pick = st.selectbox("Fund", [r["ticker"] for r in display], key=f"etf2_pick|{group}",
+        pick = st.selectbox("Fund", [r["ticker"] for r in display], key=f"etf2_pick|{ns}",
                             format_func=lambda t: f"{t} - {next(r['name'] for r in display if r['ticker'] == t)}")
         chosen = next(r for r in display if r["ticker"] == pick)
         _breakdown(chosen, prep["bench"][chosen["category"]])
 
     with tab_how:
         _how_tab(chosen, final)
+
+
+def _lookup(imap, cached_t):
+    """Sidebar lookup: where a fund sits in BOTH groupings (industry, Morningstar category, themes)."""
+    with st.sidebar.expander("Find a fund", expanded=False):
+        q = st.text_input("Ticker or name", key="etf2_lookup", placeholder="e.g. ESGV, USMV, min vol").strip()
+        if not q:
+            return
+        hit = imap[(imap["ticker"].str.upper() == q.upper())]
+        if hit.empty:
+            hit = imap[imap["name"].str.contains(q, case=False, regex=False, na=False)].head(12)
+        if hit.empty:
+            st.caption("Not in the equity-ETF universe (bond, leveraged/inverse, commodity, currency, VIX/volatility and crypto "
+                       "funds are excluded, as are funds under $5).")
+            return
+        for t, n, cat, g in zip(hit["ticker"], hit["name"], hit["morningstar_category"], hit["group"]):
+            th = ", ".join(x.replace(eg.THEME_PREFIX, "") for x in eg.themes_for(n)) or "none"
+            st.markdown(f"**{t}** · {n}  \nIndustry mode: *{g}* · Morningstar: *{cat}* · themes: *{th}* · "
+                        + ("downloaded" if t in cached_t else "not downloaded yet"))
+
+
+def _morningstar_directory(mem, cached_t):
+    st.caption("Every Morningstar category (and theme) with its equity ETFs. Categories come from yfinance; themes from fund names.")
+    rows = []
+    for g, x in mem.groupby("group"):
+        rows.append({"category / theme": g, "type": "theme" if g in eg.THEME_GROUPS else ed.category_group(g), "etfs": len(x),
+                     "downloaded": int(x["ticker"].isin(cached_t).sum()), "example funds": ", ".join(x["ticker"].head(8))})
+    t = pd.DataFrame(rows).sort_values(["type", "etfs"], ascending=[True, False])
+    st.dataframe(t, hide_index=True, width="stretch")
+    st.download_button("Download every ETF with its category and themes (CSV)", mem.to_csv(index=False),
+                       file_name="etf_morningstar_map.csv", mime="text/csv", key="etf2_ms_dl")
+
+
+def _compare_tab(mode, mem, got, counts, settings, hq_scores, hq_skips):
+    """'Compare industries' for ETFs: any number of groups of the CURRENT grouping (industry or Morningstar)."""
+    options = [g for g in sorted(got) if got.get(g)]
+    weights = {m["key"]: (0.0 if m["key"] == "n_holdings" else float(st.session_state.get(f"etf2w|{m['key']}", m["weight"]))) for m in es.METRICS}
+    blend = st.session_state.get("etf2_blend", 50) / 100
+    cache = st.session_state.setdefault("_cmpcache_etf", {})
+    if len(cache) > 80:
+        cache.clear()
+
+    def run(sel, cmode, rmode):
+        tick = {g: list(mem.loc[mem["group"] == g, "ticker"]) for g in sel}
+        have = ed.load_funds(sorted({t for ts in tick.values() for t in ts}))
+        by = {g: eg.group_raws(ts, have, g) for g, ts in tick.items()}
+        stamps = {g: hashlib.sha1(repr(sorted((r["ticker"], r["fetched"]) for r in raws)).encode()).hexdigest() for g, raws in by.items()}
+        return compare.etf_compare(by, settings, weights, blend, hq_scores, hq_skips, cmode, rmode,
+                                   all_raws=ed.load_all, cache=cache, stamps=stamps)
+
+    compare_ui.render(key=f"etfcmp_|{mode}", asset="etf", metrics=[m for m in es.METRICS if m["key"] != "n_holdings"],
+                      options=options, counts={g: f"{got.get(g, 0)} of {counts.get(g, 0)} downloaded" for g in options}, run=run,
+                      weight_defaults={f"etf2w|{m['key']}": float(m["weight"]) for m in es.METRICS if m["key"] != "n_holdings"},
+                      fmt=fmt, icons=_icons, word="industry" if mode == "industry" else "category", name_word="fund",
+                      page_prefix=PREFIX, ns_fn=lambda g: eg.ns(mode, g),
+                      extra_note="Groups follow **Group ETFs by** in the sidebar (themes included). Laura hard limits are not applied here.")
 
 
 FLAG_KEY = [("⚰️", "Closure risk", "AUM under $100M"),
@@ -317,7 +403,7 @@ def _breakdown(r, bench):
 def _how_tab(chosen, final):
     st.markdown("""
 ### Same framework as the stocks, ten ETF metrics
-Each fund is compared with the other funds in its **industry group** (the same 145 stock industries; its peer group). Two 0–100 scores per metric, where **100 is best**:
+Each fund is compared with the other funds in its **peer group**: its industry (the same 145 stock industries), its **Morningstar category**, or a **theme** (ESG, low volatility, dividend, quality, equal weight, from fund names), whichever *Group ETFs by* and the group picker select. Two 0–100 scores per metric, where **100 is best**:
 
 * **Composite (percentile).** Rank the fund among peers with a valid value: sort ascending, ties share the average rank, **p = (rank − 1) ÷ (n − 1) × 100** (n = 1 → 50). Higher-is-better metrics score p; lower-is-better (expense ratio, downside deviation, max drawdown, top-10 weight) score 100 − p. If a category has fewer than 10 valid values for a metric, that metric is ranked against **all scored equity ETFs** and flagged.
 * **Fit (comfort range).** A range in the metric's units. Only the bad side counts: higher-better → `max(0, low − value)`; lower-better → `max(0, value − high)`. **Fit = 100 × max(0, 1 − (distance ÷ spread) ÷ 2)**, spread = group 75th − 25th (Laura's tighter bound does **not** change the spread). **Default ranges = Laura standards, per group**: the bad-side bound moves to a stricter percentile of *this group's* peer pool - expense ratio, downside deviation, max drawdown, top-10 weight (high = group median), AUM and dollar volume (low = group median), holdings quality (low = 40th percentile); dividend yield and long-run return stay at the 25th–75th. *Industry average* sets every range to the 25th–75th. These are Fit-only; the optional **Laura hard limits** checkbox (off by default) adds absolute cut-offs: expense ≤ 0.20%, max drawdown ≤ 30%, AUM ≥ $1B, top-10 weight ≤ 40%.
@@ -351,7 +437,7 @@ Funds with > 30% of weight excluded are **low data** and listed last. Otherwise 
         st.markdown(f"**Composite** = {num:,.1f} ÷ {den:g} = **{chosen['composite']:.2f}**. "
                     f"**Overall** = {final['blend']:.0%} × Fit {chosen['fit']:.2f} + {1 - final['blend']:.0%} × Composite {chosen['composite']:.2f} = **{chosen['overall']:.2f}**.")
     with st.expander("Self-tests (debug)"):
-        tests = es.run_self_tests()
+        tests = es.run_self_tests() + eg.run_self_tests() + compare.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")
         st.dataframe(pd.DataFrame([{"result": "PASS" if t["passed"] else "FAIL", "test": t["test"], "detail": t["detail"]} for t in tests]),
                      hide_index=True, width="stretch")

@@ -12,7 +12,10 @@
 # ------------------------------------------------------------
 # SEC EDGAR (sec_edgar.py, fundamentals.py)
 # SEC requires a descriptive User-Agent identifying who's making
-# requests - replace with a real name/email before heavy use.
+# requests. Put the REAL one (name + email) in Streamlit secrets, not here:
+#   local:  .streamlit/secrets.toml (gitignored)  -> see .streamlit/secrets.toml.example
+#   cloud:  Streamlit Cloud > App > Settings > Secrets
+# The value below is only a generic fallback (sec_edgar.get_user_agent).
 # Responses are cached in sec_cache/ and refreshed after cache_days.
 # ------------------------------------------------------------
 sec_edgar:

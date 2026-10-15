@@ -121,3 +121,11 @@ AUM >= $1B, top-10 weight <= 40% - become *must be inside* limits for those four
 
 **Tests (I).** 14 self-tests in the app's debug area (`etf_scoring.run_self_tests`), including Laura's per-group ranges and the
 absolute hard limits.
+
+## Compare industries (`compare.py`)
+* **Each vs its own industry** (default): each name is prepared and finalized with its own industry / ETF group exactly as on that page (same peer pool and < 10 fallback, same Laura or 25th-75th ranges, the page's weights and blend); the rows are then ranked together with the usual order (low data last, Overall ↓, Composite ↓, fewer flags, less excluded weight, ticker). Self-test: scores equal the industry page.
+* **Pooled**: the union of the selected industries (each name once) is one peer group; percentiles, p25 / median / p75, spread and Laura ranges (`LAURA_TIERS`) are recomputed on it, with the same < 10-peer fallback.
+* Hand-tuned ranges and Must-be-inside limits are not applied in Compare.
+
+## ETF groupings (`etf_groups.py`)
+Peer groups can be the stock **industry** tag, the **Morningstar category** (yfinance), or a **theme** detected from the fund name (ESG / sustainable, low / min volatility, dividend / income, quality, equal weight). A fund keeps its industry or category and also joins every matching theme. Only VIX / volatility products are excluded as "volatility"; low-volatility equity funds are kept.

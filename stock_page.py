@@ -9,6 +9,8 @@ from datetime import datetime
 import pandas as pd
 import streamlit as st
 
+import compare
+import compare_ui
 import laura
 import range_ui as ru
 import scoring2 as sc
@@ -112,9 +114,11 @@ def render(group, directory_fn):
     if msg and msg[0] == group:
         st.success(msg[1])
 
-    tab_res, tab_tune, tab_dir, tab_how = st.tabs(["Ranked results", "Tune scoring", "Directory", "How scoring works"])
+    tab_res, tab_tune, tab_cmp, tab_dir, tab_how = st.tabs(["Ranked results", "Tune scoring", "Compare industries", "Directory", "How scoring works"])
     with tab_dir:
         directory_fn()
+    with tab_cmp:  # drawn BEFORE the Tune widgets so its Laura button can reset the weights in this run
+        _compare_tab(settings)
     if hit is None:
         with tab_how:
             _how_tab(None, None)
@@ -214,6 +218,30 @@ def render(group, directory_fn):
 
     with tab_how:
         _how_tab(chosen, final)
+
+
+def _compare_tab(settings):
+    """'Compare industries': any number of cached industries, each vs its own industry or pooled (compare.py)."""
+    counts = sd.cached_counts()
+    options = [i for i in sorted(counts)]
+    weights = {m["key"]: float(st.session_state.get(f"s2w|{m['key']}", m["weight"])) for m in sc.METRICS}
+    blend = st.session_state.get("s2_blend", 50) / 100
+    cache = st.session_state.setdefault("_cmpcache_stk", {})
+    if len(cache) > 80:
+        cache.clear()
+
+    def run(sel, mode, rmode):
+        by = {}
+        for g in sel:
+            hit = sd.load_industry(g)
+            if hit:
+                by[g] = hit
+        return compare.stock_compare(by, settings, weights, blend, mode, rmode, all_raws=sd.load_all_cached, cache=cache)
+
+    compare_ui.render(key="stkcmp_", asset="stock", metrics=sc.METRICS, options=options,
+                      counts={g: f"{n} companies" for g, (n, _) in counts.items()}, run=run,
+                      weight_defaults={f"s2w|{m['key']}": float(m["weight"]) for m in sc.METRICS},
+                      fmt=fmt, icons=_icons, word="industry", name_word="company", page_prefix=PREFIX, ns_fn=lambda g: g)
 
 
 FLAG_KEY = [("🔻", "Altman distress", "Altman Z below the distress line (bankruptcy-risk model)"),
@@ -327,7 +355,7 @@ Companies with > 30% of their weight excluded are marked **low data** and always
         st.markdown(f"**Composite** = Σ(weight × percentile score) ÷ Σ(weights not excluded) = {num:,.1f} ÷ {den} = **{chosen['composite']:.2f}**.")
         st.markdown(f"**Overall** = {final['blend']:.0%} × Fit {chosen['fit']:.2f} + {1 - final['blend']:.0%} × Composite {chosen['composite']:.2f} = **{chosen['overall']:.2f}**.")
     with st.expander("Self-tests (debug)"):
-        tests = sc.run_self_tests()
+        tests = sc.run_self_tests() + compare.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")
         st.dataframe(pd.DataFrame([{"result": "PASS" if t["passed"] else "FAIL", "test": t["test"], "detail": t["detail"]} for t in tests]),
                      hide_index=True, width="stretch")

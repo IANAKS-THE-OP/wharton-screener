@@ -1,7 +1,8 @@
+# Packages the app imports directly (versions tested together locally).
+# Everything else (pyarrow, lxml, curl_cffi, beautifulsoup4...) is pulled in by these.
 streamlit==1.65.0
 pandas==3.0.6
 numpy==2.5.3
 yfinance==1.7.0
 requests==2.34.2
 PyYAML==6.0.3
-lxml==6.1.3

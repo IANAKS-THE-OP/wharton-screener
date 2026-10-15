@@ -31,6 +31,8 @@ First-time ETF setup (once): `./venv/bin/python3 build_etf_universe.py` (10-20 m
 
 **Tune scoring.** Weights (a slider per metric, live total), the **blend** between Fit and Composite, and per-metric **comfort ranges** (a two-handle slider plus exact low/high boxes, in the metric's own units) with an optional hard limit ("must be inside range"). Under each metric: the industry 25th / median / 75th and Laura's bound for that metric. Exactly **two buttons**, the same on both pages: **Laura standards** (the default: Laura's per-industry ranges *and* Laura's weights) and **Industry average** (every range = the industry's 25th-75th percentile; weights unchanged). See section 8.
 
+**Compare industries.** Pick any number of downloaded industries (stocks) or groups/categories (ETFs, following *Group ETFs by*) and rank them in one table. Two modes: **Each vs its own industry** (default; every name keeps exactly the percentile scores and Laura ranges it gets on its own industry page, then all names are ranked together by Overall) and **Pooled** (all selected industries are ONE peer group: percentiles, 25th/median/75th, spread and Laura ranges are recalculated on the pooled set, same `LAURA_TIERS` rules and the same under-10-peer fallback). The table shows rank, rank inside the industry, Overall, Fit, Composite, metrics inside range, red flags and a 0-100 score per metric (percentile or Fit; hover a cell for the raw value, range and both scores), with an industry filter, sort-by-any-column and a CSV download. Above it, a per-industry summary: n, and each metric's median and Laura bound (⚠ = fallback pool), so differences between industries are visible. The same two buttons as the pages: **Laura standards** (also resets the Tune weights to Laura's, like the page button) and **Industry average**. Weights and blend come from **Tune scoring**; hand-tuned ranges and Must-be-inside limits are not used in Compare (a note appears if a page has hand-tuned ranges). Session keys are this tab's own (`stkcmp_…`, `etfcmp_…`), so Compare never changes a page's ranges.
+
 **Directory.** The full list of industries (stocks) or categories (ETFs) with counts, sector, market caps and a shortlist checkbox that saves to `results/`.
 
 **How scoring works.** The math for the current asset type with a worked example from whatever is selected, plus the live **self-tests**.
@@ -112,7 +114,15 @@ Result (after a full audit of every tagged fund): about 180 industry ETFs across
 
 **How we know the sifter works.** `validate_etf_tags.py` (writes `results/etf_tag_validation.txt`) checks four things: 43 well-known industry ETFs (SMH, KRE, XBI, ITA, JETS, GDX, URA, XOP, AMLP, CRAK, BOAT...) must land in the right industry (43/43); 49 broad, whole-sector or previously mis-tagged funds (SPY, QQQ, XLK, XLV, XLU, GXPC, CDL, FDN...) must NOT get an industry (49/49); 28 funds that must be absent from the universe entirely (GLD, GLL, silver trusts, single-stock ADR funds, a SPAC fund, weekly-pay option funds) are absent (28/28); and no kept fund may have a leveraged / inverse / bond / crypto / option-income style name (0 leaks). A line-by-line audit of every tagged fund found real faults that the first control list missed, now fixed and added to the checks: physical gold/silver trusts and an UltraShort fund counted as equity, Goldman Sachs funds tagged "Gold" (name match on "gold"), single-stock ADR funds tagged as industries, dividend funds tagged Utilities from their top 10, and a Communication Services fund tagged as one industry. The controls are a sample, not a proof: a fund nobody listed can still be tagged wrongly.
 
-**Peer group.** The funds tagged to the same industry/group are ranked against each other. With fewer than 10 valid values for a metric, that metric is ranked against all downloaded equity ETFs and flagged.
+**Group ETFs by (sidebar).** Two groupings, both working with Tune scoring, Laura ranges, Compare industries, the *Find a fund* lookup and holdings quality:
+* **Industry (145)**: the tags above.
+* **Morningstar category**: the fund's category from yfinance (Large Blend, Large Value, Large Growth, Mid-Cap Blend...), US size/style first, then sector, then international.
+
+Both lists end with **theme groups** found in the fund **name** (yfinance gives no description for most ETFs): *ESG / sustainable* (ESG, sustainable, responsible, climate, carbon, fossil-fuel-free, Paris-aligned, net zero, impact, screened...; "Social Media" / "Truth Social" / carbon-credit funds are not ESG), *Low / min volatility* (low vol, min vol, managed / disciplined / defined volatility, low beta), *Dividend / income*, *Quality*, *Equal weight*. A fund stays in its industry or category AND appears in every theme it matches (ESGV: Large Blend + ESG; SPHD: Large Value + Low volatility + Dividend). Ranges, picks and hard limits are stored per grouping (`etflo|ms:Large Blend|…` vs `etflo|Broad US market (diversified)|…`), so switching grouping never carries ranges across. **Find a fund** (sidebar) shows where any ticker sits in both groupings and its themes.
+
+**Volatility exclusion.** Only VIX / volatility *products* are removed (VIX futures, volatility-premium funds, volatility ETNs, the "Alternative Volatility" category). Low / minimum / managed-volatility **equity** funds (USMV, SPLV, LGLV, FDLO...) are kept; a self-test checks both sides.
+
+**Peer group.** The funds in the selected industry, category or theme are ranked against each other. With fewer than 10 valid values for a metric, that metric is ranked against all downloaded equity ETFs and flagged.
 
 **Downloading.** Click **Pull live ETF data** for the selected group. Big groups (Broad US market, 1,045 funds) take a long time; industry groups take a minute or two.
 
@@ -145,7 +155,8 @@ Example (illustrative numbers): if Semiconductors' median max drawdown were 45% 
 
 ## 9. Validation and tests
 * **Stock/industry backtest** (`backtest_industries.py`, report in `results/backtest_report.txt`): all 145 industries paginate exactly (reported = collected = unique); every S&P 500 stock appears under the correct industry; the exchange-listed names we omit are almost all priced under $5.
-* **Self-tests:** 20 for stocks and 14 for ETFs, shown in each "How scoring works" tab. They cover percentiles, ties, forced scores, exclusion rescaling, fit, range/weight independence, drawdown, downside deviation, history windows, holdings quality, removals, ranking, and Laura's ranges (the max-drawdown bound equals each industry's median and differs between industries; tiers, unchanged spread, safe fallback; ETF hard limits).
+* **Self-tests:** 20 for stocks, 14 for ETFs, 3 for ETF grouping/themes and 6 for Compare industries, shown in each "How scoring works" tab; run them all with `./venv/bin/python3 run_tests.py`. The Compare tests check that a name's scores in *Each vs its own industry* equal its own industry page, that *Pooled* recomputes percentiles / median / spread / Laura ranges on the pooled set, the pooled under-10 fallback, and that a fund in a category and a theme appears once per group (own) or once (pooled). `check_app_flows.py` drives the real app headlessly on the cached data (Compare with two stock industries in both modes, Morningstar Large Blend ranking ESGV, the ESG and low-volatility themes, and that ranges never leak between pages, groupings or modes).
+* **Earlier self-test detail:** They cover percentiles, ties, forced scores, exclusion rescaling, fit, range/weight independence, drawdown, downside deviation, history windows, holdings quality, removals, ranking, and Laura's ranges (the max-drawdown bound equals each industry's median and differs between industries; tiers, unchanged spread, safe fallback; ETF hard limits).
 * **Hand checks:** ROIC, net debt/EBITDA, max drawdown, expense ratio and holdings quality were recomputed independently for sample companies and funds and matched the engine exactly.
 * **Bugs found by this testing and fixed:** stale fiscal years from an old SEC revenue tag; debt undercounting; SIC-fragmented peer groups; unreachable ETF categories.
 
@@ -170,7 +181,10 @@ Example (illustrative numbers): if Semiconductors' median max drawdown were 45% 
 | `etf_industry.py`, `validate_etf_tags.py` | tags every ETF with a stock industry from its holdings and name (`results/etf_industry_map.csv`); checks the tagging against known funds |
 | `industry_universe.py`, `sec_edgar.py` | stock universe pull and SEC downloader |
 | `backtest_industries.py`, `build_industry_directory.py` | validation and the industry directory |
-| `config.yaml` | SEC user-agent |
+| `compare.py`, `compare_ui.py` | Compare industries: engine (own / pooled) and the shared tab |
+| `etf_groups.py` | ETF groupings (industry / Morningstar category) and name-based themes |
+| `run_tests.py`, `check_app_flows.py` | all self-test suites; headless app checks on the cached data |
+| `config.yaml`, `.streamlit/secrets.toml.example` | SEC cache settings; the SEC user-agent goes in Streamlit secrets |
 | `METHODOLOGY.md` | the formal spec of the scoring (for the Final Report) |
 | `_retired/` | removed features kept for reference: Bond ETF page engine (`fundamental_scoring.py`, `market_query.py`), portfolio planner, bond ladder, Treasury prices, v1 bucket screener (`screener.py`, `fetch_universe.py`) |
 
@@ -178,9 +192,14 @@ Example (illustrative numbers): if Semiconductors' median max drawdown were 45% 
 * **"not cached yet"**: click the Pull button for that industry/category.
 * **Everything is low data**: the company/fund is new or foreign; check the flag details.
 * **A fund or stock is missing**: check the removal reasons line (ETFs), the $5 / exchange filters (stocks), or whether the fund's group has been downloaded (**Pull live ETF data**).
-* **SEC errors**: set a real name and email in `config.yaml` (`sec_edgar.user_agent`); SEC requires it.
+* **SEC errors**: set a real name and email as the SEC user agent: `[sec_edgar] user_agent = "..."` in `.streamlit/secrets.toml` (local, gitignored) or in Streamlit Cloud > Settings > Secrets; `SEC_USER_AGENT` env var also works. SEC requires it.
 * **Slow first holdings run**: it scores whole industries with the stock pipeline (about 90 minutes for three categories, then instant).
 * **Start clean**: delete the `*.db` files; the app rebuilds on the next Pull.
 
 ## 13. Glossary
 **Composite**: percentile-based score vs peers. **Fit**: closeness to your comfort ranges. **Overall**: blend of the two. **Comfort range**: the low-high band you consider good for a metric. **Spread**: peers' 75th minus 25th percentile. **Pool**: the peers a value is ranked against. **Low data**: more than 30% of weight excluded. **ROIC**: operating profit after tax per dollar of invested capital. **WACC**: blended cost of capital. **Sloan ratio**: how much profit is accounting accruals rather than cash. **Downside deviation**: volatility of returns below a minimum acceptable return. **Max drawdown**: worst peak-to-trough fall. **TTM**: trailing twelve months. **AUM**: assets under management. **Laura standards**: the default ranges and weights (section 8).
+
+## 14. The hosted site (Streamlit Community Cloud)
+* **Entry point** `app.py`, **Python 3.13** (3.12 also works; numpy 2.5 needs 3.12+). Packages: `requirements.txt`.
+* **Data.** The cloud app does not download anything on start: it reads the committed read-only snapshot `stock_raw.db`, `etf_raw.db` and `holding_scores.db` (plus the CSVs in `results/`). Yahoo often blocks cloud servers, so the *Refresh* buttons may fail there; the page then shows the error and keeps the snapshot. To update the site: click Refresh locally, run `./venv/bin/python3 run_tests.py`, then commit the `.db` files and push.
+* **Secrets.** Only the SEC user agent (needed for stock refreshes): paste `[sec_edgar]` / `user_agent = "WGHSIC Team <name> <email>"` into the app's Secrets.

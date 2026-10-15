@@ -69,7 +69,7 @@ NAME_TO_INDUSTRY = [
 ]
 SELECT_SECTOR = re.compile(r"select sector|sector spdr", re.I)  # the SPDR sector funds hold the WHOLE sector
 # Funds with no Morningstar category are only kept when they prove to be an industry equity ETF; these names are never equity ETFs
-UNCAT_BAD_NAME = re.compile(r"bond|treasur|income|premium|covered|buffer|floor|bitcoin|\bbtc\b|ether|crypto|currency|volatil|vix|"
+UNCAT_BAD_NAME = re.compile(r"bond|treasur|income|premium|covered|buffer|floor|bitcoin|\bbtc\b|ether|crypto|currency|"
                             r"bullion|trust|municipal|\bmuni|credit|loan|yield|target|maturity|dividend", re.I)
 
 

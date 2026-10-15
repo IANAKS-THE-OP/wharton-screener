@@ -302,6 +302,16 @@ def cached_industries(db_path=DB_PATH):
     return {r[0] for r in rows}
 
 
+def cached_counts(db_path=DB_PATH):
+    """{industry: (number of companies, fetched_date)} for every cached industry (one cheap query)."""
+    if not os.path.exists(db_path):
+        return {}
+    conn = _conn(db_path)
+    rows = conn.execute("SELECT industry, COUNT(*), MAX(fetched_date) FROM raw_stock GROUP BY industry").fetchall()
+    conn.close()
+    return {i: (n, d) for i, n, d in rows}
+
+
 def get_or_refresh_industry(industry, force_refresh=False, min_price=5.0, max_workers=8,
                             progress_callback=None, config_path="config.yaml"):
     """Cache hit -> instant. Otherwise pulls the live tradeable universe and

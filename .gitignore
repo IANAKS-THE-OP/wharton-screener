@@ -8,3 +8,6 @@ sec_cache/
 industry_fundamentals.db
 market_cache.db
 etf_live.db
+
+# local secrets (SEC user agent) - never commit
+.streamlit/secrets.toml

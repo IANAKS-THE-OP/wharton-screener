@@ -80,7 +80,7 @@ conn = sqlite3.connect(ed.DB_PATH)
 conn.execute("CREATE TABLE IF NOT EXISTS etf_membership (symbol TEXT PRIMARY KEY, category TEXT, json TEXT)")
 conn.execute("DELETE FROM etf_membership")
 for s, q in all_q.items():
-    conn.execute("INSERT INTO etf_membership VALUES (?,?,?)", (s, cat_of.get(s, "Uncategorized"), json.dumps(q)))
+    conn.execute("INSERT INTO etf_membership VALUES (?,?,?)", (s, cat_of.get(s, "Uncategorized"), json.dumps(ed.slim_quote(q))))
 conn.commit()
 conn.close()
 

@@ -51,15 +51,34 @@ _last_request_time = [0.0]
 _rate_limit_lock = threading.Lock()
 
 
+_UA_CACHE = {}
+
+
 def get_user_agent(config_path="config.yaml"):
-    with open(config_path) as f:
-        cfg = yaml.safe_load(f)
-    ua = cfg.get("sec_edgar", {}).get("user_agent")
+    """SEC requires a descriptive User-Agent with a contact email. Looked up in this order (first found wins):
+      1. Streamlit secrets: [sec_edgar] user_agent = "..."  (Streamlit Cloud > App settings > Secrets,
+         or a local .streamlit/secrets.toml, which is gitignored)
+      2. environment variable SEC_USER_AGENT
+      3. config.yaml sec_edgar.user_agent (a generic placeholder in the repo - no personal email committed)
+    Resolved once per process (threads in the download pool reuse it)."""
+    if config_path in _UA_CACHE:
+        return _UA_CACHE[config_path]
+    ua = None
+    try:
+        import streamlit as st
+        ua = (st.secrets.get("sec_edgar") or {}).get("user_agent") or st.secrets.get("SEC_USER_AGENT")
+    except Exception:  # no secrets file / not running under Streamlit
+        ua = None
+    ua = ua or os.environ.get("SEC_USER_AGENT")
+    if not ua and os.path.exists(config_path):
+        with open(config_path) as f:
+            ua = (yaml.safe_load(f) or {}).get("sec_edgar", {}).get("user_agent")
     if not ua:
         raise RuntimeError(
-            "No sec_edgar.user_agent set in config.yaml - SEC requires a real "
-            "descriptive User-Agent (e.g. 'WGHSIC Team Jane Doe jane@example.com')."
+            "No SEC user agent set. Add [sec_edgar] user_agent = \"WGHSIC Team Jane Doe jane@example.com\" to "
+            ".streamlit/secrets.toml (or Streamlit Cloud Secrets), or set SEC_USER_AGENT."
         )
+    _UA_CACHE[config_path] = ua
     return ua
 
 
