@@ -3,10 +3,8 @@ __pycache__/
 sec_cache/
 *.log
 .DS_Store
-# raw data caches are rebuilt by the app (they are large)
-stock_raw.db
-etf_raw.db
-holding_scores.db
+# old/unused caches (the three the app needs - stock_raw.db, etf_raw.db, holding_scores.db - ARE committed
+# so the hosted website has data)
 industry_fundamentals.db
 market_cache.db
 etf_live.db
