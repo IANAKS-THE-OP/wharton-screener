@@ -173,6 +173,7 @@ def fetch_sec_annual(ticker, config_path="config.yaml"):
     info = {
         "cik": cik, "sic": int(submissions["sic"]) if submissions.get("sic") else None,
         "sic_desc": submissions.get("sicDescription"), "latest_10k": sec.latest_10k_info(submissions),
+        "annual_form": annual_form(submissions),
     }
     return info, annual, tags
 
@@ -218,6 +219,40 @@ def fetch_market(ticker):
     return market, px
 
 
+ANNUAL_FORMS = ("10-K", "10-KT", "20-F", "40-F")
+FOREIGN_FORMS = ("20-F", "40-F")
+
+
+def annual_form(submissions):
+    """The company's most recent ANNUAL report form from its SEC submissions: '10-K', '20-F' (foreign private issuer),
+    '40-F' (Canadian issuer), '10-KT', or None (no annual report yet, e.g. a new listing or SPAC). Amendments count
+    as their base form."""
+    forms = ((submissions or {}).get("filings") or {}).get("recent", {}).get("form") or []
+    return next((f.split("/")[0] for f in forms if f.split("/")[0] in ANNUAL_FORMS), None)
+
+
+def backfill_annual_forms(db_path=DB_PATH, cache_dir="sec_cache"):
+    """One-off, offline: add 'annual_form' to cached companies from the local SEC submissions cache (no network).
+    Returns {form: count}."""
+    conn = _conn(db_path)
+    rows = conn.execute("SELECT ticker, industry, json FROM raw_stock").fetchall()
+    counts = {}
+    for t, ind, js in rows:
+        r = json.loads(js)
+        sub = None
+        if r.get("cik"):
+            p = os.path.join(cache_dir, f"submissions_{str(r['cik']).zfill(10)}.json")
+            if os.path.exists(p):
+                with open(p) as f:
+                    sub = json.load(f)
+        r["annual_form"] = annual_form(sub) if sub else None
+        counts[r["annual_form"]] = counts.get(r["annual_form"], 0) + 1
+        conn.execute("UPDATE raw_stock SET json = ? WHERE ticker = ? AND industry = ?", (json.dumps(r), t, ind))
+    conn.commit()
+    conn.close()
+    return counts
+
+
 def fetch_company(ticker_info, config_path="config.yaml"):
     """ticker_info: dict from industry_universe (ticker, name, price, ...)."""
     ticker = ticker_info["ticker"]
@@ -228,7 +263,7 @@ def fetch_company(ticker_info, config_path="config.yaml"):
     except Exception as e:  # keep going: market-only metrics still work
         sec_result, _ = None, errors.append(f"SEC fetch failed: {e}")
     if sec_result is None:
-        info, annual, tags = {"cik": None, "sic": None, "sic_desc": None, "latest_10k": None}, {}, {}
+        info, annual, tags = {"cik": None, "sic": None, "sic_desc": None, "latest_10k": None, "annual_form": None}, {}, {}
         errors.append("No SEC 10-K data (no CIK, or files 20-F/IFRS) - fundamentals excluded")
     else:
         info, annual, tags = sec_result
@@ -243,7 +278,7 @@ def fetch_company(ticker_info, config_path="config.yaml"):
         "ticker": ticker, "name": market.get("name") or ticker_info.get("name"),
         "sector": market.get("sector"), "yf_industry": market.get("yf_industry"),
         "sic": info["sic"], "sic_desc": info["sic_desc"], "cik": info["cik"],
-        "latest_10k": info["latest_10k"], "fy_ends": fy_ends, "fye": fy_ends[-1] if fy_ends else None,
+        "latest_10k": info["latest_10k"], "annual_form": info.get("annual_form"), "fy_ends": fy_ends, "fye": fy_ends[-1] if fy_ends else None,
         "annual": annual, "tags": tags, "market": market, "px": px,
         "errors": errors, "fetched": datetime.now().isoformat(timespec="seconds"),
     }

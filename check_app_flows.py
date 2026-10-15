@@ -106,5 +106,35 @@ chk("USMV appears twice (Large Blend + low-vol theme)", sum(c[2] == "USMV" for c
 at.radio(key="etfcmp_|morningstar_mode").set_value("pooled").run()
 rows = cmp_table(at)
 chk("ETF pooled: each fund once", len(rows) == len({c[2] for c in rows}) and not at.exception, f"{len(rows)} rows")
+# ======================= follow-ups: banner, buttons, not scored / low data, snapshots
+import glob
+before = set(glob.glob("results/snapshots/*"))
+at.sidebar.radio(key="asset_type").set_value("Stocks").run()
+at.sidebar.selectbox(key="industry_choice").set_value("Gold").run()
+t = at.dataframe[0].value
+fnv = t[t.ticker == "FNV"].iloc[0]
+nem = t[t.ticker == "NEM"].iloc[0]
+chk("Gold: foreign filer FNV unranked with 'Not scored: files 40-F, not 10-K'",
+    fnv["why low data / not scored"] == "Not scored: files 40-F, not 10-K" and str(fnv["rank"]) in ("nan", "None", "<NA>"), str(fnv["why low data / not scored"]))
+chk("Gold: NEM (10-K filer) low-data reason lists the missing metrics", "ROIC (EBIT missing)" in nem["why low data / not scored"],
+    nem["why low data / not scored"][:160])
+at.session_state["s2h|Gold|max_drawdown"] = True  # tick a hard limit on the Gold page
+at.run()
+at.multiselect(key="stkcmp__sel").set_value(["Semiconductors", "Gold"]).run()
+infos = " ".join(x.value for x in at.info) + " " + " ".join(x.value for x in at.warning)
+chk("Compare banner lists ranges / weights / hard limits / data date", all(w in infos for w in ("**Ranges:**", "**Weights:** shared with Tune scoring", "**Hard limits:** not applied", "**Data as of:**")))
+chk("Compare warns that the ticked hard limit on Gold is ignored", "Ignored here" in infos and "Gold: Max drawdown" in infos)
+labels = [b.label for b in at.button]
+chk("Compare buttons relabelled", "Reset ranges and weights everywhere" in labels and "Industry average" in labels)
+at.button(key="snapbtn|cmp|stkcmp_").click().run()
+at.button(key="snapbtn|stk|Gold").click().run()
+new = sorted(set(glob.glob("results/snapshots/*")) - before)
+import json as _j
+js = [_j.load(open(x)) for x in new if x.endswith(".json")]
+chk("Save snapshot (Compare + Ranked results) writes CSV + JSON with data date, weights, ranges",
+    len(new) == 4 and all(j.get("data_date") and j.get("weights") and j.get("ranges") for j in js), str([os.path.basename(x) for x in new]))
+for x in new:
+    os.remove(x)
+at.session_state["s2h|Gold|max_drawdown"] = False
 print("ALL OK" if ok else "SOME FAILED")
 sys.exit(0 if ok else 1)

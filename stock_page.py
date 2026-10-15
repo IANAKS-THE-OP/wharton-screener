@@ -14,6 +14,7 @@ import compare_ui
 import laura
 import range_ui as ru
 import scoring2 as sc
+import snapshots
 import stock_data as sd
 
 log = logging.getLogger(__name__)
@@ -191,23 +192,34 @@ def render(group, directory_fn):
                 if len(results) - len(passing):
                     st.info(f"{len(results) - len(passing)} removed by hard limits · {len(passing)} remain.")
                 display = sc.rank([dict(r) for r in passing])
+        st.caption(f"**Data as of {fetched}** (SEC 10-K + yfinance, cached) · weights and ranges from Tune scoring · "
+                   f"blend {blend:.0%}" + (" · Must-be-inside limits on" if any(hard.values()) else ""))
         rows = [{
-            "rank": i, "ticker": r["ticker"], "company": r["name"], "overall": r["overall"], "fit": r["fit"],
+            "rank": r["rank"], "ticker": r["ticker"], "company": r["name"], "overall": r["overall"], "fit": r["fit"],
             "composite": r["composite"], "inside range": f"{r['n_inside']}/{r['n_total']}",
-            "flags": _icons(r["flags"]) + (" ❓low data" if r["low_data"] else ""),
+            "flags": _icons(r["flags"]) + (" ⛔ not scored" if r["not_scored"] else " ❓low data" if r["low_data"] else ""),
+            "why low data / not scored": r["low_data_reason"] or "",
             "coverage": r["coverage"] * 100, "FYE": r["fye"],
             "flag details": " | ".join(f["text"] for f in r["flags"]),
-        } for i, r in enumerate(display, 1)]
+        } for r in display]
         table = pd.DataFrame(rows)
         bar = lambda: st.column_config.ProgressColumn(min_value=0, max_value=100, format="%.0f")
         st.dataframe(table, hide_index=True, width="stretch", column_config={
             "overall": bar(), "fit": bar(), "composite": bar(), "coverage": st.column_config.NumberColumn("data coverage %", format="%.0f"),
             "flags": st.column_config.TextColumn(help="Key below the table. Full text in 'flag details'."),
+            "rank": st.column_config.NumberColumn(help="Blank = not scored (no 10-K data)."),
         })
         _flag_key(FLAG_KEY)
         export = sc.export_rows(final, settings, group)
-        st.download_button("Download full export (CSV)", export.to_csv(index=False),
+        d1, d2 = st.columns([1, 1])
+        d1.download_button("Download full export (CSV)", export.to_csv(index=False),
                            file_name=f"stock_score_{group}_{datetime.now():%Y%m%d_%H%M}.csv".replace(" ", "_"), mime="text/csv")
+        shown = {r["ticker"] for r in display}
+        snapshots.button(f"stk|{ns}", "stock", group, lambda: export[export["ticker"].isin(shown)],
+                         lambda: {"data_date": fetched, "industry": group, "settings": settings, "blend": blend, "weights": weights,
+                                  "ranges": {k: list(v) for k, v in final["ranges"].items()},
+                                  "range_source": "Tune scoring (Laura standards unless hand-tuned)",
+                                  "hard_limits": [k for k, v in hard.items() if v], "rows_shown": len(display)}, col=d2)
 
         st.subheader("Breakdown")
         pick = st.selectbox("Company", [r["ticker"] for r in display], key=f"s2_pick|{ns}",
@@ -241,7 +253,8 @@ def _compare_tab(settings):
     compare_ui.render(key="stkcmp_", asset="stock", metrics=sc.METRICS, options=options,
                       counts={g: f"{n} companies" for g, (n, _) in counts.items()}, run=run,
                       weight_defaults={f"s2w|{m['key']}": float(m["weight"]) for m in sc.METRICS},
-                      fmt=fmt, icons=_icons, word="industry", name_word="company", page_prefix=PREFIX, ns_fn=lambda g: g)
+                      fmt=fmt, icons=_icons, word="industry", name_word="company", page_prefix=PREFIX, ns_fn=lambda g: g,
+                      hard_prefix="s2h|", meta_extra={"settings": settings, "blend": blend})
 
 
 FLAG_KEY = [("🔻", "Altman distress", "Altman Z below the distress line (bankruptcy-risk model)"),
@@ -254,7 +267,8 @@ FLAG_KEY = [("🔻", "Altman distress", "Altman Z below the distress line (bankr
             ("ℹ️", "Debt assumed zero", "no debt reported in the 10-K, treated as zero"),
             ("📝", "Data note", "a data source problem for this company (e.g. no 10-K in SEC XBRL); see flag details"),
             ("📏", "Fallback pool", "fewer than 10 industry peers for a metric, ranked against the sector / all stocks"),
-            ("❓", "Low data", "more than 30% of the weight excluded; listed last"),
+            ("❓", "Low data", "more than 30% of the weight excluded; listed after the fully scored names (the 'why' column lists the missing metrics)"),
+            ("⛔", "Not scored", "no 10-K data: foreign filer (20-F / 40-F), new listing or not in SEC EDGAR; not ranked"),
             ("⚑", "Other", "any other note; read the 'flag details' column")]
 
 
@@ -265,6 +279,11 @@ def _flag_key(rows):
 
 
 def _breakdown(r, bench, comp):
+    if r["not_scored"]:
+        st.warning(f"**{r['not_scored']}.** Fundamentals come from SEC 10-K XBRL only, so this company has no ROIC, margins, "
+                   "debt or valuation metrics here and is not ranked. Price-based metrics are shown below for reference.")
+    elif r["low_data"]:
+        st.warning("**Low data** (listed after every fully scored company): " + r["low_data_reason"])
     st.markdown(f"**Overall {r['overall']:.1f}** · Fit {r['fit']:.1f} · Composite {r['composite']:.1f} · "
                 f"{r['n_inside']}/{r['n_total']} metrics inside range · coverage {r['coverage']:.0%} · fiscal year end **{r['fye']}**"
                 if None not in (r["overall"], r["fit"], r["composite"]) else "Not enough data to score this company.")
@@ -355,7 +374,7 @@ Companies with > 30% of their weight excluded are marked **low data** and always
         st.markdown(f"**Composite** = Σ(weight × percentile score) ÷ Σ(weights not excluded) = {num:,.1f} ÷ {den} = **{chosen['composite']:.2f}**.")
         st.markdown(f"**Overall** = {final['blend']:.0%} × Fit {chosen['fit']:.2f} + {1 - final['blend']:.0%} × Composite {chosen['composite']:.2f} = **{chosen['overall']:.2f}**.")
     with st.expander("Self-tests (debug)"):
-        tests = sc.run_self_tests() + compare.run_self_tests()
+        tests = sc.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")
         st.dataframe(pd.DataFrame([{"result": "PASS" if t["passed"] else "FAIL", "test": t["test"], "detail": t["detail"]} for t in tests]),
                      hide_index=True, width="stretch")

@@ -17,6 +17,7 @@ import etf_holdings as eh
 import etf_scoring as es
 import laura
 import range_ui as ru
+import snapshots
 
 log = logging.getLogger(__name__)
 PREFIX = "etf"  # this page's own session-key prefix (the Stocks page uses "stk")
@@ -61,7 +62,8 @@ def render(directory_fn):
                                  "Morningstar category: yfinance's fund category (Large Blend, Large Value, Mid-Cap Blend...). "
                                  "Both lists end with theme groups found in fund names (ESG, low volatility, dividend, quality, equal weight); "
                                  "a fund can be in its category/industry AND a theme.")
-    mem = eg.membership(imap, mode)
+    overrides = eg.load_overrides()
+    mem = eg.membership(imap, mode, overrides)
     counts = mem["group"].value_counts().to_dict()
     cached_t = ed.load_all_tickers()
     got = mem[mem["ticker"].isin(cached_t)]["group"].value_counts().to_dict()
@@ -97,7 +99,7 @@ def render(directory_fn):
     st.sidebar.caption("Funds that hold many industries are listed under *Whole sector*, *Broad US market* or *International*; "
                        "themes are detected from fund names." if mode == "industry" else
                        "Themes (ESG, low volatility, dividend, quality, equal weight) are detected from fund names.")
-    _lookup(imap, cached_t)
+    _lookup(imap, cached_t, mem)
     with st.sidebar.expander("ETF scoring inputs", expanded=False):
         tbill = st.number_input("T-bill rate (downside-deviation MAR, %)", 0.0, 15.0, 3.0, 0.25, key="etf2_tbill") / 100
         window = st.radio("History window (years)", [5, 10], index=1, horizontal=True, key="etf2_window")
@@ -265,20 +267,41 @@ def render(directory_fn):
                 if len(results) - len(passing):
                     st.info(f"{len(results) - len(passing)} removed by hard limits · {len(passing)} remain.")
                 display = es.rank([dict(r) for r in passing])
+        data_date = compare.data_date(raws)
+        st.caption(f"**Data as of {data_date}** (fund downloads, cached) · weights and ranges from Tune scoring · blend {blend:.0%}"
+                   + (" · Must-be-inside / Laura hard limits on" if any(hard.values()) else ""))
+        is_theme = group in eg.THEME_GROUPS
+        why_in = dict(zip(members["ticker"], members["matched_by"])) if is_theme else {}
         rows = [{
-            "rank": i, "ticker": r["ticker"], "fund": r["name"], "category": r["category"], "overall": r["overall"], "fit": r["fit"],
+            "rank": r["rank"], "ticker": r["ticker"], "fund": r["name"], "category": r["category"],
+            **({"theme matched by": why_in.get(r["ticker"], "")} if is_theme else {}),
+            "overall": r["overall"], "fit": r["fit"],
             "composite": r["composite"], "inside range": f"{r['n_inside']}/{r['n_total']}",
-            "flags": _icons(r["flags"]) + (" ❓low data" if r["low_data"] else ""), "coverage": r["coverage"] * 100,
+            "flags": _icons(r["flags"]) + (" ❓low data" if r["low_data"] else ""), "why low data": r["low_data_reason"] or "",
+            "coverage": r["coverage"] * 100,
             "flag details": " | ".join(f["text"] for f in r["flags"]),
-        } for i, r in enumerate(display, 1)]
+        } for r in display]
         bar = lambda: st.column_config.ProgressColumn(min_value=0, max_value=100, format="%.0f")
         st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch", column_config={
             "overall": bar(), "fit": bar(), "composite": bar(), "coverage": st.column_config.NumberColumn("data coverage %", format="%.0f"),
             "flags": st.column_config.TextColumn(help="Key below the table. Full text in 'flag details'."),
         })
         _flag_key(FLAG_KEY)
-        st.download_button("Download full export (CSV)", es.export_rows(final, settings, group).to_csv(index=False),
+        export = es.export_rows(final, settings, group)
+        if is_theme:
+            export.insert(6, "theme_matched_by", export["ticker"].map(why_in))
+        d1, d2 = st.columns(2)
+        d1.download_button("Download full export (CSV)", export.to_csv(index=False),
                            file_name=f"etf_score_{group}_{datetime.now():%Y%m%d_%H%M}.csv".replace(" ", "_").replace("★", ""), mime="text/csv")
+        shown = {r["ticker"] for r in display}
+        snapshots.button(f"etf|{ns}", "etf", f"{eg.MODES[mode]} {group}", lambda: export[export["ticker"].isin(shown)],
+                         lambda: {"data_date": data_date, "grouping": eg.MODES[mode], "group": group, "settings": settings, "blend": blend,
+                                  "weights": weights, "ranges": {k: list(v) for k, v in ranges_by_cat.get(group, {}).items()},
+                                  "range_source": "Tune scoring (Laura standards unless hand-tuned)",
+                                  "hard_limits": [k for k, v in hard.items() if v], "laura_hard_limits": bool(laura_hard),
+                                  "theme_overrides": overrides.to_dict("records") if is_theme else None, "rows_shown": len(display)}, col=d2)
+        if is_theme:
+            _overrides_box(imap, overrides, group)
 
         st.subheader("Breakdown")
         pick = st.selectbox("Fund", [r["ticker"] for r in display], key=f"etf2_pick|{ns}",
@@ -290,8 +313,9 @@ def render(directory_fn):
         _how_tab(chosen, final)
 
 
-def _lookup(imap, cached_t):
-    """Sidebar lookup: where a fund sits in BOTH groupings (industry, Morningstar category, themes)."""
+def _lookup(imap, cached_t, mem):
+    """Sidebar lookup: where a fund sits in BOTH groupings (industry, Morningstar category) and its themes
+    (with the keyword that matched, after the team overrides)."""
     with st.sidebar.expander("Find a fund", expanded=False):
         q = st.text_input("Ticker or name", key="etf2_lookup", placeholder="e.g. ESGV, USMV, min vol").strip()
         if not q:
@@ -303,10 +327,25 @@ def _lookup(imap, cached_t):
             st.caption("Not in the equity-ETF universe (bond, leveraged/inverse, commodity, currency, VIX/volatility and crypto "
                        "funds are excluded, as are funds under $5).")
             return
+        themes = mem[mem["group"].isin(eg.THEME_GROUPS)]
         for t, n, cat, g in zip(hit["ticker"], hit["name"], hit["morningstar_category"], hit["group"]):
-            th = ", ".join(x.replace(eg.THEME_PREFIX, "") for x in eg.themes_for(n)) or "none"
+            mine = themes[themes["ticker"] == t]
+            th = ", ".join(f"{x.replace(eg.THEME_PREFIX, '')} (matched “{kw}”)" for x, kw in zip(mine["group"], mine["matched_by"])) or "none"
             st.markdown(f"**{t}** · {n}  \nIndustry mode: *{g}* · Morningstar: *{cat}* · themes: *{th}* · "
                         + ("downloaded" if t in cached_t else "not downloaded yet"))
+
+
+def _overrides_box(imap, overrides, group):
+    """Lists the team's theme overrides (results/theme_overrides.csv) and what each did."""
+    rep = eg.override_report(imap, overrides)
+    with st.expander(f"Theme overrides ({len(rep)} in {eg.OVERRIDES_PATH})", expanded=bool(len(rep))):
+        st.caption("Themes come from fund names. The team can correct them in `results/theme_overrides.csv` with columns "
+                   "`ticker,theme,action` (action = add or remove; theme = e.g. `ESG / sustainable`). Overrides are applied after "
+                   "the name matching. On the hosted site, edit the file locally and push it (cloud edits don't persist).")
+        if rep.empty:
+            st.caption("No overrides yet.")
+        else:
+            st.dataframe(rep.assign(**{"this theme": rep["theme"] == group}), hide_index=True, width="stretch")
 
 
 def _morningstar_directory(mem, cached_t):
@@ -343,7 +382,9 @@ def _compare_tab(mode, mem, got, counts, settings, hq_scores, hq_skips):
                       weight_defaults={f"etf2w|{m['key']}": float(m["weight"]) for m in es.METRICS if m["key"] != "n_holdings"},
                       fmt=fmt, icons=_icons, word="industry" if mode == "industry" else "category", name_word="fund",
                       page_prefix=PREFIX, ns_fn=lambda g: eg.ns(mode, g),
-                      extra_note="Groups follow **Group ETFs by** in the sidebar (themes included). Laura hard limits are not applied here.")
+                      extra_note="Groups follow **Group ETFs by** in the sidebar (themes included).", hard_prefix="etf2h|",
+                      global_hard="Laura hard limits (expense ≤ 0.20%, max drawdown ≤ 30%, AUM ≥ $1B, top-10 ≤ 40%)" if st.session_state.get("etf2_laura_hard") else None,
+                      meta_extra={"settings": settings, "blend": blend, "grouping": eg.MODES[mode]})
 
 
 FLAG_KEY = [("⚰️", "Closure risk", "AUM under $100M"),
@@ -352,7 +393,7 @@ FLAG_KEY = [("⚰️", "Closure risk", "AUM under $100M"),
             ("🔍", "Low / no look-through", "under 25% of the fund's holdings could be scored for holdings quality"),
             ("❔", "Expense missing", "no expense ratio reported"),
             ("📏", "Group fallback", "fewer than 10 funds in the group for a metric, ranked against all equity ETFs"),
-            ("❓", "Low data", "more than 30% of the weight excluded; listed last"),
+            ("❓", "Low data", "more than 30% of the weight excluded; listed last (the 'why low data' column lists the missing metrics)"),
             ("⚑", "Other", "any other note; read the 'flag details' column")]
 
 
@@ -363,6 +404,8 @@ def _flag_key(rows):
 
 
 def _breakdown(r, bench):
+    if r["low_data"]:
+        st.warning("**Low data** (listed after every fully scored fund): " + r["low_data_reason"])
     if None not in (r["overall"], r["fit"], r["composite"]):
         st.markdown(f"**Overall {r['overall']:.1f}** · Fit {r['fit']:.1f} · Composite {r['composite']:.1f} · "
                     f"{r['n_inside']}/{r['n_total']} inside range · coverage {r['coverage']:.0%} · category **{r['category']}**")
@@ -437,7 +480,7 @@ Funds with > 30% of weight excluded are **low data** and listed last. Otherwise 
         st.markdown(f"**Composite** = {num:,.1f} ÷ {den:g} = **{chosen['composite']:.2f}**. "
                     f"**Overall** = {final['blend']:.0%} × Fit {chosen['fit']:.2f} + {1 - final['blend']:.0%} × Composite {chosen['composite']:.2f} = **{chosen['overall']:.2f}**.")
     with st.expander("Self-tests (debug)"):
-        tests = es.run_self_tests() + eg.run_self_tests() + compare.run_self_tests()
+        tests = es.run_self_tests() + eg.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")
         st.dataframe(pd.DataFrame([{"result": "PASS" if t["passed"] else "FAIL", "test": t["test"], "detail": t["detail"]} for t in tests]),
                      hide_index=True, width="stretch")

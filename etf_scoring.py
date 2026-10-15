@@ -327,6 +327,7 @@ def finalize(prep, weights=None, ranges_by_cat=None, blend=0.5, hard_limits=None
         else:
             overall = blend * fit_total + (1 - blend) * composite
         share = excluded_w / total_w if total_w else 0
+        missing = [(METRIC_BY_KEY[k]["label"], rows[k]["note"] or "excluded") for k in KEYS if weights.get(k, 0) > 0 and pct_scores[k] is None]
         fails = []
         for k, on in hard_limits.items():
             if on:
@@ -340,6 +341,9 @@ def finalize(prep, weights=None, ranges_by_cat=None, blend=0.5, hard_limits=None
             "ticker": t, "name": f["raw"].get("name"), "category": cat, "metrics": rows, "composite": composite,
             "fit": fit_total, "overall": overall, "n_inside": sum(1 for k in KEYS if fit_scores[k] == 100),
             "n_total": len(KEYS), "excluded_weight_share": share, "coverage": 1 - share, "low_data": share > low_data_threshold,
+            "missing": missing, "not_scored": None,
+            "low_data_reason": (f"{share:.0%} of the weight is excluded (> 30%). Missing: " + "; ".join(f"{l} ({w})" for l, w in missing))
+            if share > low_data_threshold else None,
             "flags": f["flags"], "holdings": f["holdings"], "hq_coverage": f["coverage"], "history": f["history"],
             "hard_limit_failed": bool(fails), "hard_limit_failures": fails,
         })
@@ -365,7 +369,7 @@ def export_rows(final, settings, label):
         row = {"timestamp": stamp, "view": label, "rank": r["rank"], "ticker": r["ticker"], "name": r["name"],
                "category": r["category"], "overall": r["overall"], "fit": r["fit"], "composite": r["composite"],
                "metrics_inside_range": f"{r['n_inside']}/{r['n_total']}", "data_coverage": r["coverage"],
-               "low_data": r["low_data"], "red_flags": " | ".join(f["text"] for f in r["flags"]),
+               "low_data": r["low_data"], "low_data_reason": r["low_data_reason"], "red_flags": " | ".join(f["text"] for f in r["flags"]),
                "history_years_available": r["history"]["years_available"], "history_years_used": r["history"]["used"],
                "holdings_coverage": r["hq_coverage"]}
         for k in KEYS:

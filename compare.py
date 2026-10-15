@@ -76,7 +76,8 @@ def stock_compare(raws_by_group, settings, weights, blend, mode="own", range_mod
             gs = member[r["ticker"]]
             rows.append({**r, "group": " + ".join(gs), "groups": gs, "group_rank": r["rank"]})
         preps[POOLED] = p
-    return {"rows": sc.rank(rows), "bench": bench, "preps": preps}
+    dates = {g: stamp for g, (_, stamp) in raws_by_group.items()}
+    return {"rows": sc.rank(rows), "bench": bench, "preps": preps, "dates": dates}
 
 
 # ------------------------------------------------------------------ ETFs
@@ -117,7 +118,13 @@ def etf_compare(raws_by_group, settings, weights, blend, hq_scores, hq_skips, mo
             gs = member[r["ticker"]]
             rows.append({**r, "group": " + ".join(gs), "groups": gs, "group_rank": r["rank"]})
         preps[POOLED] = p
-    return {"rows": es.rank(rows), "bench": bench, "preps": preps}
+    return {"rows": es.rank(rows), "bench": bench, "preps": preps, "dates": {g: data_date(raws) for g, raws in raws_by_group.items()}}
+
+
+def data_date(raws):
+    """'YYYY-MM-DD' (or 'oldest to newest') of the downloads behind a group of funds."""
+    d = sorted({str(r.get("fetched") or "")[:10] for r in raws if r.get("fetched")})
+    return None if not d else d[0] if len(d) == 1 else f"{d[0]} to {d[-1]}"
 
 
 # ------------------------------------------------------------------ summary

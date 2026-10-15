@@ -19,6 +19,7 @@ import streamlit as st
 
 import compare
 import laura
+import snapshots
 
 MODE_LABELS = {"own": "Each vs its own industry", "pooled": "Pooled (one peer group)"}
 
@@ -50,12 +51,25 @@ def _color(v):
     return f"background:hsla({int(v * 1.2)},70%,45%,0.20);"
 
 
+def _ticked_hard(hard_prefix, ns_fn, groups, metrics):
+    """{group: [metric labels]} whose 'Must be inside range' box is ticked on the page (Compare ignores them)."""
+    out = {}
+    for g in groups:
+        on = [m["label"] for m in metrics if st.session_state.get(f"{hard_prefix}{ns_fn(g)}|{m['key']}")]
+        if on:
+            out[g] = on
+    return out
+
+
 def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, icons, word="industry",
-           name_word="company", page_prefix=None, ns_fn=None, extra_note=""):
+           name_word="company", page_prefix=None, ns_fn=None, extra_note="", hard_prefix=None, global_hard=None,
+           meta_extra=None):
     """options: groups the user can pick (only ones with downloaded data). counts: {group: label text for n}.
-    run(selected, mode, range_mode) -> compare.stock_compare / etf_compare result."""
-    st.caption(f"Rank names from several {word}s side by side. Only {word}s with downloaded data are listed. "
-               f"Weights and blend are the ones on **Tune scoring**. {extra_note}")
+    run(selected, mode, range_mode) -> compare.stock_compare / etf_compare result.
+    hard_prefix: the page's 'Must be inside' key prefix (e.g. 's2h|'); global_hard: label of a page-wide hard-limit
+    switch that is on (e.g. ETF 'Laura hard limits'), or None. meta_extra: settings saved with a snapshot."""
+    banner = st.container()  # filled once the result is known; always the first thing on the tab
+    st.caption(f"Rank names from several {word}s side by side. Only {word}s with downloaded data are listed. {extra_note}")
     if not options:
         st.info(f"Nothing downloaded yet. Pull at least one {word} first.")
         return
@@ -71,17 +85,21 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
                     help=f"Each vs its own {word}: every name keeps the percentile scores and Laura ranges it gets on its own "
                          f"{word} page, then all are ranked together by Overall. Pooled: all selected {word}s are treated as ONE "
                          "peer group, so percentiles, 25th/median/75th, spread and Laura ranges are recalculated on the pooled set.")
-    if c2.button("Laura standards", key=f"cmpbtn|{key}|laura", use_container_width=True,
-                 help="Default. Laura's per-peer-group ranges (risk metrics at the median, consistency at the 40th percentile) "
-                      "and Laura's weights (also resets the weights on Tune scoring, like the page button)."):
+    if c2.button("Reset ranges and weights everywhere", key=f"cmpbtn|{key}|laura", use_container_width=True):
         st.session_state[k_rm] = "laura"
         for wk, v in weight_defaults.items():
-            st.session_state[wk] = v
+            st.session_state[wk] = v  # the SHARED Tune scoring weights
+        if page_prefix:
+            import range_ui as ru
+            for g in sel:
+                ru.clear(page_prefix, ns_fn(g))  # page ranges of the selected groups go back to Laura (re-seeded there)
         st.rerun()
-    if c3.button("Industry average", key=f"cmpbtn|{key}|avg", use_container_width=True,
-                 help="Every range = the peer group's 25th-75th percentile. Weights unchanged."):
+    c2.caption(f"Laura standards. **Also changes Tune scoring**: resets its weights to Laura's and the ranges on the "
+               f"selected {word}s' pages to Laura's.")
+    if c3.button("Industry average", key=f"cmpbtn|{key}|avg", use_container_width=True):
         st.session_state[k_rm] = "avg"
         st.rerun()
+    c3.caption("Ranges only, Compare only: every range = the peer group's 25th–75th. Weights and Tune scoring unchanged.")
     rmode = st.session_state[k_rm]
     if not sel:
         st.info(f"Pick at least one {word} above.")
@@ -89,14 +107,29 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
     with st.spinner("Scoring..."):
         res = run(sel, mode, rmode)
     rows = res["rows"]
-    st.caption(f"Ranges: **{'Laura standards' if rmode == 'laura' else 'Industry average (25th-75th)'}** of "
-               + (f"each name's own {word}" if mode == "own" else f"the pooled set of {len(sel)} {word}s")
-               + f" · {len(rows)} rows · Must-be-inside limits from Tune scoring are not applied here.")
-    if page_prefix and mode == "own":
+    dates = res.get("dates") or {}
+
+    # ---------------------------------------------------------------- banner: exactly what is applied
+    rtxt = "Laura standards" if rmode == "laura" else "Industry average (25th–75th)"
+    custom_w = any(abs(float(st.session_state.get(k, v)) - v) > 1e-9 for k, v in weight_defaults.items())
+    lines = [f"**Ranges:** {rtxt} of " + (f"each name's own {word}" if mode == "own" else f"the pooled set of {len(sel)} {word}s"),
+             "**Weights:** shared with Tune scoring (" + ("hand-changed there" if custom_w else "Laura's defaults") + ")",
+             "**Hard limits:** not applied", "**Data as of:** " + ", ".join(f"{g} {d}" for g, d in dates.items() if d)]
+    ignored = []
+    if page_prefix:
         tuned = _tuned_groups(page_prefix, ns_fn, res["bench"], asset, metrics)
         if tuned:
-            st.info(f"Hand-tuned ranges on the page for **{', '.join(tuned)}** are not used here (Compare uses "
-                    f"{'Laura standards' if rmode == 'laura' else 'Industry average'}), so those scores can differ from that page.")
+            ignored.append(f"hand-tuned ranges on Tune scoring for **{', '.join(tuned)}**")
+    if hard_prefix:
+        ticked = _ticked_hard(hard_prefix, ns_fn, sel, metrics)
+        if ticked:
+            ignored.append("ticked hard limits (" + "; ".join(f"{g}: {', '.join(v)}" for g, v in ticked.items()) + ")")
+    if global_hard:
+        ignored.append(global_hard)
+    with banner:
+        st.info("  \n".join(lines))
+        if ignored:
+            st.warning("**Ignored here:** " + " · ".join(ignored) + ". Scores in Compare can therefore differ from those pages.")
 
     # ---------------------------------------------------------------- per-group summary
     shown_m = [m for m in metrics if m["weight"] > 0]
@@ -104,7 +137,7 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
     summ = compare.summary(res["bench"], {g: str(counts.get(g, "")) for g in res["bench"]} | {compare.POOLED: f"{len(rows)} names"}, asset, shown_m)
     srows = []
     for s in summ:
-        row = {word: s["group"], "n": s["n"]}
+        row = {word: s["group"], "n": s["n"], "data as of": dates.get(s["group"]) or (", ".join(sorted({d for d in dates.values() if d})) if s["group"] == compare.POOLED else "")}
         for m in shown_m:
             x = s[m["key"]]
             if x["median"] is None:
@@ -153,11 +186,14 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
     for r in view:
         def num(v):
             return f"<td style='{_color(v)}'>{'' if v is None else format(v, '.0f')}</td>"
-        tds = [f"<td>{r['rank']}</td>", f"<td>{r['group_rank']}</td>", f"<td><b>{html.escape(r['ticker'])}</b></td>",
+        dash = lambda v: "—" if v is None else v
+        why = r.get("low_data_reason") or ""
+        tds = [f"<td>{dash(r['rank'])}</td>", f"<td>{dash(r['group_rank'])}</td>", f"<td><b>{html.escape(r['ticker'])}</b></td>",
                f"<td title='{html.escape(r['name'] or '')}'>{html.escape((r['name'] or '')[:34])}</td>",
                f"<td>{html.escape(r['group'][:40])}</td>",
                num(r["overall"]), num(r["fit"]), num(r["composite"]), f"<td>{r['n_inside']}/{r['n_total']}</td>",
-               f"<td title='{html.escape(' | '.join(f['text'] for f in r['flags']))}'>{icons(r['flags'])}{' ❓' if r['low_data'] else ''}</td>"]
+               f"<td title='{html.escape(chr(10).join(x for x in [why] + [f['text'] for f in r['flags']] if x))}'>{icons(r['flags'])}"
+               f"{' ⛔ ' + html.escape(r['not_scored']) if r.get('not_scored') else ' ❓' if r['low_data'] else ''}</td>"]
         for m in shown_m:
             x = r["metrics"][m["key"]]
             v = x[cell]
@@ -181,18 +217,28 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
 </style>
 <div class="cmpwrap"><table><thead><tr>{th}</tr></thead><tbody>{''.join(body)}</tbody></table></div>""")
     st.caption(f"{len(view)} of {len(rows)} rows · cells coloured red (0) → green (100) · hover a cell for raw value, range and both scores · "
-               "❓ = low data (over 30% of weight excluded, listed last in the rank)")
+               "❓ = low data (over 30% of weight excluded, listed after fully scored names; hover the flags cell for the missing metrics) · "
+               "⛔ = not scored (no 10-K data, e.g. a 20-F / 40-F foreign filer): no rank")
 
     exp = []
     for r in rows:
         e = {"rank": r["rank"], f"rank_in_{word}": r["group_rank"], "ticker": r["ticker"], "name": r["name"], word: r["group"],
              "overall": r["overall"], "fit": r["fit"], "composite": r["composite"], "inside_range": f"{r['n_inside']}/{r['n_total']}",
-             "low_data": r["low_data"], "red_flags": " | ".join(f["text"] for f in r["flags"])}
+             "low_data": r["low_data"], "not_scored": r.get("not_scored"), "low_data_reason": r.get("low_data_reason"),
+             "data_as_of": dates.get(r["groups"][0]), "red_flags": " | ".join(f["text"] for f in r["flags"])}
         for m in metrics:
             x = r["metrics"][m["key"]]
             e.update({f"{m['key']}__value": x["value"], f"{m['key']}__percentile_score": x["pct"], f"{m['key']}__fit": x["fit"],
                       f"{m['key']}__range_low": x["range"][0], f"{m['key']}__range_high": x["range"][1], f"{m['key']}__weight": x["weight"]})
         e.update({"setting_mode": mode, "setting_ranges": rmode, "setting_groups": " | ".join(sel)})
         exp.append(e)
-    st.download_button("Download comparison (CSV)", pd.DataFrame(exp).to_csv(index=False), mime="text/csv",
+    exp_df = pd.DataFrame(exp)
+    d1, d2 = st.columns(2)
+    d1.download_button("Download comparison (CSV)", exp_df.to_csv(index=False), mime="text/csv",
                        file_name=f"compare_{asset}_{mode}_{datetime.now():%Y%m%d_%H%M}.csv", key=f"cmpbtn|{key}|csv")
+    snapshots.button(f"cmp|{key}", asset, f"compare_{mode}_" + "+".join(sel), lambda: exp_df, lambda: {
+        "data_date": dates, "mode": mode, "range_source": rtxt, "groups": sel,
+        "weights": {k.split("|", 1)[1]: float(st.session_state.get(k, v)) for k, v in weight_defaults.items()},
+        "ranges": {g: {k: list(v) for k, v in ({**laura.default_ranges(b), **(laura.laura_ranges(b, asset, metrics) if rmode == "laura" else {})}).items()}
+                   for g, b in res["bench"].items()},
+        "hard_limits": "not applied", "ignored": ignored, **(meta_extra or {})}, col=d2)

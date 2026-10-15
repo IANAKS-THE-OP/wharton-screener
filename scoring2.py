@@ -759,6 +759,9 @@ def finalize(prep, weights=None, ranges=None, blend=0.5, hard_limits=None, low_d
         else:
             overall = blend * fit + (1 - blend) * composite
         excl_share = excluded_w / total_w if total_w else 0
+        missing = [(METRIC_BY_KEY[k]["label"], rows[k]["note"] or "excluded") for k in KEYS
+                   if weights.get(k, 0) > 0 and (rows[k]["status"] == EXCL or rows[k].get("status_effective") == EXCL)]
+        not_scored = not_scored_reason(c["raw"])
         fails = []
         for k, on in hard_limits.items():
             if not on:
@@ -774,22 +777,50 @@ def finalize(prep, weights=None, ranges=None, blend=0.5, hard_limits=None, low_d
             "n_inside": sum(1 for k in KEYS if fit_scores[k] == 100), "n_total": len(KEYS),
             "excluded_weight_share": excl_share, "coverage": 1 - excl_share,
             "low_data": excl_share > low_data_threshold, "flags": c["flags"], "wacc": c["wacc"],
+            "missing": missing, "not_scored": not_scored, "annual_form": c["raw"].get("annual_form"),
+            "low_data_reason": low_data_reason(excl_share, missing, not_scored) if (excl_share > low_data_threshold or not_scored) else None,
             "altman": c["altman"], "piotroski": c["piotroski"], "derived": c["derived"],
             "hard_limit_failed": bool(fails), "hard_limit_failures": fails,
         })
     return {"results": rank(results), "weights": weights, "ranges": ranges, "blend": blend, "total_weight": total_w}
 
 
+def not_scored_reason(raw):
+    """Companies with NO SEC annual (10-K) data get no rank at all, with the reason, instead of a silent 'last place'.
+    raw['annual_form'] comes from the SEC submissions (stock_data.annual_form)."""
+    if raw.get("annual"):
+        return None
+    form = raw.get("annual_form")
+    if form in ("20-F", "40-F"):
+        return f"Not scored: files {form}, not 10-K"
+    if form is None and raw.get("cik"):
+        return "Not scored: no annual report (10-K) in SEC data yet (new listing / shell company?)"
+    if not raw.get("cik"):
+        return "Not scored: not found in SEC EDGAR (no CIK)"
+    return "Not scored: no usable 10-K data in SEC XBRL"
+
+
+def low_data_reason(share, missing, not_scored=None):
+    if not_scored:
+        return not_scored
+    return f"{share:.0%} of the weight is excluded (> 30%). Missing: " + "; ".join(f"{lbl} ({why})" for lbl, why in missing)
+
+
 def rank(results):
-    """Part G3: low-data last; Overall desc; then Composite desc, fewer flags,
-    less excluded weight, ticker A-Z."""
+    """Part G3: not-scored (no 10-K data) after everything and UNRANKED (rank None); low-data next-to-last;
+    Overall desc; then Composite desc, fewer flags, less excluded weight, ticker A-Z."""
     def key(r):
-        return (r["low_data"], -(r["overall"] if r["overall"] is not None else -1),
+        return (bool(r.get("not_scored")), r["low_data"], -(r["overall"] if r["overall"] is not None else -1),
                 -(r["composite"] if r["composite"] is not None else -1),
                 len(r["flags"]), r["excluded_weight_share"], r["ticker"])
     out = sorted(results, key=key)
-    for i, r in enumerate(out, 1):
-        r["rank"] = i
+    i = 0
+    for r in out:
+        if r.get("not_scored"):
+            r["rank"] = None
+        else:
+            i += 1
+            r["rank"] = i
     return out
 
 
@@ -801,7 +832,8 @@ def export_rows(final, settings, industry):
         row = {"timestamp": stamp, "industry": industry, "rank": r["rank"], "ticker": r["ticker"], "name": r["name"],
                "fiscal_year_end": r["fye"], "overall": r["overall"], "fit": r["fit"], "composite": r["composite"],
                "metrics_inside_range": f"{r['n_inside']}/{r['n_total']}", "data_coverage": r["coverage"],
-               "low_data": r["low_data"], "red_flags": " | ".join(f["text"] for f in r["flags"]),
+               "low_data": r["low_data"], "not_scored": r["not_scored"], "low_data_reason": r["low_data_reason"],
+               "annual_form": r["annual_form"], "red_flags": " | ".join(f["text"] for f in r["flags"]),
                "wacc": r["wacc"].get("wacc"), "roic_minus_wacc_pp": r["wacc"].get("spread"),
                "altman_z": r["altman"].get("z"), "piotroski_f": r["piotroski"].get("f")}
         for k, v in r["derived"].items():
@@ -975,4 +1007,21 @@ def run_self_tests():
     one = laura.industry_default({"q": {"p5": 2.0, "p25": 2.0, "median": 2.0, "p75": 2.0, "p95": 2.0, "n": 3}, "vals": [2, 2, 2]})
     check("17. Laura bound equal to the other bound → industry default + note; never a zero-width range",
           fb["fallback"] and fb["range"] == (1.0, 3.0) and one[1] - one[0] > 0, f"{fb['range']} · {fb['note'][:60]}… · single-value pool → {one}")
+    # 18-19 not scored (foreign filer) + low-data reason
+    fr = _synthetic_raw(5)
+    fr.update({"ticker": "FOR", "annual": {}, "fy_ends": [], "annual_form": "40-F", "cik": "0000000001"})
+    nr = _synthetic_raw(6)
+    nr["ticker"] = "NOE"
+    for e in nr["annual"]:
+        nr["annual"][e].pop("ebit")  # a 10-K filer with no operating-income line (like NEM)
+    pf = prepare_industry([_synthetic_raw(i) for i in range(10)] + [fr, nr])
+    out = finalize(pf)["results"]
+    fo, no = next(x for x in out if x["ticker"] == "FOR"), next(x for x in out if x["ticker"] == "NOE")
+    check("18. Foreign filer (40-F, no 10-K) → 'Not scored: files 40-F, not 10-K', unranked and after every ranked name",
+          fo["not_scored"] == "Not scored: files 40-F, not 10-K" and fo["rank"] is None and out[-1]["ticker"] == "FOR"
+          and all(x["rank"] is not None for x in out if x["ticker"] != "FOR"), f"{fo['not_scored']} · rank {fo['rank']}")
+    labels = [m for m, _ in no["missing"]]
+    check("19. Low data names the missing metrics and why (EBIT missing → ROIC, earnings yield, interest coverage...)",
+          no["low_data"] and "ROIC" in labels and "Interest coverage" in labels and "EBIT missing" in no["low_data_reason"]
+          and no["rank"] is not None, (no["low_data_reason"] or "")[:140])
     return results
