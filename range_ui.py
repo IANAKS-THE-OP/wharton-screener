@@ -62,7 +62,8 @@ def buttons(cols, prefix, ns, bench, weight_defaults):
             st.session_state[k] = v  # Laura weights
         st.rerun()
     if c2.button("Industry average", key=f"{prefix}_btn_avg|{ns}", use_container_width=True,
-                 help="Every range becomes the peer group's 25th-75th percentile (its middle half). Weights unchanged."):
+                 help="Every range becomes the peer group's 25th-75th percentile (its middle half): good bound = the better quartile "
+                      "(Fit 100), bad bound = the worse quartile (Fit 80). Weights unchanged."):
         for key, r in laura.default_ranges(bench).items():
             _set(prefix, ns, key, bench[key], *r)
         st.rerun()
@@ -97,10 +98,10 @@ def laura_caption(info, direction, fmt_fn):
     """One line under each metric: what Laura's bound is and where it comes from."""
     if not info:
         return
-    if info["tier"] == "moderate":
-        st.caption("Laura (moderate): industry 25th–75th percentile.")
-    elif info["fallback"]:
+    if info["fallback"]:
         st.caption(f"⚠ {info['note']}")
     else:
         side = "≤" if direction == "lower" else "≥"
-        st.caption(f"**Laura ({info['tier']}): {side} {fmt_fn(info['bound'])}** ({laura.pct_name(info['pct'])}).")
+        st.caption(f"**Laura ({info['tier']})**: good {side} {fmt_fn(info['good'])} ({laura.pct_name(info['good_pct'])}) → Fit 100 · "
+                   f"bad bound {fmt_fn(info['bound'])} ({laura.pct_name(info['pct'])}) → Fit 80. "
+                   "Slider handles = good and bad bound.")

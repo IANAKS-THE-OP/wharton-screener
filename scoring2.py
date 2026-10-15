@@ -51,7 +51,7 @@ DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 
 DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05}
-PREP_VERSION = 2  # bump when prepare_industry's output changes, so cached preps in a session are rebuilt
+PREP_VERSION = 2  # bump when prepare_industry's Composite inputs change. NOTE: part of etf_holdings.model_hash(), so a bump wipes holding_scores.db
 MIN_POOL = 10
 FINANCIAL_WORDS = ["bank", "insurance", "credit services", "capital markets", "mortgage finance"]
 
@@ -79,12 +79,28 @@ def percentile_scores(values, higher_is_better=True):
     return p if higher_is_better else [100 - x for x in p]
 
 
+FIT_AT_BAD = 80.0     # Fit at the bad-side bound
+FIT_SLOPE_OUT = 50.0  # Fit points lost per spread beyond the bad-side bound
+
+
 def metric_fit(value, low, high, spread, direction):
-    """Part E6. Only the 'bad' side of the range is penalized."""
+    """Part E6, graded. The range runs from the GOOD bound to the BAD bound:
+    lower-is-better (low = good, high = bad); higher-is-better (high = good, low = bad).
+      at or beyond the good bound   -> 100
+      inside the range              -> linear, 100 at the good bound to 80 at the bad bound
+      beyond the bad bound          -> max(0, 80 - 50 x distance / spread), spread = peer p75 - p25
+    Returns (fit, distance beyond the bad bound)."""
     if not (_num(value) and _num(low) and _num(high) and _num(spread)) or spread <= 0:
         return None, None
-    distance = max(0.0, low - value) if direction == "higher" else max(0.0, value - high)
-    return 100 * max(0.0, 1 - (distance / spread) / 2), distance
+    good, bad = (high, low) if direction == "higher" else (low, high)
+    past_bad = (bad - value) if direction == "higher" else (value - bad)
+    if past_bad > 0:
+        return max(0.0, FIT_AT_BAD - FIT_SLOPE_OUT * past_bad / spread), past_bad
+    short_of_good = (good - value) if direction == "higher" else (value - good)
+    width = abs(bad - good)
+    if short_of_good <= 0 or width <= 0:
+        return 100.0, 0.0
+    return 100.0 - (100.0 - FIT_AT_BAD) * min(1.0, short_of_good / width), 0.0
 
 
 def downside_deviation(monthly_returns, tbill):
@@ -621,8 +637,9 @@ def _wacc(co, raw, fin, derived, settings, industry_median_beta, mcap, roic_metr
 
 def _quantiles(vals):
     a = np.array(vals, dtype=float)
-    return {"p5": float(np.percentile(a, 5)), "p25": float(np.percentile(a, 25)), "median": float(np.median(a)),
-            "p75": float(np.percentile(a, 75)), "p95": float(np.percentile(a, 95)), "n": len(a)}
+    return {"p5": float(np.percentile(a, 5)), "p10": float(np.percentile(a, 10)), "p25": float(np.percentile(a, 25)),
+            "median": float(np.median(a)), "p75": float(np.percentile(a, 75)), "p90": float(np.percentile(a, 90)),
+            "p95": float(np.percentile(a, 95)), "n": len(a)}
 
 
 def prepare_industry(raws, settings=None, all_raws=None):
@@ -774,7 +791,8 @@ def finalize(prep, weights=None, ranges=None, blend=0.5, hard_limits=None, low_d
         results.append({
             "ticker": t, "name": c["raw"].get("name"), "fye": c["derived"].get("fiscal_year_end"),
             "sector": c["raw"].get("sector"), "metrics": rows, "composite": composite, "fit": fit, "overall": overall,
-            "n_inside": sum(1 for k in KEYS if fit_scores[k] == 100), "n_total": len(KEYS),
+            "n_inside": sum(1 for k in KEYS if rows[k]["status"] == HUNDRED or (rows[k]["distance"] == 0 and fit_for_avg[k] is not None)),
+            "n_total": len(KEYS),
             "excluded_weight_share": excl_share, "coverage": 1 - excl_share,
             "low_data": excl_share > low_data_threshold, "flags": c["flags"], "wacc": c["wacc"],
             "missing": missing, "not_scored": not_scored, "annual_form": c["raw"].get("annual_form"),
@@ -927,10 +945,11 @@ def run_self_tests():
           f"{composite_score(scores, w):.4f} vs {expected:.4f}")
 
     # 7 fit
-    fh = [metric_fit(v, 10, 20, 10, "higher")[0] for v in (25, 15, 5, 0, -10)]
-    check("7a. Fit higher-is-better [25,15,5,0,-10] → [100,100,75,50,0]", close(fh, [100, 100, 75, 50, 0]), str(fh))
-    fl = [metric_fit(v, 1, 2, 1, "lower")[0] for v in (0.5, 2.5, 3, 4)]
-    check("7b. Fit lower-is-better [0.5,2.5,3,4] → [100,75,50,0]", close(fl, [100, 75, 50, 0]), str(fl))
+    # graded: range (bad 10, good 20), spread 10. Good bound and beyond = 100, linear to 80 at the bad bound, then 80 - 50 x d / spread
+    fh = [metric_fit(v, 10, 20, 10, "higher")[0] for v in (25, 20, 15, 10, 5, 0, -10)]
+    check("7a. Graded Fit higher-is-better [25,20,15,10,5,0,-10] → [100,100,90,80,55,30,0]", close(fh, [100, 100, 90, 80, 55, 30, 0]), str(fh))
+    fl = [metric_fit(v, 1, 2, 1, "lower")[0] for v in (0.5, 1, 1.5, 2, 2.5, 3, 4)]
+    check("7b. Graded Fit lower-is-better (good 1, bad 2) [0.5,1,1.5,2,2.5,3,4] → [100,100,90,80,55,30,0]", close(fl, [100, 100, 90, 80, 55, 30, 0]), str(fl))
 
     # 8 / 9 / 13 / 14 full pipeline on a synthetic industry of 12 companies
     raws = [_synthetic_raw(i) for i in range(12)]
@@ -986,21 +1005,23 @@ def run_self_tests():
     med_b = float(np.median(prep_b["bench"]["max_drawdown"]["vals"]))
     check("15. Laura max-drawdown upper bound = that industry's median, and differs between two industries",
           abs(la["max_drawdown"][1] - med_a) < 1e-9 and abs(lb["max_drawdown"][1] - med_b) < 1e-9 and abs(med_a - med_b) > 1e-6
-          and abs(la["max_drawdown"][0] - prep["bench"]["max_drawdown"]["q"]["p25"]) < 1e-9,
+          and abs(la["max_drawdown"][0] - float(np.percentile(prep["bench"]["max_drawdown"]["vals"], 10))) < 1e-9,  # good bound = p10
           f"industry A {la['max_drawdown'][1]:.3f} (median {med_a:.3f}) vs industry B {lb['max_drawdown'][1]:.3f} (median {med_b:.3f})")
     bq = lambda k: prep["bench"][k]
     p40 = float(np.percentile(bq("roic")["vals"], 40))
-    ok16 = (abs(la["interest_coverage"][0] - bq("interest_coverage")["q"]["median"]) < 1e-9          # higher-better risk: low = p50
-            and abs(la["roic"][0] - p40) < 1e-9 and abs(la["roic"][1] - bq("roic")["q"]["p75"]) < 1e-9  # consistency: low = p40, high stays p75
-            and la["revenue_growth"] == (bq("revenue_growth")["q"]["p25"], bq("revenue_growth")["q"]["p75"])  # moderate: unchanged
+    p90 = lambda k: float(np.percentile(bq(k)["vals"], 90))
+    ok16 = (abs(la["interest_coverage"][0] - bq("interest_coverage")["q"]["median"]) < 1e-9          # higher-better risk: bad = p50
+            and abs(la["roic"][0] - p40) < 1e-9 and abs(la["roic"][1] - p90("roic")) < 1e-9          # consistency: bad = p40, good = p90
+            and abs(la["revenue_growth"][0] - bq("revenue_growth")["q"]["p25"]) < 1e-9 and abs(la["revenue_growth"][1] - p90("revenue_growth")) < 1e-9  # moderate: bad p25
             and all(abs(bq(k)["spread"] - (bq(k)["q"]["p75"] - bq(k)["q"]["p25"])) < 1e-12 for k in KEYS if bq(k)["q"] and bq(k)["q"]["p75"] > bq(k)["q"]["p25"])
             and all(base["results"][0]["metrics"][k]["range"] == la[k] for k in la))                 # engine default = Laura
-    # a company between the median and p75 of max drawdown: Fit 100 on the industry default, < 100 under Laura
+    # a company between the median and p75 of max drawdown: inside the industry default (Fit >= 80), beyond Laura's bad bound (< 80)
     t_mid = next((t for t, c in prep["companies"].items() if c["metrics"]["max_drawdown"]["status"] == OK
                   and med_a < c["metrics"]["max_drawdown"]["value"] <= bq("max_drawdown")["q"]["p75"]), None)
     avg = {x["ticker"]: x for x in finalize(prep, ranges=default_ranges(prep["bench"]))["results"]}
-    stricter = t_mid is not None and avg[t_mid]["metrics"]["max_drawdown"]["fit"] == 100 and bt[t_mid]["metrics"]["max_drawdown"]["fit"] < 100
-    check("16. Laura tiers: risk = p50, consistency = p40, moderate = p25-p75; spread unchanged; Laura is the engine default and is stricter",
+    stricter = t_mid is not None and avg[t_mid]["metrics"]["max_drawdown"]["fit"] >= 80 and bt[t_mid]["metrics"]["max_drawdown"]["fit"] < 80
+    check("16. Laura tiers: bad bound risk = p50, consistency = p40, moderate = p25/p75; good bound p10/p90; spread unchanged; "
+          "Laura is the engine default and is stricter",
           ok16 and stricter, f"tiers/spread/default ok={ok16}, stricter on {t_mid}={stricter}")
     flat = {"q": {"p5": 1.0, "p25": 1.0, "median": 1.0, "p75": 3.0, "p95": 4.0, "n": 8}, "vals": [1, 1, 1, 1, 1, 2, 3, 4]}
     fb = laura.laura_metric(flat, "lower", ("risk", 50))
@@ -1024,4 +1045,15 @@ def run_self_tests():
     check("19. Low data names the missing metrics and why (EBIT missing → ROIC, earnings yield, interest coverage...)",
           no["low_data"] and "ROIC" in labels and "Interest coverage" in labels and "EBIT missing" in no["low_data_reason"]
           and no["rank"] is not None, (no["low_data_reason"] or "")[:140])
+    # 20 graded Fit on stocks: good bound beats bad bound (both inside); the good-bound handle now matters
+    vals = sorted(c["metrics"]["roic"]["value"] for c in prep["companies"].values() if c["metrics"]["roic"]["status"] == OK)
+    lo_v, hi_v = vals[1], vals[-2]
+    g_lo = next(t for t, c in prep["companies"].items() if c["metrics"]["roic"]["value"] == lo_v)
+    g_hi = next(t for t, c in prep["companies"].items() if c["metrics"]["roic"]["value"] == hi_v)
+    f1 = {x["ticker"]: x for x in finalize(prep, ranges={"roic": (lo_v, hi_v)})["results"]}
+    f2 = {x["ticker"]: x for x in finalize(prep, ranges={"roic": (lo_v, hi_v + 5)})["results"]}
+    check("20. Stocks graded Fit: company at the good bound (100) outscores one at the bad bound (80), both inside; moving the good bound changes Fit",
+          f1[g_hi]["metrics"]["roic"]["fit"] == 100 and abs(f1[g_lo]["metrics"]["roic"]["fit"] - 80) < 1e-9
+          and f2[g_hi]["metrics"]["roic"]["fit"] < 100 and f1[g_hi]["n_inside"] >= 1,
+          f"good {f1[g_hi]['metrics']['roic']['fit']:.1f}, bad {f1[g_lo]['metrics']['roic']['fit']:.1f}, good bound +5 → {f2[g_hi]['metrics']['roic']['fit']:.1f}")
     return results

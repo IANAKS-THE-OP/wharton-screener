@@ -151,8 +151,10 @@ def render(group, directory_fn):
             f"Weights total **{total:.1f}**" + ("" if abs(total - 100) < 0.01 else " (not 100 - scores still calculate; the formula normalizes)")
             + " · defaults = Laura Gao's standards (risk and balance sheet first)")
         st.caption("Weights affect both Composite and Fit. Comfort ranges affect only Fit. Ranges are in the metric's own units. "
-                   "**Laura standards** (default) tighten the bad-side bound to a stricter percentile of THIS industry: risk metrics "
-                   "at the industry median, consistency metrics at the 40th percentile, the rest at the 25th-75th.")
+                   "The two slider handles are the **good bound** (Fit 100 at or beyond it) and the **bad bound** (Fit 80); Fit falls "
+                   "linearly between them and keeps falling past the bad bound (80 − 50 × distance ÷ spread). **Laura standards** (default): "
+                   "good bound = this industry's best decile (10th / 90th percentile); bad bound = the industry median for risk metrics, "
+                   "the 40th percentile for consistency metrics, the 25th for the rest.")
 
         for gname in sc.GROUPS:
             with st.expander(gname, expanded=False):
@@ -343,7 +345,7 @@ def _how_tab(chosen, final):
 For each of the 14 metrics a company gets two numbers, both 0–100 where **100 is best**:
 
 * **Composite (percentile).** Rank the company among its industry peers that have a valid value for that metric. Sort ascending, rank 1 = lowest, ties share the average rank. **p = (rank − 1) ÷ (n − 1) × 100** (n = 1 → 50). *Higher-is-better* metrics use p; *lower-is-better* use 100 − p.
-* **Fit (comfort range).** A range [low, high] in the metric's own units. **Default = Laura standards, per industry**: the "bad side" bound moves to a stricter percentile of *this industry's* peer pool - risk metrics (downside deviation, max drawdown, net debt/EBITDA, Sloan: high = industry median; interest coverage: low = median), consistency metrics (ROIC, gross profitability, Δ ROIC, Δ operating margin: low = 40th percentile), the rest unchanged at the 25th–75th. *Industry average* sets every range to the 25th–75th. Only the bad side counts: higher-is-better → `distance = max(0, low − value)`; lower-is-better → `distance = max(0, value − high)`. **Fit = 100 × max(0, 1 − (distance ÷ spread) ÷ 2)**, spread = industry 75th − 25th value (Laura's tighter bound does **not** change the spread). Inside the range (or on the good side) = 100, one spread outside = 50, two or more = 0.
+* **Fit (comfort range, graded).** A range from a **good bound** to a **bad bound** in the metric's own units (the two slider handles; lower-is-better: low = good, high = bad; higher-is-better: high = good, low = bad). At or beyond the good bound → **100**; inside the range Fit falls linearly from 100 at the good bound to **80** at the bad bound; beyond the bad bound **Fit = max(0, 80 − 50 × distance ÷ spread)**, spread = industry 75th − 25th value (moving a bound does **not** change the spread). **Default = Laura standards, per industry**: good bound = the industry's **10th percentile** for lower-is-better metrics, **90th** for higher-is-better; bad bound = a stricter percentile of *this industry's* peer pool - risk metrics (downside deviation, max drawdown, net debt/EBITDA, Sloan: industry median; interest coverage: median), consistency metrics (ROIC, gross profitability, Δ ROIC, Δ operating margin: 40th percentile), the rest at the 25th percentile. *Industry average* sets every range to the 25th–75th.
 
 Each is a **weighted average** over the metrics (default weights add to 100 and are Laura Gao's standards: moderate risk, no big drops, steady growth - so downside deviation and max drawdown carry 10 each, net debt/EBITDA 9, interest coverage / Sloan / ROIC 8 each, down to 4 for earnings yield and Lynch). Excluded metrics drop out and the denominator shrinks - a company missing a weight-10 metric is divided by 90, not 100.
 

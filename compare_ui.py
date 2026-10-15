@@ -1,5 +1,5 @@
 """
-"Compare industries" tab, shared by the Stocks and ETF pages (the engine is compare.py).
+"Compare industries" (Stocks) / "Compare groups" (ETFs: Morningstar categories + themes) tab (the engine is compare.py).
 =======================================================================================
 Session keys (all start with this tab's own key, e.g. "stkcmp_" or "etfcmp_|morningstar"):
   <key>_sel    selected industries/groups     <key>_mode   "own" / "pooled"
@@ -21,7 +21,7 @@ import compare
 import laura
 import snapshots
 
-MODE_LABELS = {"own": "Each vs its own industry", "pooled": "Pooled (one peer group)"}
+MODE_LABELS = {"own": "Each vs its own {word}", "pooled": "Pooled (one peer group)"}
 
 
 def _clean_selection(k, options):
@@ -81,7 +81,7 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
     sel = st.multiselect(f"{word.capitalize()}s to compare (any number)", options, key=k_sel,
                          format_func=lambda g: f"{g}  ({counts.get(g, '?')})", placeholder=f"Pick two or more {word}s")
     c1, c2, c3 = st.columns([2, 1, 1])
-    mode = c1.radio("Peer group", list(MODE_LABELS), key=k_mode, horizontal=True, format_func=MODE_LABELS.get,
+    mode = c1.radio("Peer group", list(MODE_LABELS), key=k_mode, horizontal=True, format_func=lambda m: MODE_LABELS[m].format(word=word),
                     help=f"Each vs its own {word}: every name keeps the percentile scores and Laura ranges it gets on its own "
                          f"{word} page, then all are ranked together by Overall. Pooled: all selected {word}s are treated as ONE "
                          "peer group, so percentiles, 25th/median/75th, spread and Laura ranges are recalculated on the pooled set.")

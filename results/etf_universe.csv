@@ -1,0 +1,2211 @@
+ticker,name,morningstar_category,has_holdings
+AADR,AdvisorShares Dorsey Wright ADR ETF,Foreign Large Growth,True
+AAEQ,Alpha Architect US Equity 2 ETF,Large Blend,True
+AAUA,Alpha Architect US Equity 3 ETF,Large Blend,True
+AAUB,Alpha Architect US Equity 4 ETF,Large Blend,True
+AAUS,Alpha Architect US Equity ETF,Large Blend,True
+AAVM,Alpha Architect Global Factor Equity ETF,Global Small/Mid Stock,True
+AAXJ,iShares MSCI All Country Asia ex Japan ETF,Pacific/Asia ex-Japan Stk,True
+ABCS,Alpha Blue Capital US Small-Mid Cap Dynamic ETF,Mid-Cap Value,True
+ABEQ,Absolute Select Value ETF,Large Value,True
+ABFL,Abacus FCF Leaders ETF,Large Blend,True
+ABIG,Argent Large Cap ETF,Large Blend,True
+ABLS,Abacus FCF Small Cap Leaders ETF,Small Blend,True
+ACEP,ARS Core Equity Portfolio ETF,Large Blend,True
+ACES,ALPS Clean Energy ETF,Miscellaneous Sector,True
+ACGO,Hartford Alpha Capture Growth ETF,Large Growth,True
+ACIG,Hartford Alpha Capture International Growth ETF,Foreign Large Growth,False
+ACKY,VistaShares Target 15 ACKtivist Select Income ETF,Large Blend,True
+ACSG,American Century Small Cap Growth Insights ETF,Small Growth,True
+ACSI,American Customer Satisfaction ETF,Large Blend,True
+ACSM,Hartford Alpha Capture SMID Cap ETF,Mid-Cap Blend,False
+ACSV,American Century Small Cap Value Insights ETF,Small Value,True
+ACTS,FIS Tactical Equity ETF,Global Large-Stock Blend,True
+ACVF,American Conservative Values ETF,Large Blend,True
+ACWI,iShares MSCI ACWI ETF,Global Large-Stock Blend,True
+ACWV,iShares MSCI Global Min Vol Factor ETF,Global Large-Stock Blend,True
+ACWX,iShares MSCI ACWI ex U.S. ETF,Foreign Large Blend,True
+ADDS,Hedgeye Index Adds ETF,Large Blend,True
+ADIV,Guinness Atkinson Asia Pacific Dividend Builder ETF,Pacific/Asia ex-Japan Stk,True
+ADPV,Adaptiv Select ETF,Mid-Cap Blend,True
+ADVE,Matthews Asia Dividend Active ETF,Focused Region,True
+AELV,Harbor AlphaEdge Large Cap Value ETF,Large Value,True
+AEMC,Harbor AlphaEdge Mid Cap Core ETF,Mid-Cap Blend,True
+AEMG,Harbor AlphaEdge Mid Cap Growth ETF,Mid-Cap Growth,True
+AEMV,Harbor AlphaEdge Mid Cap Value ETF,Mid-Cap Value,True
+AESB,Harbor AlphaEdge Small Cap Core ETF,Small Blend,True
+AESG,Harbor AlphaEdge Small Cap Growth ETF,Small Growth,True
+AESL,Harbor AlphaEdge Small Cap Value ETF,Small Value,True
+AESR,Anfield U.S. Equity Sector Rotation ETF,Large Blend,True
+AFDM,First Trust Active Factor International ETF,Foreign Large Value,True
+AFEM,First Trust Active Factor Emerging Markets Fund,Diversified Emerging Mkts,True
+AFGR,First Trust Active Factor Large Cap Growth ETF,Large Growth,True
+AFK,VanEck Africa Index ETF,Focused Region,True
+AFLG,First Trust Active Factor Large Cap ETF,Large Blend,True
+AFMC,First Trust Active Factor Mid Cap ETF,Mid-Cap Blend,True
+AFOS,ARS Focused Opportunities Strategy ETF,Large Blend,True
+AFSC,abrdn Focused U.S. Small Cap Active ETF,Small Blend,True
+AFSM,First Trust Active Factor Small Cap ETF,Small Blend,True
+AGEM,abrdn Emerging Markets Dividend Active ETF,Diversified Emerging Mkts,True
+AGIQ,Sofi Agentic AI ETF,Technology,True
+AGIX,KraneShares Artificial Intelligence and Technology Public and Private ETF,Technology,True
+AGMI,Themes Silver Miners ETF,Equity Precious Metals,True
+AGNG,Global X Aging Population ETF,Health,True
+AGQI,First Trust Active Global Quality Income ETF,Global Large-Stock Value,True
+AGRW,Allspring LT Large Growth ETF,Large Growth,True
+AHBM,Amplify Top 10 Asia Memory ETF,Technology,True
+AIA,iShares Asia 50 ETF,Pacific/Asia ex-Japan Stk,True
+AIBF,iShares Future AI Beneficiaries ETF,Technology,True
+AICH,China AI ETF,Technology,True
+AIEQ,Amplify AI Powered Equity ETF,Mid-Cap Blend,True
+AIFD,TCW Artificial Intelligence ETF,Technology,True
+AIFR,Defiance Global Foundries ETF,Technology,True
+AIHY,Defiance AI Hyperscale Leaders ETF,Technology,True
+AIMS,Acuitas Small Cap Active ETF,Small Blend,True
+AIPO,Defiance AI & Power Infrastructure ETF,Technology,True
+AIQ,Global X Artificial Intelligence & Technology ETF,Technology,True
+AIRR,First Trust RBA American Industrial RenaissanceTM ETF,Industrials,True
+AIS,VistaShares Artificial Intelligence Supercycle ETF,Technology,True
+AIUP,FINQ FIRST U.S. Large Cap AI-Managed Equity ETF,Large Blend,True
+AIVC,Amplify Bloomberg AI Value Chain ETF,Technology,True
+AIVI,WisdomTree International Al Enhanced Value Fund,Foreign Large Value,True
+AIVL,WisdomTree U.S. Al Enhanced Value Fund,Mid-Cap Value,True
+AIX,Defiance US 100 Tech AI Moat ETF,Technology,True
+AKAF,The Frontier Economic Fund,Global Large-Stock Blend,True
+AKRE,Akre Focus ETF,Large Growth,True
+ALAI,Alger AI Enablers & Adopters ETF,Technology,True
+ALIL,Argent Focused Small Cap ETF,Small Blend,True
+ALRG,Allspring LT Large Core ETF,Large Blend,True
+ALTL,Pacer Lunt Large Cap Alternator ETF,Large Blend,True
+AMEI,Amana Equity Income ETF,Large Value,True
+AMEM,Amana Developing World ETF,Diversified Emerging Mkts,True
+AMGR,Amana Growth ETF,Large Growth,True
+AMID,Argent Mid Cap ETF,Mid-Cap Blend,True
+AMJB,Alerian MLP Index ETN,Energy Limited Partnership,False
+AMLP,Alerian MLP ETF,Energy Limited Partnership,True
+AMMO,VistaShares Defense Supercycle ETF,Industrials,True
+AMOM,QRAFT AI-Enhanced U.S. Large Cap Momentum ETF,Large Growth,True
+AMUB,UBS ETRACS Alerian MLP Index ETN Series B,Energy Limited Partnership,False
+AMZA,InfraCap MLP ETF,Energy Limited Partnership,True
+ANGU,Sei ANG Research Enhanced U.S. Large Cap ETF,Large Blend,True
+ANTW,Anthropic AI Lab Ecosystem ETF,Technology,True
+AOTG,AOT Growth and Innovation ETF,Technology,True
+APIE,ActivePassive International Equity ETF,Foreign Large Blend,True
+APUE,ActivePassive U.S. Equity ETF,Large Blend,True
+AQEC,AQE Core ETF,Large Blend,True
+AQLT,iShares MSCI Global Quality Factor ETF,Global Large-Stock Blend,True
+AQWA,Global X Clean Water ETF,Miscellaneous Sector,True
+ARGT,Global X MSCI Argentina ETF,Focused Region,True
+ARIA,ARIA Opportunities ETF,Global Large-Stock Blend,True
+ARKF,ARK Blockchain & Fintech Innovation ETF,Technology,True
+ARKG,ARK Genomic Revolution ETF,Health,True
+ARKK,ARK Innovation ETF,Mid-Cap Growth,True
+ARKQ,ARK Autonomous Technology & Robotics ETF,Mid-Cap Growth,True
+ARKW,ARK Next Generation Technology ETF,Mid-Cap Growth,True
+ARKX,ARK Space & Defense Innovation ETF,Technology,True
+ARMY,Tema International Defense Innovation ETF,Industrials,True
+ARTY,iShares Future AI & Tech ETF,Technology,True
+ARVR,First Trust Indxx Metaverse ETF,Technology,True
+ARWG,Archer Growth ETF,Large Growth,True
+ASCE,Allspring SMID Core ETF,Small Blend,True
+ASCI,abrdn International Small Cap Active ETF,Foreign Small/Mid Growth,True
+ASD,Defiance Autism Impact ETF,Health,True
+ASEA,Global X FTSE Southeast Asia ETF,Pacific/Asia ex-Japan Stk,True
+ASHR,Xtrackers Harvest CSI 300 China A-Shares ETF,Greater China Region,True
+ASHS,Xtrackers Harvest CSI 500 China A-Shares Small Cap ETF,Greater China Region,True
+ASIA,Matthews Pacific Tiger Active ETF,Pacific/Asia ex-Japan Stk,True
+ASLV,Allspring Special Large Value ETF,Large Value,True
+AT,Defiance Robotics Actuators ETF,Technology,True
+ATFV,Alger 35 ETF,Large Growth,True
+ATMP,Barclays ETN+ Select MLP ETN,Energy Limited Partnership,False
+AUAU,Global X Gold Miners ETF,Equity Precious Metals,True
+AUMI,Themes Gold Miners ETF,Equity Precious Metals,True
+AUSF,Global X Adaptive U.S. Factor ETF,Mid-Cap Value,True
+AV,Corgi Aerospace & Commercial Aviation ETF,Industrials,True
+AVDE,Avantis International Equity ETF,Foreign Large Blend,True
+AVDS,Avantis International Small Cap Equity ETF,Foreign Small/Mid Blend,True
+AVDV,Avantis International Small Cap Value ETF,Foreign Small/Mid Value,True
+AVEE,Avantis Emerging Markets Small Cap Equity ETF,Diversified Emerging Mkts,True
+AVEM,Avantis Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+AVES,Avantis Emerging Markets Value ETF,Diversified Emerging Mkts,True
+AVGE,Avantis All Equity Markets ETF,Global Large-Stock Blend,True
+AVGV,Avantis ALL Equity Markets Value ETF,Global Small/Mid Stock,True
+AVIE,Avantis Inflation Focused Equity ETF,Large Value,True
+AVIV,Avantis International Large Cap Value ETF,Foreign Large Value,True
+AVLC,Avantis U.S. Large Cap Equity E,Large Blend,True
+AVLV,Avantis US Large Cap Value ETF,Large Value,True
+AVMC,Avantis U.S. Mid Cap Equity ETF,Mid-Cap Blend,True
+AVMV,Avantis U.S. Mid Cap Value ETF,Mid-Cap Value,True
+AVNC,Avantis ALL International Core Equity ETF,Foreign Large Value,True
+AVNM,Avantis All International Markets Equity ETF,Foreign Large Blend,True
+AVNV,Avantis All International Markets Value ETF,Foreign Large Value,True
+AVOS,Avos Global Equities ETF,Global Large-Stock Blend,True
+AVRE,Avantis Real Estate ETF,Global Real Estate,True
+AVRY,Avory Foundational ETF,Large Blend,True
+AVSC,Avantis US Small Cap Equity ETF,Small Value,True
+AVSD,Avantis Responsible International Equity ETF,Foreign Large Blend,True
+AVSE,Avantis Responsible Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+AVSU,Avantis Responsible U.S. Equity ETF,Large Blend,True
+AVTM,Avantis Total Equity Markets ETF,Global Large-Stock Blend,True
+AVUQ,Avantis U.S. Quality ETF,Large Growth,True
+AVUS,Avantis US Equity ETF,Large Blend,True
+AVUV,Avantis US Small Cap Value ETF,Small Value,True
+AVXC,Avantis Emerging Markets Ex-China Equity ETF,Diversified Emerging Mkts,True
+AWAY,Amplify Travel Tech ETF,Consumer Cyclical,True
+AZTD,Aztlan Global Stock Selection Dm SMID ETF,Global Small/Mid Stock,True
+BAFE,Brown Advisory Flexible Equity ETF,Large Blend,True
+BAGX,EA Bridgeway Aggressive Investors ETF,Large Blend,True
+BAI,iShares A.I. Innovation and Tech Active ETF,Technology,True
+BAIV,Brown Advisory International Value Select ETF,Foreign Large Value,True
+BAMD,Brookstone Dividend Stock ETF,Mid-Cap Value,True
+BAMG,Brookstone Growth Stock ETF,Large Growth,True
+BAMV,Brookstone Value Stock ETF,Large Value,True
+BASG,Brown Advisory Sustainable Growth ETF,Large Growth,True
+BASV,Brown Advisory Sustainable Value ETF,Large Value,True
+BATT,Amplify Lithium & Battery Technology ETF,Natural Resources,True
+BAY,Corgi Bay Area Based ETF,Large Blend,True
+BBAX,JPMorgan BetaBuilders Developed Asia Pacific ex-Japan ETF,Pacific/Asia ex-Japan Stk,True
+BBC,Virtus LifeSci Biotech Clinical Trials ETF,Health,True
+BBCA,JPMorgan BetaBuilders Canada ETF,Focused Region,True
+BBEM,JPMorgan Betabuilders Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+BBEU,JPMorgan BetaBuilders Europe ETF,Europe Stock,True
+BBH,VanEck Biotech ETF,Health,True
+BBHL,BBH Select Large Cap ETF,Large Growth,True
+BBHM,BBH Select Mid Cap ETF,Mid-Cap Growth,True
+BBIN,JPMorgan BetaBuilders International Equity ETF,Foreign Large Blend,True
+BBJP,JPMorgan BetaBuilders Japan ETF,Japan Stock,True
+BBLS,Munificent Seven ETF,Equity Energy,True
+BBLU,Ea Bridgeway Blue Chip ETF,Large Blend,True
+BBMC,JPMorgan BetaBuilders U.S. Mid Cap Equity ETF,Mid-Cap Blend,True
+BBP,Virtus LifeSci Biotech Products ETF,Health,True
+BBRE,JPMorgan BetaBuilders MSCI U.S. REIT ETF,Real Estate,True
+BBSC,JPMorgan BetaBuilders U.S. Small Cap Equity ETF,Small Blend,True
+BBUS,JPMorgan BetaBuilders U.S. Equity ETF,Large Blend,True
+BCEM,Baron Emerging Markets Select ETF,Diversified Emerging Mkts,True
+BCFN,Baron Financials ETF,Financial,True
+BCGD,Baron Global Durable Advantage ETF,Global Large-Stock Blend,True
+BCGS,Bancreek Global Select ETF,Global Large-Stock Blend,True
+BCHP,Principal Focused Blue Chip ETF,Large Growth,True
+BCIL,Bancreek International Large Cap ETF,Foreign Large Growth,True
+BCOR,Grayscale Bitcoin Adopters ETF,Global Large-Stock Blend,True
+BCSM,Baron SMID Cap ETF,Mid-Cap Growth,True
+BCTK,Baron Technology ETF,Technology,True
+BCUS,Bancreek U.S. Large Cap ETF,Large Blend,True
+BDCZ,UBS ETRACS Wells Fargo Business Development Company Index ETN,Financial,False
+BDIV,AAM Brentview Dividend Growth ETF,Large Value,True
+BDRY,Breakwave Dry Bulk Shipping ETF,Miscellaneous Sector,True
+BDVG,iMGP Berkshire Dividend Growth ETF,Large Value,True
+BDVL,iShares Disciplined Volatility Equity Active ETF,Global Large-Stock Blend,True
+BDYN,iShares Dynamic Equity Active ETF,Global Large-Stock Blend,True
+BEDY,Bny Mellon Enhanced Dividend Income ETF,Large Value,True
+BEEX,The BeeHive ETF,Large Blend,True
+BEEZ,Honeytree U.S. Equity ETF,Large Blend,True
+BESF,Bastion Energy ETF,Equity Energy,True
+BETZ,Roundhill Sports Betting & iGaming ETF,Consumer Cyclical,True
+BFOR,Barron's 400 ETF,Mid-Cap Blend,True
+BGCG,Baillie Gifford International Concentrated Growth ETF,Foreign Large Growth,True
+BGDV,Bahl & Gaynor Dividend ETF,Large Blend,True
+BGEG,Baillie Gifford Emerging Markets ETF,Diversified Emerging Mkts,True
+BGGG,Baillie Gifford Long Term Global Growth ETF,Global Large-Stock Growth,True
+BGIA,Baillie Gifford International Alpha ETF,Foreign Large Growth,True
+BGIG,Bahl & Gaynor Income Growth ETF,Large Value,True
+BGRO,iShares Large Cap Growth Active ETF,Large Growth,True
+BGUS,Baillie Gifford ETF Trust - Baillie Gifford U.S. Equity Growth ETF,Large Growth,True
+BIBL,Inspire 100 ETF,Large Blend,True
+BIDD,iShares International Dividend Active ETF,Foreign Large Blend,True
+BILD,Nomura Global Listed Infrastructure ETF,Infrastructure,True
+BILT,iShares Infrastructure Active ETF,Infrastructure,True
+BINT,Bluemonte Global Equity ETF,Global Large-Stock Blend,True
+BINV,Brandes International ETF,Foreign Large Value,True
+BIZD,VanEck BDC Income ETF,Financial,True
+BKCG,BNY Mellon ETF Trust II: BNY Mellon Concentrated Growth ETF,Large Growth,True
+BKCI,BNY Mellon Concentrated International ETF,Foreign Large Growth,True
+BKDV,BNY Mellon Dynamic Value ETF,Large Value,True
+BKEM,BNY Mellon Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+BKF,iShares MSCI BIC ETF,Diversified Emerging Mkts,True
+BKGI,Bny Mellon Global Infrastructure Income ETF,Infrastructure,True
+BKIE,BNY Mellon International Equity ETF,Foreign Large Blend,True
+BKLC,BNY Mellon US Large Cap Core Equity ETF,Large Blend,True
+BKLG,Bny Mellon US Large Cap Equity Growth ETF,Large Growth,True
+BKMC,BNY Mellon US Mid Cap Core Equity ETF,Mid-Cap Blend,True
+BKSE,BNY Mellon US Small Cap Core Equity ETF,Small Blend,True
+BLCK,Corgi Crypto Infrastructure ETF,Technology,True
+BLCR,iShares Large Cap Core Active ETF,Large Blend,True
+BLCV,iShares Large Cap Value Active ETF,Large Value,True
+BLDG,Cambria Global Real Estate ETF,Global Real Estate,True
+BLDX,Impax Global Sustainable Infrastructure ETF,Infrastructure,True
+BLES,Inspire Global Hope ETF,Global Large-Stock Blend,True
+BLUC,Bluemonte Large Cap Core ETF,Large Blend,True
+BLUX,Bluemonte Dynamic Total Market ETF,Large Blend,True
+BMED,iShares Health Innovation Active ETF,Health,True
+BMVP,Invesco Bloomberg MVP Multi-fac,Mid-Cap Blend,True
+BNGE,First Trust S-Network Streaming & Gaming ETF,Communications,True
+BOAT,SonicShares Global Shipping ETF,Industrials,True
+BOBP,CORE16 Best of Breed Premier Index ETF,Large Blend,True
+BOTT,Themes Humanoid Robotics ETF,Technology,True
+BOTZ,Global X Robotics & Artificial Intelligence ETF,Technology,True
+BOUT,CapForce IBD Breakout Opportunities ETF,Mid-Cap Growth,True
+BPAY,iShares FinTech Active ETF,Financial,True
+BPRO,Bitwise Proficio Currency Debasement ETF,Miscellaneous Sector,True
+BRAZ,Global X Brazil Active ETF,Focused Region,True
+BRCE,MFS Blended Research Core Equity ETF,Large Blend,True
+BREE,MFS Blended Research Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+BRES,Burney U.S. Equity Select ETF,Large Blend,True
+BREW,Corgi Coffee & Energy Drinks ETF,Consumer Defensive,True
+BRF,VanEck Brazil Small-Cap ETF,Focused Region,True
+BRIE,MFS Blended Research International Equity ETF,Foreign Large Blend,True
+BRIF,FIS Bright Portfolios Focused Equity ETF,Large Blend,True
+BRNY,Burney U.S. Factor Rotation ETF,Mid-Cap Blend,True
+BROL,Baron Risk Optimized Large Cap ETF,Large Growth,True
+BRSM,MFS Blended Research Small-Mid Cap ETF,Mid-Cap Blend,True
+BRSV,EA Bridgeway Select Small-Cap Value ETF,Small Value,True
+BSMC,Brandes U.S. Small-Mid Cap Value ETF,Small Value,True
+BSVO,EA Bridgeway Omni Small-Cap Value ETF,Small Value,True
+BUG,Global X Cybersecurity ETF,Technology,True
+BUIL,Rebuild America ETF,Infrastructure,True
+BUL,Pacer US Cash Cows Growth ETF,Mid-Cap Blend,True
+BULD,Pacer BlueStar Engineering the Future ETF,Technology,True
+BUSA,Brandes U.S. Value ETF,Large Value,True
+BUYB,ProShares S&P 500 Buyback Aristocrats ETF,Large Blend,True
+BUYO,KraneShares Man Buyout Beta Index ETF,Small Blend,True
+BUYZ,Franklin Disruptive Commerce ETF,Global Large-Stock Growth,True
+BUZZ,VanEck Social Sentiment ETF,Large Growth,True
+BVAL,Bluemonte Large Cap Value ETF,Large Value,True
+BWQG,BWM Quality Growth ETF,Large Growth,True
+BWTG,Brendan Wood TopGun ETF,Large Growth,True
+BYRE,Principal Real Estate Active Opportunities ETF,Real Estate,True
+BZZ,Corgi Drones & Urban Air Mobility ETF,Industrials,True
+CABZ,Roundhill Robotaxi Autonomous Vehicles & Technology ETF,Technology,True
+CAFG,Pacer US Small Cap Cash Cows Growth Leaders ETF,Small Growth,True
+CALF,Pacer US Small Cap Cash Cows 100 ETF,Small Value,True
+CAML,Congress Large Cap Growth ETF,Large Growth,True
+CAMX,Cambiar Aggressive Value ETF,Global Large-Stock Value,True
+CANC,Tema Oncology ETF,Health,True
+CAPA,Defiance AI Capacitors & MLCC ETF,Technology,True
+CAPE,DoubleLine Shiller CAPE U.S. Equities ETF,Large Value,True
+CARK,Castleark Large Growth ETF,Large Growth,True
+CARZ,First Trust S-Network Future Vehicles & Technology ETF,Technology,True
+CAS,Simplify China A Shares PLUS Income ETF,Greater China Region,True
+CATH,Global X S&P 500 Catholic Values ETF,Large Blend,True
+CBOT,Corgi Robots & Humanoids ETF,Technology,True
+CBSE,Clough Select Equity ETF,Global Small/Mid Stock,True
+CCFE,Concourse Capital Focused Equity ETF,Small Value,True
+CCML,Roundhill MLCC & PCB ETF,Technology,True
+CCNR,ALPS/CoreCommodity Natural Resources ETF,Natural Resources,True
+CCSO,Carbon Collective Climate Solutions U.S. Equity ETF,Mid-Cap Growth,True
+CDC,VictoryShares US EQ Income Enhanced Volatility Wtd ETF,Large Value,True
+CDEI,"Calvert US Large-Cap Diversity, Equity And Inclusion Index ETF",Large Blend,True
+CDIG,City Different Investments Global Equity ETF,Global Large-Stock Blend,True
+CDL,VictoryShares US Large Cap High Div Volatility Wtd ETF,Large Value,True
+CEFA,Global X S&P Catholic Values Developed ex-U.S. ETF,Foreign Large Blend,True
+CFA,VictoryShares US 500 Volatility Wtd ETF,Large Blend,True
+CFO,VictoryShares US 500 Enhanced Volatility Wtd ETF,Large Blend,True
+CGCV,Capital Group Conservative Equity ETF,Large Value,True
+CGDG,Capital Group Dividend Growers ETF,Global Large-Stock Blend,True
+CGDV,Capital Group Dividend Value ETF,Large Value,True
+CGFS,CG Flagship Equity ETF,Large Blend,True
+CGGE,Capital Group Global Equity ETF,Global Large-Stock Blend,True
+CGGG,Capital Group U.S. Large Growth ETF,Large Growth,True
+CGGO,Capital Group Global Growth Equity ETF,Global Large-Stock Growth,True
+CGGR,Capital Group Growth ETF,Large Growth,True
+CGIC,Capital Group International Core Equity ETF,Foreign Large Blend,True
+CGIE,Capital Group International Equity ETF,Foreign Large Growth,True
+CGMM,Capital Group U.S. Small and Mid Cap ETF,Mid-Cap Blend,True
+CGNG,Capital Group New Geography Equity ETF,Diversified Emerging Mkts,True
+CGPT,Vegashares AI Inference ETF,Technology,True
+CGRO,CoreValues Alpha Greater China Growth ETF,Greater China Region,True
+CGUS,Capital Group Core Equity ETF,Large Blend,True
+CGV,Conductor Global Equity Value ETF,Foreign Small/Mid Value,True
+CGVV,Capital Group U.S. Large Value ETF,Large Value,True
+CGW,Invesco S&P Global Water Index ETF,Miscellaneous Sector,True
+CGXU,Capital Group International Focus Equity ETF,Foreign Large Growth,True
+CHAT,Roundhill Generative AI & Technology ETF,Technology,True
+CHGX,Stance Sustainable Beta ETF,Large Blend,True
+CHIP,Rex AI Chipmaking ETF,Technology,True
+CHIQ,Global X MSCI China Consumer Discretionary ETF,Greater China Region,True
+CHPS,Xtrackers Semiconductor Select Equity ETF,Technology,True
+CHPX,Global X AI Semiconductor & Quantum ETF,Technology,True
+CHRI,Global X S&P 500 Christian Values ETF,Large Blend,True
+CIBR,First Trust NASDAQ Cybersecurity ETF,Technology,True
+CLCG,Crossmark Large Cap Growth ETF,Large Growth,True
+CLCV,Crossmark Large Cap Value ETF,Large Value,True
+CLIM,Climate Resilient US REIT Index ETF,Real Estate,True
+CLOD,Themes Cloud Computing ETF,Technology,True
+CLOU,Global X Cloud Computing ETF,Technology,True
+CLUB,Bancreek Billionaires Club ETF,Global Large-Stock Blend,True
+CMAG,Corgi Mag 7 ETF,Technology,True
+CNAV,Mohr Company Nav ETF,Large Blend,True
+CNBS,Amplify Seymour Cannabis ETF,Miscellaneous Sector,True
+CNEQ,Alger Concentrated Equity ETF,Large Growth,True
+CNQQ,Rayliant-ChinaAMC Transformative China Tech ETF,Greater China Region,True
+CNRG,State Street SPDR S&P Kensho Clean Power ETF,Equity Energy,True
+CNXT,VanEck ChiNext Innovators ETF,Greater China Region,True
+CNYA,iShares MSCI China A ETF,Greater China Region,True
+COAL,Range Global Coal ETF,Equity Energy,True
+COLO,Global X MSCI Colombia ETF,Focused Region,True
+COOL,"VegaShares AI Thermal, Cooling & Power Management ETF",Technology,True
+COPA,Themes Copper Miners ETF,Natural Resources,True
+COPJ,Sprott Junior Copper Miners ETF,Natural Resources,True
+COPP,Sprott Copper Miners ETF,Natural Resources,True
+COPX,Global X Copper Miners ETF,Natural Resources,True
+COPY,"Tweedy, Browne Insider + Value ETF",Global Small/Mid Stock,True
+CORO,iShares International Country Rotation Active ETF,Foreign Large Blend,True
+COWG,Pacer US Large Cap Cash Cows Growth Leaders ETF,Mid-Cap Growth,True
+COWS,Amplify Cash Flow Dividend Leaders ETF,Mid-Cap Value,True
+COWZ,Pacer US Cash Cows 100 ETF,Mid-Cap Value,True
+CPAI,Counterpoint Quantitative Equity ETF,Mid-Cap Blend,True
+CPTL,Global X Morningstar Capital Allocation Leaders ETF,Large Blend,True
+CPU,Amplify Top 10 Semiconductors ETF,Technology,False
+CQQQ,Invesco China Technology ETF,Greater China Region,True
+CQTM,Corgi Quantum Computing ETF,Technology,True
+CRAK,VanEck Oil Refiners ETF,Equity Energy,True
+CRAM,Defiance China Memory ETF,Technology,True
+CRBN,iShares Low Carbon Optimized MSCI ACWI ETF,Global Large-Stock Blend,True
+CRIB,Russell Investments Global Real Estate ETF,Global Real Estate,True
+CRTC,Xtrackers US National Critical Technologies ETF,Technology,True
+CSB,VictoryShares US Small Cap High Div Volatility Wtd ETF,Small Value,True
+CSD,Invesco S&P Spin-Off ETF,Mid-Cap Blend,True
+CSEN,Cohen & Steers Future of Energy Active ETF,Equity Energy,True
+CSIO,Cohen & Steers Infrastructure Opportunities Active ETF,Infrastructure,True
+CSM,ProShares Large Cap Core Plus,Large Blend,True
+CSMD,Congress SMID Growth ETF,Mid-Cap Growth,True
+CSNR,Cohen & Steers Natural Resources Active ETF,Natural Resources,True
+CSRE,Cohen & Steers Real Estate Active ETF,Real Estate,True
+CSTK,Invesco Comstock Contrarian Equity ETF,Large Value,True
+CTEC,Global X ClimateTech ETF,Global Small/Mid Stock,True
+CTEF,Castellan Targeted Equity ETF,Mid-Cap Blend,True
+CTEX,ProShares S&P Kensho Cleantech ETF,Technology,True
+CUT,Invesco MSCI Global Timber ETF,Natural Resources,True
+CVAR,Cultivar ETF,Mid-Cap Value,True
+CVIE,Calvert International Responsible Index ETF,Foreign Large Blend,True
+CVLC,Calvert US Large-Cap Core Responsible Index ETF,Large Blend,True
+CVMC,Calvert US Mid-Cap Core Responsible Index ETF,Mid-Cap Blend,True
+CVSM,Cresalta Small And Mid-Cap ETF,Small Blend,True
+CWI,State Street SPDR MSCI ACWI ex-US ETF,Foreign Large Blend,True
+CWS,AdvisorShares Focused Equity ETF,Mid-Cap Blend,True
+CZA,Invesco Zacks Mid-Cap ETF,Mid-Cap Blend,True
+DARP,Grizzle Growth ETF,Large Growth,True
+DAT,ProShares Big Data Refiners ETF,Technology,True
+DAX,Global X DAX Germany ETF,Focused Region,True
+DBAW,Xtrackers MSCI All World ex US Hedged Equity ETF,Foreign Large Blend,True
+DBEF,Xtrackers MSCI EAFE Hedged Equity ETF,Foreign Large Blend,True
+DBEM,Xtrackers MSCI Emerging Markets Hedged Equity ETF,Diversified Emerging Mkts,True
+DBEU,Xtrackers MSCI Europe Hedged Equity ETF,Europe Stock,True
+DBEZ,Xtrackers MSCI Eurozone Hedged Equity ETF,Europe Stock,True
+DBJP,Xtrackers MSCI Japan Hedged Equity ETF,Japan Stock,True
+DCOR,DFA U.S. Core Equity 1 Portfolio – ETF Class Shares,Large Blend,True
+DDIV,First Trust Dorsey Wright Momentum & Dividend ETF,Mid-Cap Value,True
+DDLS,WisdomTree Dynamic International SmallCap Equity ETF,Foreign Small/Mid Value,True
+DDWM,WisdomTree Dynamic International Equity ETF,Foreign Large Value,True
+DDXX,Defined Duration 20 ETF,Global Large-Stock Blend,True
+DEEF,Xtrackers FTSE Developed ex US Multifactor ETF,Foreign Large Value,True
+DEEP,Acquirers Small and Micro Deep Value ETF,Small Value,True
+DEHP,Dimensional Emerging Markets High Profitability ETF,Diversified Emerging Mkts,True
+DEM,WisdomTree Emerging Markets High Dividend Fund,Diversified Emerging Mkts,True
+DEMZ,Democratic Large Cap Core ETF,Large Blend,True
+DEPW,Google DeepMind AI Lab Ecosystem ETF,Technology,True
+DES,WisdomTree U.S. SmallCap Dividend Fund,Small Value,True
+DESK,Vaneck Office And Commercial REIT ETF,Real Estate,True
+DEUS,Xtrackers Russell US Multifactor ETF,Mid-Cap Blend,True
+DEW,WisdomTree Global High Dividend Fund,Global Large-Stock Value,True
+DEXC,Dimensional Emerging Markets ex China Core Equity ETF,Diversified Emerging Mkts,True
+DFAC,U.S. Core Equity 2 Portfolio-ETF Class Shares,Large Blend,True
+DFAE,Dimensional Emerging Core Equity Market ETF,Diversified Emerging Mkts,True
+DFAI,Dimensional International Core Equity Market ETF,Foreign Large Blend,True
+DFAL,Dimensional US Large Cap Core Equity Market ETF,Large Blend,True
+DFAR,DFA Real Estate Securities Portfolio – ETF Class Shares,Real Estate,True
+DFAS,U.S. Small Cap Portfolio-ETF Class Shares,Small Blend,True
+DFAT,U.S. Targeted Value Portfolio-ETF Class Shares,Small Value,True
+DFAU,Dimensional US Core Equity Market ETF,Large Blend,True
+DFAX,Dimensional World ex U.S. Core Equity 2 ETF,Foreign Large Blend,True
+DFE,WisdomTree Europe SmallCap Dividend Fund,Europe Stock,True
+DFEM,Dimensional Emerging Markets Core Equity 2 ETF,Diversified Emerging Mkts,True
+DFEV,Dimensional Emerging Markets Value ETF,Diversified Emerging Mkts,True
+DFGR,Dimensional Global Real Estate ETF,Global Real Estate,True
+DFIC,Dimensional International Core Equity 2 ETF,Foreign Large Blend,True
+DFIS,Dimensional International Small Cap ETF,Foreign Small/Mid Blend,True
+DFIV,Dimensional International Value ETF,Foreign Large Value,True
+DFJ,WisdomTree Japan SmallCap Dividend Fund,Japan Stock,True
+DFLV,Dimensional US Large Cap Value ETF,Large Value,True
+DFMC,DFA US Micro Cap Portfolio ETF Class,Small Blend,True
+DFNL,Davis Select Financial ETF,Financial,True
+DFSE,Dimensional Emerging Markets Sustainability Core 1 ETF,Diversified Emerging Mkts,True
+DFSI,Dimensional International Sustainability Core 1 ETF,Foreign Large Blend,True
+DFSU,Dimensional US Sustainability Core 1 ETF,Large Blend,True
+DFSV,DFA U.S. Small Cap Value Portfolio – ETF Class Shares,Small Value,True
+DFTT,DF Tactical 30 ETF,Large Blend,True
+DFUS,Dimensional U.S. Equity Market ETF,Large Blend,True
+DFUV,Dimensional US Marketwide Value ETF,Large Value,True
+DFVE,Doubleline Fortune 500 Equal Weight ETF,Mid-Cap Value,True
+DFVX,Dimensional US Large Cap Vector ETF,Large Value,True
+DGIN,VanEck Digital India ETF,India Equity,True
+DGLO,First Trust RBA Deglobalization ETF,Large Blend,True
+DGRE,WisdomTree Emerging Markets Quality Dividend Growth Fund,Diversified Emerging Mkts,True
+DGRO,iShares Core Dividend Growth ETF,Large Value,True
+DGRS,WisdomTree U.S. SmallCap Quality Dividend Growth Fund,Small Value,True
+DGRW,WisdomTree U.S. Quality Dividend Growth Fund,Large Blend,True
+DGS,WisdomTree Emerging Markets SmallCap Dividend Fund,Diversified Emerging Mkts,True
+DGT,State Street SPDR Global Dow ETF,Global Large-Stock Value,True
+DHLX,Diamond Hill Large Cap Concentrated ETF,Large Value,True
+DHS,WisdomTree U.S. High Dividend Fund,Large Value,True
+DIA,State Street SPDR Dow Jones Industrial Average ETF Trust,Large Value,True
+DICE,Tema Trading & Prediction Markets ETF,Financial,True
+DIEM,Franklin Emerging Market Core Dividend Tilt Index ETF,Diversified Emerging Mkts,True
+DIHP,Dimensional International High Profitability ETF,Foreign Large Blend,True
+DIM,WisdomTree International MidCap Dividend Fund,Foreign Small/Mid Value,True
+DINT,Davis Select International ETF,Foreign Large Blend,True
+DISK,Tema Memory ETF,Technology,True
+DISV,Dimensional International Small Cap Value ETF,Foreign Small/Mid Value,True
+DIV,Global X SuperDividend U.S. ETF,Small Value,True
+DIVB,iShares Core Dividend ETF,Large Value,True
+DIVE,Dana Concentrated Dividend ETF,Large Value,True
+DIVG,Invesco S&P 500 High Dividend Growers ETF,Mid-Cap Value,True
+DIVH,Integrity Dividend Harvest ETF,Large Value,True
+DIVI,Franklin International Core Dividend Tilt Index ETF,Foreign Large Value,True
+DIVL,Madison Dividend Value ETF,Large Value,True
+DIVN,Horizon Dividend Income ETF,Large Value,True
+DIVS,Guinness Atkinson Dividend Builder ETF,Global Large-Stock Blend,True
+DIVY,Tidal ETF Trust - Sound Equity Income ETF,Mid-Cap Value,True
+DIVZ,Polen Dividend Income ETF,Large Value,True
+DJD,Invesco Dow Jones Industrial Average Dividend ETF,Large Value,True
+DLCU,U.S. Large Company Portfolio ETF,Large Blend,True
+DLN,WisdomTree U.S. LargeCap Dividend Fund,Large Value,True
+DLS,WisdomTree International SmallCap Dividend Fund,Foreign Small/Mid Value,True
+DMXF,iShares ESG Advanced MSCI EAFE Index ETF,Foreign Large Blend,True
+DMXU,Xtrackers Bloomberg Developed Markets ex US Equity ETF,Foreign Large Blend,True
+DNL,WisdomTree Global ex-U.S. Quality Growth Fund,Foreign Large Growth,True
+DOCK,"Corgi Ports, Rail & Freight ETF",Industrials,True
+DOL,WisdomTree True Developed International Fund,Foreign Large Value,True
+DON,WisdomTree U.S. MidCap Dividend Fund,Mid-Cap Value,True
+DPRE,Virtus Duff & Phelps Real Estat,Real Estate,True
+DRAM,Roundhill Memory ETF,Technology,True
+DRES,GMO Domestic Resilience ETF,Mid-Cap Blend,True
+DRGN,Themes China Generative Artificial Intelligence ETF,Technology,True
+DRKY,VistaShares Target 15 DRUKMacro Distribution ETF,Large Blend,True
+DRLL,Strive U.S. Energy ETF,Equity Energy,True
+DRMP,Tuttle Capital Memory Stack Income Blast ETF,Technology,True
+DRMY,XFUNDS Memory Income ETF,Technology,True
+DRUP,GraniteShares ETF Trust - GraniteShares Nasdaq Select Disruptors ETF,Technology,True
+DRVR,Amplify S&P 500 Dividend Drivers ETF,Large Value,True
+DSI,iShares ESG MSCI KLD 400 ETF,Large Blend,True
+DSMC,Distillate Small/Mid Cash Flow ETF,Small Value,True
+DSPY,Tema S&P 500 Historical Weight ETF Strategy,Large Blend,True
+DSTL,Distillate U.S. Fundamental Stability & Value ETF,Large Value,True
+DSTX,Distillate International Fundamental Stability & Value ETF,Foreign Large Blend,True
+DTAN,Sparkline International Intangible Value ETF,Foreign Large Value,True
+DTCR,Global X Data Center & Digital Infrastructure ETF,Real Estate,True
+DTD,WisdomTree U.S. Total Dividend Fund,Large Value,True
+DTEC,ALPS Disruptive Technologies ETF,Technology,True
+DTH,WisdomTree International High Dividend Fund,Foreign Large Value,True
+DTRE,First Trust Alerian Disruptive Technology Real Estate ETF,Global Real Estate,True
+DUHP,DFA U.S. High Relative Profitability Portfolio – ETF Class Shares,Large Blend,True
+DUKQ,Ocean Park Domestic ETF,Large Blend,True
+DUKX,Ocean Park International ETF,Foreign Large Blend,True
+DUNK,Dana Unconstrained Equity ETF,Large Blend,True
+DURA,VanEck Durable High Dividend ETF,Large Value,True
+DUSA,Davis Select U.S. Equity ETF,Large Value,True
+DUSG,U.S. Small Cap Growth Portfolio: ETF Class Shares,Small Growth,True
+DUTY,U.S. Defense ETF,Uncategorized,True
+DVAL,BrandywineGLOBAL Dynamic U.S. Large Cap Value ETF,Large Value,True
+DVDN,Kingsbarn Dividend Opportunity ETF,Real Estate,True
+DVGR,Dac 3D Dividend Growth ETF,Large Value,True
+DVLU,First Trust Dorsey Wright Momentum & Value ETF,Mid-Cap Value,True
+DVND,Touchstone Dividend Select ETF,Large Value,True
+DVOL,First Trust Dorsey Wright Momentum & Low Volatility ETF,Large Blend,True
+DVQQ,WEBs QQQ Defined Volatility ETF,Large Growth,True
+DVSP,WEBs SPY Defined Volatility ETF  ,Large Blend,True
+DVVY,Invesco Diversified Dividend Op,Large Value,True
+DVY,iShares Select Dividend ETF,Mid-Cap Value,True
+DVYE,iShares Emerging Markets Dividend ETF,Diversified Emerging Mkts,True
+DWAS,Invesco DWA SmallCap Momentum ETF,Small Blend,True
+DWM,WisdomTree International Equity Fund,Foreign Large Value,True
+DWMF,WisdomTree International Multifactor Fund,Foreign Large Value,True
+DWUS,AdvisorShares Dorsey Wright FSM US Core ETF,Large Blend,True
+DWX,State Street SPDR S&P International Dividend ETF,Foreign Large Value,True
+DXIV,Dimensional International Vector Equity ETF,Foreign Small/Mid Value,True
+DXJ,WisdomTree Japan Hedged Equity Fund,Japan Stock,True
+DXUV,DFA U.S. Vector Equity Portfolio – ETF Class Shares,Mid-Cap Value,True
+DYNF,iShares U.S. Equity Factor Rotation Active ETF,Large Blend,True
+EAFG,Pacer Developed Markets Cash Cows Growth Leaders ETF,Foreign Large Growth,True
+EAFH,Xtrackers MSCI EAFE 50% Hedged Equity ETF,Foreign Large Blend,False
+EAGL,Eagle Capital Select Equity ETF,Large Blend,True
+EART,Global X Rare Earth & Critical Materials ETF,Natural Resources,True
+EASY,Liberty One Defensive Dividend Growth ETF,Large Blend,True
+EBI,Longview Advantage ETF,Large Blend,True
+EBIT,Harbor Small Cap Earners ETF,Small Value,True
+ECML,EA Series Trust - Euclidean Fundamental Value ETF,Small Value,True
+ECON,Columbia Research Enhanced Emerging Economies ETF,Diversified Emerging Mkts,True
+ECOW,Pacer Emerging Markets Cash Cows 100 ETF,Diversified Emerging Mkts,True
+EDGI,3EDGE Dynamic International Equity ETF,Foreign Large Blend,True
+EDGU,3EDGE Dynamic US Equity ETF,Large Blend,True
+EDIV,State Street SPDR S&P Emerging Markets Dividend ETF,Diversified Emerging Mkts,True
+EDOG,ALPS Emerging Sector Dividend Dogs ETF,Diversified Emerging Mkts,True
+EDOW,First Trust Dow 30 Equal Weight ETF,Large Value,True
+EELV,Invesco S&P Emerging Markets Low Volatility ETF,Diversified Emerging Mkts,True
+EEM,iShares MSCI Emerging Markets ETF,Diversified Emerging Mkts,True
+EEMA,iShares MSCI Emerging Markets Asia ETF,Pacific/Asia ex-Japan Stk,True
+EEMO,Invesco S&P Emerging Markets Momentum ETF,Diversified Emerging Mkts,True
+EEMS,iShares MSCI Emerging Markets Small-Cap ETF,Diversified Emerging Mkts,True
+EEMV,iShares MSCI Emerging Markets Min Vol Factor ETF,Diversified Emerging Mkts,True
+EEMX,State Street SPDR MSCI Emerging Markets Fossil Fuel Reserves Free ETF,Diversified Emerging Mkts,True
+EES,WisdomTree U.S. SmallCap Earnings Fund,Small Value,True
+EFA,iShares MSCI EAFE ETF,Foreign Large Blend,True
+EFAD,ProShares MSCI EAFE Dividend Growers ETF,Foreign Large Blend,True
+EFAS,Global X MSCI SuperDividend EAFE ETF,Foreign Large Value,True
+EFAV,iShares MSCI EAFE Min Vol Factor ETF,Foreign Large Blend,True
+EFAX,State Street SPDR MSCI EAFE Fossil Fuel Reserves Free ETF,Foreign Large Blend,True
+EFFE,Harbor Osmosis Emerging Markets Resource Efficient ETF,Diversified Emerging Mkts,True
+EFFI,Harbor Osmosis International Resource Efficient ETF,Foreign Large Blend,True
+EFG,iShares MSCI EAFE Growth ETF,Foreign Large Growth,True
+EFIV,State Street SPDR S&P 500 ESG ETF,Large Blend,True
+EFRA,iShares Environmental Infrastructure and Industrials ETF,Infrastructure,True
+EFV,iShares MSCI EAFE Value ETF,Foreign Large Value,True
+EGLE,Global X S&P 500 U.S. Revenue Leaders ETF,Large Blend,True
+EGUS,Ishares ESG Aware MSCI USA Growth ETF,Large Growth,True
+EINC,VanEck Energy Income ETF,Energy Limited Partnership,True
+EIPX,FT Energy Income Partners Strategy ETF,Equity Energy,True
+EKG,First Trust Nasdaq Lux Digital Health Solutions ETF,Health,True
+ELCV,Eventide High Dividend ETF,Large Value,True
+ELFY,ALPS Electrification Infrastructure ETF,Utilities,True
+EMC,Global X Emerging Markets Great Consumer ETF,Diversified Emerging Mkts,True
+EMCR,Xtrackers Emerging Markets Carbon Reduction and Climate Improvers ETF,Diversified Emerging Mkts,True
+EMCS,Xtrackers MSCI Emerging Markets Select ETF,Diversified Emerging Mkts,True
+EMDM,First Trust Bloomberg Emerging Market Democracies ETF,Diversified Emerging Mkts,True
+EMDV,ProShares MSCI Emerging Markets Dividend Growers ETF,Diversified Emerging Mkts,True
+EMEM,Sophus Capital Emerging Market ETF,Diversified Emerging Mkts,True
+EMEQ,Nomura Focused Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+EMES,Harbor Emerging Markets Select ETF,Diversified Emerging Mkts,True
+EMET,VanEck Copper and Electrification Metals ETF,Natural Resources,True
+EMGF,iShares Emerging Markets Equity Factor ETF,Diversified Emerging Mkts,True
+EMIF,iShares Emerging Markets Infrastructure ETF,Diversified Emerging Mkts,True
+EMKT,Lazard Emerging Markets Opportunities ETF,Diversified Emerging Mkts,True
+EMLP,First Trust North American Energy Infrastructure Fund,Energy Limited Partnership,True
+EMM,Global X Emerging Markets ex-China ETF,Diversified Emerging Mkts,True
+EMMF,WisdomTree Emerging Markets Multifactor Fund,Diversified Emerging Mkts,True
+EMOP,AB Emerging Markets Opportunities ETF,Diversified Emerging Mkts,True
+EMOT,First Trust S&P 500 Economic Moat ETF,Large Blend,True
+EMQQ,EMQQ The Emerging Markets Internet ETF,Diversified Emerging Mkts,True
+EMSC,Sophus Capital Emerging Market Small Cap ETF,Diversified Emerging Mkts,True
+EMSF,Matthews Emerging Markets Sustainable Future Active ETF,Diversified Emerging Mkts,True
+EMXC,iShares MSCI Emerging Markets ex China ETF,Diversified Emerging Mkts,True
+EMXF,iShares ESG Advanced MSCI EM ETF,Diversified Emerging Mkts,True
+ENFR,Alerian Energy Infrastructure ETF,Energy Limited Partnership,True
+ENHE,iShares Enhanced Emerging Markets Active ETF,Diversified Emerging Mkts,True
+ENHI,Ishares Enhanced International Active ETF,Foreign Large Blend,True
+ENHU,iShares Enhanced Large Cap Core Active ETF,Large Blend,True
+ENRG,Ninepoint North American Energy Independence ETF,Equity Energy,False
+EPAI,Harbor AI Inflection Strategy ETF,Technology,True
+EPIN,Harbor International Equity ETF,Foreign Large Blend,True
+EPMB,Harbor Mid Cap Core ETF,Mid-Cap Blend,True
+EPMV,Harbor Mid Cap Value ETF,Mid-Cap Value,True
+EPP,iShares MSCI Pacific ex Japan ETF,Pacific/Asia ex-Japan Stk,True
+EPS,WisdomTree U.S. LargeCap Fund,Large Value,True
+EPSB,Harbor SMID Cap Core ETF,Small Blend,True
+EPSV,Harbor SMID Cap Value ETF,Small Value,True
+EQAL,Invesco Russell 1000 Equal Weight ETF,Mid-Cap Blend,True
+EQIN,Columbia U.S. Equity Income ETF,Large Value,True
+EQL,ALPS Equal Sector Weight ETF,Large Value,True
+EQLT,iShares MSCI Emerging Markets Quality Factor ETF,Diversified Emerging Mkts,True
+EQRR,ProShares Equities for Rising Rates ETF,Mid-Cap Value,True
+EQTY,Kovitz Core Equity ETF,Large Blend,True
+EQWL,Invesco S&P 100 Equal Weight ETF,Large Value,True
+ERET,Ishares Environmentally Aware Real Estate ETF,Global Real Estate,True
+ESG,Northern Trust STOXX US ESG Select ETF,Large Blend,True
+ESGD,iShares ESG Aware MSCI EAFE ETF,Foreign Large Blend,True
+ESGE,iShares ESG Aware MSCI EM ETF,Diversified Emerging Mkts,True
+ESGU,iShares ESG Aware MSCI USA ETF,Large Blend,True
+ESGV,Vanguard ESG U.S. Stock ETF,Large Blend,True
+ESIM,Eventide International ETF,Foreign Large Blend,True
+ESLG,Eventide Large Cap Growth ETF,Large Growth,True
+ESLV,Eventide Large Cap Value ETF,Large Value,True
+ESML,iShares ESG Aware MSCI USA Small-Cap ETF,Small Blend,True
+ESMV,iShares ESG Optimized MSCI USA Min Vol Factor ETF,Large Blend,True
+ESN,Essential 40 Stock ETF,Large Value,True
+ESSC,Eventide Small Cap ETF,Small Blend,True
+ESUM,Eventide US Market ETF,Large Blend,True
+ETHO,Amplify Etho Climate Leadership U.S. ETF,Mid-Cap Blend,True
+EUAD,Select STOXX Europe Aerospace & Defense ETF,Uncategorized,True
+EUDG,WisdomTree Europe Quality Dividend Growth Fund,Europe Stock,True
+EUDV,ProShares MSCI Europe Dividend Growers ETF,Europe Stock,True
+EUFN,iShares MSCI Europe Financials ETF,Europe Stock,True
+EUSA,iShares MSCI USA Equal Weighted ETF,Mid-Cap Blend,True
+EUV,Corgi Lithography & Semiconductor Photonics ETF,Technology,True
+EVLU,iShares MSCI Emerging Markets Value Factor ETF,Diversified Emerging Mkts,True
+EVUS,Ishares ESG Aware MSCI USA Value ETF,Large Value,True
+EWJ,iShares MSCI Japan ETF,Japan Stock,True
+EWJV,iShares MSCI Japan Value ETF,Japan Stock,True
+EWX,State Street SPDR S&P Emerging Markets Small Cap ETF,Diversified Emerging Mkts,True
+EXEQ,Wedbush ReturnOnLeadership(R) U.S. Large-Cap ETF,Large Blend,True
+EXI,iShares Global Industrials ETF,Uncategorized,True
+EXPN,Horizon Expansion Leaders ETF,Large Blend,True
+EXUS,Nomura Focused International Core ETF,Foreign Large Blend,True
+EYES,Corgi Data & Surveillance ETF,Technology,True
+EYLD,Cambria Emerging Shareholder Yield ETF,Diversified Emerging Mkts,True
+EZM,WisdomTree U.S. MidCap Earnings Fund,Small Value,True
+EZMO,Alphadroid Broad Markets Momentum ETF,Large Growth,True
+EZU,iShares MSCI Eurozone ETF,Europe Stock,True
+FAB,First Trust Multi Cap Value AlphaDEX Fund,Mid-Cap Value,True
+FAD,First Trust Multi Cap Growth AlphaDEX Fund,Mid-Cap Growth,True
+FAI,First Trust Bloomberg Artificial Intelligence ETF,Technology,True
+FBCG,Fidelity Blue Chip Growth ETF,Large Growth,True
+FBCV,Fidelity Blue Chip Value ETF,Large Value,True
+FBDC,FT Confluence BDC & Specialty Finance Income ETF,Financial,True
+FBT,First Trust NYSE Arca Biotechnology Index Fund,Health,True
+FCFY,First Trust S&P 500 Diversified Free Cash Flow ETF,Mid-Cap Value,True
+FCG,First Trust Natural Gas ETF,Equity Energy,True
+FCLD,Fidelity Cloud Computing ETF,Technology,True
+FCOM,Fidelity MSCI Communication Services Index ETF,Uncategorized,True
+FCPI,Fidelity Stocks for Inflation ETF,Large Blend,True
+FCTE,SMI 3Fourteen Full-Cycle Trend ETF,Large Blend,True
+FCTR,First Trust Lunt U.S. Factor Rotation ETF,Large Blend,True
+FCUS,Pinnacle Focused Opportunities ETF,Mid-Cap Growth,True
+FDD,First Trust STOXX European Select Dividend Index Fund,Europe Stock,True
+FDEM,Fidelity Emerging Markets Multifactor ETF,Diversified Emerging Mkts,True
+FDEV,Fidelity International Multifactor ETF,Foreign Large Blend,True
+FDFF,Fidelity Disruptive Finance ETF,Financial,True
+FDG,American Century Focused Dynamic Growth ETF,Large Growth,True
+FDIF,Fidelity Disruptors ETF,Large Growth,True
+FDIQ,Invesco Bloomberg Financial Data Providers ETF,Financial,True
+FDIS,Fidelity MSCI Consumer Discretionary Index ETF,Uncategorized,True
+FDIV,MarketDesk Focused U.S. Dividend ETF,Mid-Cap Value,True
+FDL,First Trust Morningstar Dividend Leaders Index Fund,Large Value,True
+FDLO,Fidelity Low Volatility Factor ETF,Large Blend,True
+FDLS,Inspire Fidelis Multi Factor ETF,Small Blend,True
+FDM,First Trust Dow Jones Select MicroCap Index Fund,Small Value,True
+FDMO,Fidelity Momentum Factor ETF,Large Growth,True
+FDN,First Trust Dow Jones Internet Index Fund,Technology,True
+FDNI,First Trust Dow Jones International Internet ETF,Diversified Emerging Mkts,True
+FDRR,Fidelity Dividend ETF for Rising Rates,Large Value,True
+FDRS,Founder-Led ETF Shares,Large Blend,True
+FDRV,Fidelity Electric Vehicles and Future Transportation ETF,Technology,True
+FDT,First Trust Developed Markets Ex-US AlphaDEX Fund,Foreign Large Value,True
+FDTS,First Trust Developed Markets ex-US Small Cap AlphaDEX Fund,Foreign Small/Mid Value,True
+FDTX,Fidelity Disruptive Technology ETF,Technology,True
+FDV,Federated Hermes U.S. Strategic Dividend ETF,Large Value,True
+FDVV,Fidelity High Dividend ETF,Large Value,True
+FEAC,Fidelity Enhanced U.S. All-Cap Equity ETF,Large Blend,True
+FEDM,Northern Trust ESG & Climate Developed Markets ex-US Core ETF,Foreign Large Blend,True
+FELC,Fidelity Enhanced Large Cap Core ETF,Large Blend,True
+FELG,Fidelity Enhanced Large Cap Growth ETF,Large Growth,True
+FELV,Fidelity Enhanced Large Cap Value ETF,Large Value,True
+FEM,First Trust Emerging Markets AlphaDEX Fund,Diversified Emerging Mkts,True
+FEMD,First Eagle Mid Cap Equity ETF,Mid-Cap Value,True
+FEMG,Fidelity Enhanced Mid Cap Growt,Mid-Cap Growth,True
+FEMR,Fidelity Enhanced Emerging Markets ETF,Diversified Emerging Mkts,True
+FEMS,First Trust Emerging Markets Small Cap AlphaDEX Fund,Diversified Emerging Mkts,True
+FEMV,Fidelity Enhanced Mid Cap Value,Mid-Cap Value,True
+FENI,Fidelity Enhanced International ETF,Foreign Large Blend,True
+FENY,Fidelity MSCI Energy Index ETF,Equity Energy,True
+FEOE,First Eagle Overseas Equity ETF,Foreign Large Blend,True
+FEP,First Trust Europe AlphaDEX Fund,Europe Stock,True
+FESC,First Eagle Small Cap Equity ET,Small Value,True
+FESM,Fidelity Enhanced Small Cap Core ETF,Small Blend,True
+FEUS,Northern Trust ESG & Climate US Large Cap Core ETF,Large Blend,True
+FEUZ,First Trust Eurozone AlphaDEX ETF,Europe Stock,True
+FEX,First Trust Large Cap Core AlphaDEX Fund,Large Blend,True
+FEZ,State Street SPDR EURO STOXX 50 ETF,Europe Stock,True
+FFDI,Fidelity Fundamental Developed ,Foreign Large Growth,True
+FFEM,Fidelity Fundamental Emerging M,Diversified Emerging Mkts,True
+FFF,Founders 100 ETF,Large Blend,True
+FFGX,Fidelity Fundamental Global ex-,Foreign Large Growth,True
+FFLV,Fidelity Fundamental Large Cap ,Large Value,True
+FFND,One Global ETF,Large Growth,True
+FFOG,Franklin Focused Dynamic Growth ETF,Large Growth,True
+FFOX,FundX Future Fund Opportunities ETF,Mid-Cap Growth,True
+FFTY,CapForce IBD 50 ETF,Mid-Cap Growth,True
+FGD,First Trust Dow Jones Global Select Dividend Index Fund,Foreign Large Value,True
+FHIL,Federated Hermes International ,Foreign Large Blend,True
+FHLC,Fidelity MSCI Health Care Index ETF,Health,True
+FICS,First Trust International Developed Cap Strength ETF,Foreign Large Growth,True
+FID,First Trust S&P International Dividend Aristocrats ETF,Foreign Large Value,True
+FIDI,Fidelity International High Dividend ETF,Foreign Large Value,True
+FIDU,Fidelity MSCI Industrials Index ETF,Uncategorized,True
+FINA,Fidelity MSCI North American Subset Index ETF,Large Blend,True
+FINT,Frontier Asset Total International Equity ETF,Foreign Large Blend,True
+FINX,Global X FinTech ETF,Technology,True
+FITE,State Street SPDR S&P Kensho Future Security ETF,Technology,True
+FITZ,Fitz-Gerald Must Have Portfolio ETF,Large Growth,True
+FIVA,Fidelity International Value Factor ETF,Foreign Large Value,True
+FJP,First Trust Japan AlphaDEX Fund,Japan Stock,True
+FLAG,Global X S&P 500 U.S. Market Leaders TOP 50 ETF,Large Blend,True
+FLAX,Franklin FTSE Asia ex Japan ETF,Pacific/Asia ex-Japan Stk,True
+FLCC,Federated Hermes MDT Large Cap Core ETF,Large Blend,True
+FLCE,Frontier Asset U.S. Large Cap Equity ETF,Large Blend,True
+FLCG,Federated Hermes MDT Large Cap Growth ETF,Large Growth,True
+FLCV,Federated Hermes MDT Large Cap Value ETF,Large Value,True
+FLDZ,TrueShares Patriot Defense ETF,Mid-Cap Blend,True
+FLEE,Franklin FTSE Europe ETF,Europe Stock,True
+FLEU,Franklin FTSE Eurozone ETF,Europe Stock,True
+FLJH,Franklin FTSE Japan Hedged ETF,Japan Stock,True
+FLJP,Franklin FTSE Japan ETF,Japan Stock,True
+FLOW,Global X U.S. Cash Flow Kings 100 ETF,Mid-Cap Value,True
+FLQL,Franklin U.S. Large Cap Multifactor Index ETF,Large Blend,True
+FLQM,Franklin U.S. Mid Cap Multifactor Index ETF,Mid-Cap Blend,True
+FLQS,Franklin U.S. Small Cap Multifactor Index ETF,Small Blend,True
+FLRG,Fidelity U.S. Multifactor ETF,Large Blend,True
+FLV,American Century Focused Large Cap Value ETF,Large Value,True
+FMAG,Fidelity Magellan ETF,Large Growth,True
+FMAT,Fidelity MSCI Materials Index ETF,Natural Resources,True
+FMCE,FM Compounders Equity ETF,Large Blend,True
+FMCX,FM Focus Equity ETF,Large Blend,True
+FMDE,Fidelity Enhanced Mid Cap Core ETF,Mid-Cap Blend,True
+FMED,Fidelity Disruptive Medicine ETF,Health,True
+FMKT,The Free Markets ETF,Large Blend,True
+FMQQ,FMQQ The Next Frontier Internet ETF,Diversified Emerging Mkts,True
+FMTL,First Trust Indxx Critical Metals ETF,Natural Resources,True
+FMTM,MarketDesk Focused U.S. Momentum ETF,Large Growth,True
+FNCL,Fidelity MSCI Financials Index ETF,Financial,True
+FNDA,Schwab Fundamental U.S. Small Company ETF,Small Blend,True
+FNDB,Schwab Fundamental U.S. Broad Market ETF,Large Value,True
+FNDC,Schwab Fundamental International Small Equity ETF,Foreign Small/Mid Value,True
+FNDE,Schwab Fundamental Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+FNDF,Schwab Fundamental International Equity ETF,Foreign Large Value,True
+FNDX,Schwab Fundamental U.S. Large Company ETF,Large Value,True
+FNGS,MicroSectors FANG+ ETN,Technology,True
+FNK,First Trust Mid Cap Value AlphaDEX Fund,Small Value,True
+FNX,First Trust Mid Cap Core AlphaDEX Fund,Mid-Cap Blend,True
+FNY,First Trust Mid Cap Growth AlphaDEX Fund,Mid-Cap Growth,True
+FOTO,Tuttle Capital Pure Play Photonics ETF,Technology,True
+FOWF,Pacer Solactive Whitney Future of Warfare ETF,Uncategorized,True
+FPA,First Trust Asia Pacific Ex-Japan AlphaDEX Fund,Pacific/Asia ex-Japan Stk,True
+FPRO,Fidelity Real Estate Investment ETF,Real Estate,True
+FPWR,First Trust EIP Power Solutions ETF,Utilities,True
+FPX,First Trust US Equity Opportunities ETF,Mid-Cap Growth,True
+FPXE,First Trust IPOX Europe Equity Opportunities ETF,Europe Stock,True
+FPXI,First Trust International Equity Opportunities ETF,Foreign Large Growth,True
+FQAL,Fidelity Quality Factor ETF,Large Blend,True
+FRDM,Freedom 100 Emerging Markets ETF,Diversified Emerging Mkts,True
+FREL,Fidelity MSCI Real Estate Index ETF,Real Estate,True
+FRGN,Horizon International Equity ETF,Foreign Large Blend,True
+FRI,First Trust S&P REIT Index Fund,Real Estate,True
+FRIZ,Franklin Dividend Growth ETF,Large Blend,True
+FRNW,Fidelity Clean Energy ETF,Uncategorized,True
+FRTY,Alger Mid Cap 40 ETF,Mid-Cap Growth,True
+FRUT,Yorkville America MANGOS Plus Index ETF,Technology,True
+FRWD,Nomura Transformational Technologies ETF,Technology,True
+FSCC,Federated Hermes MDT Small Cap Core ETF,Small Blend,True
+FSCS,First Trust SMID Capital Strength ETF,Mid-Cap Blend,True
+FSEG,Fidelity Enhanced Small Cap Gro,Small Growth,True
+FSEV,Fidelity Enhanced Small Cap Val,Small Value,True
+FSGS,First Trust SMID Growth Strength ETF,Small Value,True
+FSMD,Fidelity Small-Mid Multifactor ETF,Small Blend,True
+FSML,Franklin Small Cap Enhanced ETF,Small Blend,True
+FSPC,First Trust Bloomberg Space Economy ETF,Large Blend,True
+FSTA,Fidelity MSCI Consumer Staples Index ETF,Uncategorized,True
+FTA,First Trust Large Cap Value AlphaDEX Fund,Mid-Cap Value,True
+FTAG,First Trust Indxx Global Agriculture ETF,Natural Resources,True
+FTC,First Trust Large Cap Growth AlphaDEX Fund,Large Growth,True
+FTCE,First Trust New Constructs Core Earnings Leaders ETF,Large Blend,True
+FTCS,First Trust Capital Strength ETF,Large Blend,True
+FTDS,First Trust Dividend Strength ETF,Mid-Cap Value,True
+FTEC,Fidelity MSCI Information Technology Index ETF,Technology,True
+FTG,FullerThaler Behavioral Growth ETF,Mid-Cap Growth,True
+FTGS,First Trust Growth Strength ETF,Large Blend,True
+FTHF,First Trust Emerging Markets Human Flourishing ETF,Diversified Emerging Mkts,True
+FTIF,First Trust Bloomberg Inflation Sensitive Equity ETF,Mid-Cap Value,True
+FTRI,First Trust Indxx Global Natural Resources Income ETF,Natural Resources,True
+FTWO,Strive Natural Resources and Security ETF,Natural Resources,True
+FTXH,First Trust Nasdaq Pharmaceuticals ETF,Health,True
+FTXL,First Trust Nasdaq Semiconductor ETF,Technology,True
+FTXN,First Trust Nasdaq Oil & Gas ETF,Equity Energy,True
+FTXO,First Trust Nasdaq Bank ETF,Financial,True
+FUTY,Fidelity MSCI Utilities Index ETF,Utilities,True
+FV,First Trust Dorsey Wright Focus 5 ETF,Mid-Cap Blend,True
+FVAL,Fidelity Value Factor ETF,Large Value,True
+FVD,First Trust Value Line Dividend Index Fund,Mid-Cap Value,True
+FXH,First Trust Health Care AlphaDEX Fund,Health,True
+FXL,First Trust Technology AlphaDEX Fund,Technology,True
+FXN,First Trust Energy AlphaDEX Fund,Equity Energy,True
+FXO,First Trust Financials AlphaDEX Fund,Financial,True
+FXU,First Trust Utilities AlphaDEX Fund,Utilities,True
+FXZ,First Trust Materials AlphaDEX Fund,Natural Resources,True
+FYC,First Trust Small Cap Growth AlphaDEX Fund,Small Growth,True
+FYLD,Cambria Foreign Shareholder Yield ETF,Foreign Small/Mid Value,True
+FYT,First Trust Small Cap Value AlphaDEX Fund,Small Value,True
+FYX,First Trust Small Cap Core AlphaDEX Fund,Small Blend,True
+GABF,Gabelli Financial Services Opportunities ETF,Financial,True
+GALX,VistaShares Space Supercycle ETF,Technology,True
+GARA,Guinness Atkinson Real Assets Income ETF,Large Blend,True
+GARY,Mango Growth ETF,Large Growth,True
+GBUG,Sprott Active Gold & Silver Miners ETF,Equity Precious Metals,True
+GCAD,Gabelli Commercial Aerospace & Defense ETF,Uncategorized,True
+GDIV,Harbor Dividend Growth Leaders ETF,Large Blend,True
+GDOC,Goldman Sachs Future Health Care Equity ETF,Health,True
+GDX,VanEck Gold Miners ETF,Equity Precious Metals,True
+GDXJ,VanEck Junior Gold Miners ETF,Equity Precious Metals,True
+GEM,Goldman Sachs ActiveBeta Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+GEME,Pacific NoS Global EM Equity Active ETF,Diversified Emerging Mkts,True
+GEND,Genter Capital Dividend Income ETF,Large Value,True
+GENW,Genter Capital International Dividend ETF,Foreign Large Value,True
+GFGF,Guru Favorite Stocks ETF,Large Blend,True
+GFLW,VictoryShares Free Cash Flow Growth ETF,Large Growth,True
+GGM,GGM Macro Alignment ETF,Large Blend,True
+GGME,Invesco Next Gen Media and Gaming ETF,Technology,True
+GGRW,Gabelli Growth Innovators ETF,Technology,True
+GGTL,Gabelli Global Technology Leaders ETF,Technology,True
+GGUS,Goldman Sachs MarketBeta Russell 1000 Growth Equity ETF,Large Growth,True
+GIEQ,Goldman Sachs Data Enhanced International Equity ETF,Foreign Large Blend,True
+GII,State Street SPDR S&P Global Infrastructure ETF,Infrastructure,True
+GK,AdvisorShares Gerber Kawasaki ETF,Large Growth,True
+GLAM,"Corgi Beauty, Skincare & Aesthe",Large Blend,True
+GLDN,Nicholas Gold Income ETF,Equity Precious Metals,True
+GLIX,Lazard Listed Infrastructure ETF,Infrastructure,True
+GLRY,Inspire Growth ETF,Mid-Cap Blend,True
+GMF,State Street SPDR S&P Emerging Asia Pacific ETF,Pacific/Asia ex-Japan Stk,True
+GMOI,GMO International Value ETF,Foreign Large Value,True
+GMOV,GMO U.S. Value ETF,Large Value,True
+GNMX,Corgi Genomics & Precision Medicine ETF,Health,True
+GNOM,Global X Genomics & Biotechnology ETF,Health,True
+GNR,State Street SPDR S&P Global Natural Resources ETF,Natural Resources,True
+GOAU,U.S. Global GO GOLD and Precious Metal Miners ETF,Equity Precious Metals,True
+GOEX,Global X Gold Explorers ETF,Equity Precious Metals,True
+GOLS,Gabelli Opportunities in Live and Sports ETF,Uncategorized,True
+GOP,Subversive Congressional Republicans Trading ETF,Large Blend,True
+GPZ,VanEck Alternative Asset Manager ETF,Financial,True
+GQGU,GQG US Equity ETF,Large Growth,True
+GQQQ,Astoria US Quality Growth Kings ETF,Large Growth,True
+GQRE,Northern Trust Global Quality Real Estate ETF,Global Real Estate,True
+GRID,First Trust NASDAQ Clean Edge Smart Grid Infrastructure Index Fund,Infrastructure,True
+GRIN,VictoryShares International Free Cash Flow Growth ETF,Foreign Large Growth,True
+GRNJ,Fundstrat Granny Shots US Small- & Mid-Cap ETF,Mid-Cap Blend,True
+GRNY,Fundstrat Granny Shots US Large Cap ETF,Large Growth,True
+GROZ,Zacks Focus Growth ETF,Large Growth,True
+GRPM,Invesco S&P MidCap 400 GARP ETF,Small Blend,True
+GRPZ,Invesco S&P Smallcap 600 GARP ETF,Small Blend,True
+GRW,TCW Durable Growth ETF,Large Growth,True
+GSC,Goldman Sachs Small Cap Equity ETF,Small Blend,True
+GSEE,Goldman Sachs MarketBeta Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+GSEU,Goldman Sachs ActiveBeta Europe Equity ETF,Europe Stock,True
+GSEW,Goldman Sachs Equal Weight U.S. Large Cap Equity ETF,Large Blend,True
+GSGO,Goldman Sachs Growth Opportunities ETF,Large Growth,True
+GSIB,Themes Global Systemically Important Banks ETF,Financial,True
+GSID,Goldman Sachs MarketBeta International Equity ETF,Foreign Large Blend,True
+GSIE,Goldman Sachs ActiveBeta International Equity ETF,Foreign Large Blend,True
+GSJY,Goldman Sachs ActiveBeta Japan Equity ETF,Japan Stock,True
+GSLC,Goldman Sachs ActiveBeta U.S. Large Cap Equity ETF,Large Blend,True
+GSPY,Gotham Enhanced 500 ETF,Large Blend,True
+GSSC,Goldman Sachs ActiveBeta U.S. Small Cap Equity ETF,Small Blend,True
+GSUS,Goldman Sachs MarketBeta US Equity ETF,Large Blend,True
+GTEK,Goldman Sachs Future Tech Leaders Equity ETF,Technology,True
+GTOP,Goldman Sachs Technology Opportunities ETF,Technology,True
+GUNR,Northern Trust Morningstar Global Upstream Natural Resources ETF,Natural Resources,True
+GURU,Global X Guru Index ETF,Large Blend,True
+GUSA,Goldman Sachs MarketBeta U.S. 1000 Equity ETF,Large Blend,True
+GUSE,Goldman Sachs Enhanced U.S. Equity ETF,Large Blend,True
+GVAL,Cambria Global Value ETF,Foreign Large Value,True
+GVIP,Goldman Sachs Hedge Industry VIP ETF,Large Growth,True
+GVLE,Goldman Sachs Value Opportunities ETF,Large Value,True
+GVLU,Gotham 1000 Value ETF,Mid-Cap Value,True
+GVUS,Goldman Sachs MarketBeta Russell 1000 Value Equity ETF,Large Value,True
+GWX,State Street SPDR S&P International Small Cap ETF,Foreign Small/Mid Blend,True
+GXLC,Global X U.S. 500 ETF,Large Blend,True
+GXPC,Global X Purecap MSCI Communication Services ETF,Uncategorized,True
+GXPD,Global X Purecap MSCI Consumer Discretionary ETF,Uncategorized,True
+GXPE,Global X Purecap MSCI Energy ETF,Equity Energy,True
+GXPS,Global X Purecap MSCI Consumer Staples ETF,Uncategorized,True
+GXPT,Global X PureCap MSCI Information Technology ETF,Technology,True
+GXUS,Goldman Sachs MarketBeta(R) Total International Equity ETF,Foreign Large Blend,True
+HACK,Amplify Cybersecurity ETF,Technology,True
+HAIL,State Street SPDR S&P Kensho Smart Mobility ETF,Technology,True
+HALX,Tuttle Capital Heavy Asset Low Obsolescence ETF,Large Blend,True
+HAP,VanEck Natural Resources ETF,Natural Resources,True
+HAPI,Harbor Human Capital Factor US Large Cap ETF,Large Blend,True
+HAPS,Harbor Human Capital Factor US Small Cap ETF,Small Blend,True
+HAUS,Residential REIT ETF,Real Estate,True
+HAUZ,Xtrackers International Real Estate ETF,Global Real Estate,True
+HBMX,Tuttle Capital Concentrated Memory Stack ETF,Technology,True
+HCMT,Direxion HCM Tactical Enhanced U.S. Equity Strategy ETF,Large Blend,True
+HDEF,Xtrackers MSCI EAFE High Dividend Yield Equity ETF,Foreign Large Value,True
+HDMV,First Trust Horizon Managed Volatility Developed International ETF,Foreign Large Value,True
+HDUS,Hartford Disciplined US Equity ETF,Large Blend,True
+HDV,iShares Core High Dividend ETF,Large Value,True
+HEAL,Global X HealthTech ETF,Health,True
+HEDJ,WisdomTree Europe Hedged Equity Fund,Europe Stock,True
+HELX,Franklin Genomic Advancements ETF,Health,True
+HFGO,Hartford Large Cap Growth ETF,Large Growth,True
+HFXI,NYLI FTSE International Equity Currency Neutral ETF,Foreign Large Blend,True
+HGRO,Hedgeye Quality Growth ETF,Large Blend,True
+HIAI,AI Funds High Conviction US Equity AI-Managed ETF,Large Blend,True
+HIDV,AB US High Dividend ETF,Large Value,True
+HIS,Humilis US Focused Opportunities ETF,Large Blend,True
+HLAL,Wahed FTSE USA Shariah ETF,Large Blend,True
+HLTH,Tema Healthcare AI ETF,Health,True
+HOMZ,The Hoya Capital Housing ETF,Mid-Cap Value,True
+HQDG,Raub Brock Dividend Growth ETF,Large Value,True
+HQGO,Hartford US Quality Growth ETF,Large Growth,True
+HRTS,Tema Heart & Health ETF,Health,True
+HSMV,First Trust Horizon Managed Volatility Small/Mid ETF,Small Blend,True
+HTEC,Robo Global Healthcare Technology and Innovation ETF,Health,True
+HULL,Corgi Shipping & Global Logistics ETF,Uncategorized,True
+HUMM,800VDC AI Datacenter Ecosystem ETF,Technology,True
+HUMN,Roundhill Humanoid Robotics ETF,Technology,True
+HUSV,First Trust Horizon Managed Volatility Domestic ETF,Large Value,True
+HVAC,AdvisorShares HVAC and Industrials ETF,Uncategorized,True
+HWO,Hotchkis & Wiley Opportunities Fund ETF Class,Mid-Cap Value,True
+HWSM,Hotchkis & Wiley SMID Cap Diversified Value Fund,Mid-Cap Value,True
+HYP,Golden Eagle Dynamic Hypergrowth ETF,Large Growth,True
+IAI,iShares U.S. Broker-Dealers & Securities Exchanges ETF,Financial,True
+IAK,iShares U.S. Insurance ETF,Financial,True
+IAT,iShares U.S. Regional Banks ETF,Financial,True
+IBAT,iShares Energy Storage & Materials ETF,Uncategorized,True
+IBB,iShares Biotechnology ETF,Health,True
+IBBQ,Invesco Nasdaq Biotechnology ETF,Health,True
+IBOT,Vaneck Robotics ETF,Technology,True
+IBRN,iShares Neuroscience and Healthcare ETF,Health,True
+ICAP,Infrastructure Capital Equity Income Fund ETF,Mid-Cap Value,True
+ICF,iShares Select U.S. REIT ETF,Real Estate,True
+ICLN,iShares Global Clean Energy ETF,Uncategorized,True
+ICMO,Symmetry Panoramic International Country Momentum ETF,Foreign Large Blend,True
+ICOP,iShares Copper and Metals Mining ETF,Natural Resources,True
+ICOW,Pacer Developed Markets International Cash Cows 100 ETF,Foreign Large Value,True
+ICPY,"Tweedy, Browne International Insider + Value ETF",Foreign Large Value,True
+IDEF,iShares Defense Industrials Active ETF,Uncategorized,True
+IDEQ,Lazard International Dynamic Equity ETF,Foreign Large Blend,True
+IDEV,iShares Core MSCI International Developed Markets ETF,Foreign Large Blend,True
+IDGT,iShares U.S. Digital Infrastructure and Real Estate ETF,Technology,True
+IDHQ,Invesco S&P International Developed Quality ETF,Foreign Large Growth,True
+IDLV,Invesco S&P International Developed Low Volatility ETF,Foreign Large Blend,True
+IDMO,Invesco S&P International Developed Momentum ETF,Foreign Large Blend,True
+IDNA,iShares Genomics Immunology and Healthcare ETF,Health,True
+IDOG,ALPS International Sector Dividend Dogs ETF,Foreign Large Value,True
+IDU,iShares U.S. Utilities ETF,Utilities,True
+IDV,iShares International Select Dividend ETF,Foreign Large Value,True
+IDVY,First Trust International Rising Dividend Achievers ETF,Foreign Large Blend,True
+IDVZ,Polen International Dividend Income ETF,Foreign Large Value,True
+IDYN,iShares International Equity Factor Rotation Active ETF,Foreign Large Blend,True
+IEFA,iShares Core MSCI EAFE ETF,Foreign Large Blend,True
+IEMG,iShares Core MSCI Emerging Markets ETF,Diversified Emerging Mkts,True
+IEO,iShares U.S. Oil & Gas Exploration & Production ETF,Equity Energy,True
+IETC,iShares U.S. Tech Independence Focused ETF,Technology,True
+IEUR,iShares Core MSCI Europe ETF,Europe Stock,True
+IEUS,iShares MSCI Europe Small-Cap ETF,Europe Stock,True
+IEV,iShares Europe ETF,Europe Stock,True
+IEZ,iShares U.S. Oil Equipment & Services ETF,Equity Energy,True
+IFED,ETRACS IFED Invest with the Fed TR Index ETN,Large Blend,False
+IFGL,iShares International Developed Real Estate ETF,Global Real Estate,True
+IFLO,VictoryShares International Free Cash Flow ETF,Foreign Large Value,True
+IFRA,iShares U.S. Infrastructure ETF,Infrastructure,True
+IFV,First Trust Dorsey Wright International Focus 5 ETF,Foreign Large Blend,True
+IGE,iShares North American Natural Resources ETF,Natural Resources,True
+IGF,iShares Global Infrastructure ETF,Infrastructure,True
+IGGY,AB International Growth ETF,Foreign Large Growth,True
+IGM,iShares Expanded Tech Sector ETF,Technology,True
+IGPT,Invesco AI and Next Gen Software ETF,Technology,True
+IGRO,iShares International Dividend Growth ETF,Foreign Large Blend,True
+IGV,iShares Expanded Tech-Software Sector ETF,Technology,True
+IHAK,iShares Cybersecurity and Tech ETF,Technology,True
+IHDG,WisdomTree International Hedged Quality Dividend Growth Fund,Foreign Large Growth,True
+IHE,iShares U.S. Pharmaceuticals ETF,Health,True
+IHF,iShares U.S. Healthcare Providers ETF,Health,True
+IHI,iShares U.S. Medical Devices ETF,Health,True
+IJH,iShares Core S&P Mid-Cap ETF,Mid-Cap Blend,True
+IJJ,iShares S&P Mid-Cap 400 Value ETF,Mid-Cap Value,True
+IJK,iShares S&P Mid-Cap 400 Growth ETF,Mid-Cap Growth,True
+IJR,iShares Core S&P Small-Cap ETF,Small Blend,True
+IJS,iShares S&P Small-Cap 600 Value ETF,Small Value,True
+IJT,iShares S&P Small-Cap 600 Growth ETF,Small Growth,True
+ILCG,iShares Morningstar Growth ETF,Large Growth,True
+ILCV,iShares Morningstar Value ETF,Large Value,True
+ILDR,First Trust Innovation Leaders ETF,Large Growth,True
+ILIT,Ishares Lithium Miners And Producers ETF,Natural Resources,True
+ILOW,AB International Low Volatility Equity ETF,Foreign Large Blend,True
+IMCB,iShares Morningstar Mid-Cap ETF,Mid-Cap Blend,True
+IMCG,iShares Morningstar Mid-Cap Growth ETF,Mid-Cap Growth,True
+IMCV,iShares Morningstar Mid-Cap Value ETF,Mid-Cap Value,True
+IMFL,Invesco International Developed Dynamic Multifactor ETF,Foreign Large Blend,True
+IMOM,Alpha Architect International Quantitative Momentum ETF,Foreign Large Blend,True
+IMTM,iShares MSCI Intl Momentum Factor ETF,Foreign Large Blend,True
+INCE,Franklin Income Equity Focus ETF,Large Value,True
+INDS,Pacer Benchmark Industrial Real Estate SCTR ETF,Real Estate,True
+INEQ,Columbia International Equity Income ETF,Foreign Large Value,True
+INFO,Harbor PanAgora Dynamic Large Cap Core ETF,Large Blend,True
+INRO,iShares U.S. Industry Rotation Active ETF,Large Blend,True
+INTF,iShares International Equity Factor ETF,Foreign Large Blend,True
+INTL,Main International ETF,Foreign Large Blend,True
+INVN,Alger Russell Innovation ETF,Mid-Cap Blend,True
+ION,Proshares S&P Global Core Battery Metals ETF,Natural Resources,True
+IPAV,Global X Infrastructure Development ex-U.S. ETF,Infrastructure,True
+IPKW,Invesco International BuyBack Achievers ETF,Foreign Large Value,True
+IPO,Renaissance IPO ETF,Mid-Cap Growth,True
+IPOS,Renaissance International IPO ETF,Foreign Large Growth,True
+IQDF,Northern Trust International Quality Dividend ETF,Foreign Large Value,True
+IQDG,WisdomTree International Quality Dividend Growth Fund,Foreign Large Growth,True
+IQDY,Northern Trust International Quality Dividend Dynamic ETF,Foreign Large Value,True
+IQGR,Astoria International Quality Growth Kings ETF,Foreign Large Growth,True
+IQLT,iShares MSCI Intl Quality Factor ETF,Foreign Large Blend,True
+IQM,Franklin Intelligent Machines ETF,Technology,True
+IQQ,iShares Nasdaq 100 ETF,Large Growth,True
+IQSI,NYLI Candriam International Equity ETF,Foreign Large Blend,True
+IQSM,NYLI Candriam U.S. Mid Cap Equity ETF,Mid-Cap Blend,True
+IQSU,NYLI Candriam U.S. Large Cap Equity ETF,Large Blend,True
+ISCF,iShares International Small-Cap Equity Factor ETF,Foreign Small/Mid Blend,True
+ISCG,iShares Morningstar Small-Cap Growth ETF,Small Growth,True
+ISCV,iShares Morningstar Small-Cap Value ETF,Small Value,True
+ISMD,Inspire Small/Mid Cap ETF,Small Blend,True
+ISVL,iShares International Developed Small Cap Value Factor ETF,Foreign Small/Mid Value,True
+ITA,iShares U.S. Aerospace & Defense ETF,Uncategorized,True
+ITAN,Sparkline Intangible Value ETF,Large Value,True
+ITB,iShares U.S. Home Construction ETF,Uncategorized,True
+ITEQ,Amplify Bluestar Israel Technology ETF,Technology,True
+ITOT,iShares Core S&P Total U.S. Stock Market ETF,Large Blend,True
+IUS,Invesco RAFI Strategic US ETF,Large Value,True
+IUSG,iShares Core S&P U.S. Growth ETF,Large Growth,True
+IUSV,iShares Core S&P U.S. Value ETF,Large Value,True
+IVAL,Alpha Architect International Quantitative Value ETF,Foreign Large Value,True
+IVE,iShares S&P 500 Value ETF,Large Value,True
+IVES,Dan IVES Wedbush AI Revolution ETF,Technology,True
+IVLU,iShares Edge MSCI Intl Value Factor ETF,Foreign Large Value,True
+IVOG,Vanguard S&P Mid-Cap 400 Growth Index Fund ETF Shares,Mid-Cap Growth,True
+IVOO,Vanguard S&P Mid-Cap 400 Index Fund ETF Shares,Mid-Cap Blend,True
+IVOV,Vanguard S&P Mid-Cap 400 Value Index Fund ETF Shares,Mid-Cap Value,True
+IVSI,Applied Finance IVS International Large ETF,Foreign Large Blend,True
+IVSS,Applied Finance IVS US SMID ETF,Mid-Cap Blend,True
+IVSX,Applied Finance IVS International SMID ETF,Foreign Small/Mid Blend,True
+IVV,iShares Core S&P 500 ETF,Large Blend,True
+IVW,iShares S&P 500 Growth ETF,Large Growth,True
+IWB,iShares Russell 1000 ETF,Large Blend,True
+IWC,iShares Micro-Cap ETF,Small Blend,True
+IWD,iShares Russell 1000 Value ETF,Large Value,True
+IWF,iShares Russell 1000 Growth ETF,Large Growth,True
+IWFG,NYLI Winslow Focused Large Cap Growth ETF,Large Growth,True
+IWL,iShares Russell Top 200 ETF,Large Blend,True
+IWLG,NYLI Winslow Large Cap Growth ETF,Large Growth,True
+IWM,iShares Russell 2000 ETF,Small Blend,True
+IWN,iShares Russell 2000 Value ETF,Small Value,True
+IWO,iShares Russell 2000 Growth ETF,Small Growth,True
+IWP,iShares Russell Mid-Cap Growth ETF,Mid-Cap Growth,True
+IWR,iShares Russell Mid-Cap ETF,Mid-Cap Blend,True
+IWS,iShares Russell Mid-Cap Value ETF,Mid-Cap Value,True
+IWV,iShares Russell 3000 ETF,Large Blend,True
+IWX,iShares Russell Top 200 Value ETF,Large Value,True
+IWY,iShares Russell Top 200 Growth ETF,Large Growth,True
+IXC,iShares Global Energy ETF,Equity Energy,True
+IXG,iShares Global Financials ETF,Financial,True
+IXJ,iShares Global Healthcare ETF,Health,True
+IXN,iShares Global Tech ETF,Technology,True
+IXUS,iShares Core MSCI Total International Stock ETF,Foreign Large Blend,True
+IYC,iShares US Consumer Discretionary ETF,Uncategorized,True
+IYE,iShares U.S. Energy ETF,Equity Energy,True
+IYF,iShares U.S. Financials ETF,Financial,True
+IYG,iShares U.S. Financial Services ETF,Financial,True
+IYH,iShares U.S. Healthcare ETF,Health,True
+IYJ,iShares U.S. Industrials ETF,Uncategorized,True
+IYK,iShares US Consumer Staples ETF,Uncategorized,True
+IYM,iShares U.S. Basic Materials ETF,Natural Resources,True
+IYR,iShares U.S. Real Estate ETF,Real Estate,True
+IYW,iShares U.S. Technology ETF,Technology,True
+IYY,iShares Dow Jones U.S. ETF,Large Blend,True
+JADE,JPMorgan Active Developing Markets Equity ETF,Diversified Emerging Mkts,True
+JAPN,Horizon Kinetics Japan Owner Operator ETF,Japan Stock,True
+JAVA,JPMorgan Active Value ETF,Large Value,True
+JDOC,Jpmorgan Healthcare Leaders ETF,Health,True
+JDVI,John Hancock Disciplined Value International Select ETF,Foreign Large Value,True
+JDVL,John Hancock Disciplined Value Select ETF,Large Value,True
+JEDI,Defiance Drone and Modern Warfare ETF,Technology,True
+JEMA,JPMorgan ActiveBuilders Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+JETS,U.S. Global Jets ETF,Uncategorized,True
+JGRO,JPMorgan Active Growth ETF,Large Growth,True
+JGRW,Jensen Quality Growth ETF,Large Blend,True
+JHAC,John Hancock Fundamental All Cap Core ETF,Large Blend,True
+JHAI,Janus Henderson Global Artificial Intelligence ETF,Technology,True
+JHDV,John Hancock U.S. High Dividend ETF,Large Value,True
+JHEM,John Hancock Multifactor Emerging Markets ETF,Diversified Emerging Mkts,True
+JHID,John Hancock International High Dividend ETF,Foreign Large Value,True
+JHMD,John Hancock Multifactor Developed International ETF,Foreign Large Blend,True
+JHML,John Hancock Multifactor Large Cap ETF,Large Blend,True
+JHMM,John Hancock Multifactor Mid Cap ETF,Mid-Cap Blend,True
+JHSC,John Hancock Multifactor Small Cap ETF,Small Blend,True
+JIDE,JPMorgan International Dynamic ETF,Foreign Large Blend,True
+JIG,JPMorgan International Growth ETF,Foreign Large Growth,True
+JINT,Janus Henderson International Core Alpha ETF,Foreign Large Blend,True
+JIRE,JPMorgan International Research Enhanced Equity ETF,Foreign Large Blend,True
+JIVE,Jpmorgan International Value ETF,Foreign Large Value,True
+JLCO,JHancock Large Cap Opportunities ETF,Large Value,True
+JLVP,JPMorgan U.S. Large Cap Value Plus ETF,Large Value,True
+JMEE,JPMorgan Small & Mid Cap Enhanced Equity ETF,Small Blend,True
+JMID,Janus Henderson Mid Cap Growth Alpha ETF,Mid-Cap Growth,True
+JMOM,JPMorgan U.S. Momentum Factor ETF,Large Blend,True
+JOET,Virtus Terranova U.S. Quality M,Large Blend,True
+JPAN,Matthews Japan Active ETF,Japan Stock,True
+JPEF,JPMorgan Equity Focus ETF,Large Blend,True
+JPEM,JPMorgan Diversified Return Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+JPIN,JPMorgan Diversified Return International Equity ETF,Foreign Large Value,True
+JPME,JPMorgan Diversified Return U.S. Mid Cap Equity ETF,Mid-Cap Blend,True
+JPRE,JPMorgan Realty Income ETF,Real Estate,True
+JPSE,JPMorgan Diversified Return U.S. Small Cap Equity ETF,Small Blend,True
+JPSV,Jpmorgan Active Small Cap Value ETF,Small Value,True
+JPUS,JPMorgan Diversified Return U.S. Equity ETF,Mid-Cap Value,True
+JPXN,iShares JPX-Nikkei 400 ETF,Japan Stock,True
+JPY,Lazard Japanese Equity ETF,Japan Stock,True
+JQTY,Jensen U.S. Quality Index ETF,Large Blend,True
+JQUA,JPMorgan U.S. Quality Factor ETF,Large Blend,True
+JSMD,Janus Henderson Small/Mid Cap Growth Alpha ETF,Small Growth,True
+JSML,Janus Henderson Small Cap Growth Alpha ETF,Small Growth,True
+JTEK,JPMorgan U.S. Tech Leaders ETF,Technology,True
+JUSA,JPMorgan U.S. Research Enhanced Large Cap ETF,Large Blend,True
+JUST,Goldman Sachs JUST U.S. Large Cap Equity ETF,Large Blend,True
+JVAL,JPMorgan U.S. Value Factor ETF,Large Value,True
+JXI,iShares Global Utilities ETF,Utilities,True
+JXX,Janus Henderson Transformational Growth ETF,Large Growth,True
+KAIT,KraneShares Asia AI Technology ETF,Technology,True
+KAT,Scharf ETF,Large Blend,True
+KBE,State Street SPDR S&P Bank ETF,Financial,True
+KBWB,Invesco KBW Bank ETF,Financial,True
+KBWD,Invesco KBW High Dividend Yield Financial ETF,Financial,True
+KBWP,Invesco KBW Property & Casualty Insurance ETF,Financial,True
+KBWY,Invesco KBW Premium Yield Equity REIT ETF,Real Estate,True
+KCE,State Street SPDR S&P Capital Markets ETF,Financial,True
+KCHP,KICK Korea Semiconductor Index ETF,Technology,True
+KDEF,PLUS Korea Defense Industry Index ETF,Uncategorized,True
+KDVD,Keeley Dividend ETF,Mid-Cap Blend,True
+KEMQ,KraneShares Public-Private Emerging Markets Internet and Technology ETF,Diversified Emerging Mkts,True
+KEMX,KraneShares MSCI Emerging Markets ex China Index ETF,Diversified Emerging Mkts,True
+KIE,State Street SPDR S&P Insurance ETF,Financial,True
+KLMN,Invesco MSCI North America Climate ETF,Large Blend,True
+KMEM,Kurv Memory Select ETF,Technology,True
+KMID,Virtus KAR Mid-Cap ETF,Mid-Cap Growth,True
+KNCT,Invesco Next Gen Connectivity E,Technology,True
+KNGZ,First Trust S&P 500 Diversified Dividend Aristocrats ETF,Large Value,True
+KONG,Formidable Fortress ETF,Mid-Cap Blend,True
+KOOL,North Shore Equity Rotation ETF,Large Blend,True
+KRE,State Street SPDR S&P Regional Banking ETF,Financial,True
+KSMH,xETFs Korea AI Semiconductor ETF,Technology,True
+KSTR,KraneShares China Technology & Semiconductor STAR 50 Index ETF,Uncategorized,True
+KURE,KraneShares MSCI All China Health Care Index ETF,Uncategorized,True
+KVLE,KraneShares Value Line Dynamic Dividend Equity Index ETF,Large Value,True
+KWH,GMO Power Infrastructure ETF,Infrastructure,True
+KWIN,KraneShares Wahed Alternative Income Index ETF,Large Value,True
+KXI,iShares Global Consumer Staples ETF,Uncategorized,True
+KYC,Corgi Digital Banking & Fintech Infrastructure ETF,Financial,True
+LATR,Corgi Buy Now Pay Later ETF,Financial,True
+LAZR,Tema Photonics & Optical ETF,Technology,True
+LBO,WHITEWOLF Publicly Listed Private Equity ETF,Financial,True
+LCAP,Principal Capital Appreciation Select ETF,Large Blend,True
+LCDS,JPMorgan Fundamental Data Science Large Core ETF,Large Blend,True
+LCF,Touchstone US Large Cap Focused ETF,Large Blend,True
+LCLG,Logan Capital Broad Innovative Growth ETF,Large Growth,True
+LCOW,Pacer S&P 500 Quality FCF Aristocrats ETF,Large Blend,True
+LCTD,iShares World ex U.S. Carbon Transition Readiness Aware Active ETF,Foreign Large Blend,True
+LCTU,iShares U.S. Carbon Transition Readiness Aware Active ETF,Large Blend,True
+LDEM,iShares ESG MSCI EM Leaders ETF,Diversified Emerging Mkts,True
+LEGR,First Trust Indxx Innovative Transaction & Process ETF,Large Value,True
+LFSC,F/m Emerald Life Sciences Innovation ETF,Health,True
+LGDS,J P MORGAN Exchange-Traded Fund Trust - Fundamental Data Science Large Growth ETF,Large Growth,True
+LGDX,Intech S&P Large Cap Diversified Alpha ETF,Large Blend,True
+LGH,HCM Defender 500 Index ETF,Large Blend,True
+LGHT,Langar Global Healthtech ETF,Health,True
+LGLV,State Street SPDR US Large Cap Low Volatility Index ETF,Large Blend,True
+LGRO,Level Four Large Cap Growth Active ETF,Large Growth,True
+LIT,Global X Lithium & Battery Tech ETF,Natural Resources,True
+LITL,Simplify Piper Sandler US Small-Cap PLUS Income ETF,Small Blend,True
+LITP,Sprott Lithium Miners ETF,Natural Resources,True
+LLMA,Global X Llm ETF,Technology,False
+LNGX,Global X U.S. Natural Gas ETF,Equity Energy,True
+LOEV,Harding Loevner International Developed Markets Select Equity ETF,Foreign Large Blend,True
+LOGO,Alpha Brands Consumption Leaders ETF,Mid-Cap Blend,True
+LOHA,Roundhill HALO ETF,Large Blend,True
+LOPP,Gabelli Love Our Planet & People ETF,Mid-Cap Blend,True
+LOUP,Innovator Deepwater Frontier Tech ETF,Technology,True
+LOWV,AB US Low Volatility Equity ETF,Large Blend,True
+LPRE,Long Pond Real Estate Select ETF,Real Estate,True
+LPSV,Lone Peak SMID Value ETF,Mid-Cap Value,True
+LQAI,LG QRAFT AI-Powered U.S. Large Cap Core ETF,Large Blend,True
+LRGC,AB US Large Cap Strategic Equities ETF,Large Blend,True
+LRGE,ClearBridge Large Cap Growth Select ETF,Large Growth,True
+LRGF,iShares U.S. Equity Factor ETF,Large Blend,True
+LRGG,Nomura Focused Large Growth ETF,Large Growth,True
+LRND,NYLI U.S. Large Cap R&D Leaders ETF,Large Growth,True
+LRNZ,"TrueShares Technology, AI and Deep Learning ETF",Technology,True
+LSAF,LeaderSharesTM AlphaFactor US Core Equity ETF,Mid-Cap Blend,True
+LSAT,LeaderShares AlphaFactor Tactical Focused ETF,Mid-Cap Value,True
+LSGR,Natixis Loomis Sayles Focused Growth ETF,Large Growth,True
+LST,Leuthold Select Industries ETF,Mid-Cap Blend,True
+LSVD,LSV Disciplined Value ETF,Large Value,True
+LUMA,KraneShares Photonic and Optical ETF,Technology,True
+LVDS,JPMorgan Fundamental Data Science Large Value ETF,Large Value,True
+LVHD,Franklin U.S. Low Volatility High Dividend Index ETF,Mid-Cap Value,True
+LVHI,Franklin International Low Volatility High Dividend Index ETF,Foreign Large Value,True
+LYLD,Cambria LargeCap Shareholder Yield ETF,Mid-Cap Value,True
+LYTE,Roundhill Photonics & Optics ETF,Technology,True
+MAGA,Truth Social America First ETF,Mid-Cap Value,True
+MAGS,Roundhill Magnificent Seven ETF,Technology,True
+MAKX,ProShares S&P Kensho Smart Factories ETF,Technology,True
+MAVF,Matrix Advisors Value ETF,Large Value,True
+MBOX,Freedom Day Dividend ETF,Large Value,True
+MCDS,JPMorgan Fundamental Data Science Mid Core ETF,Mid-Cap Blend,True
+MCOW,Pacer S&P MidCap 400 Quality FCF Aristocrats ETF,Mid-Cap Blend,True
+MDEV,First Trust Indxx Global Medical Devices ETF,Health,True
+MDLV,Morgan Dempsey Large Cap Value ETF,Large Value,True
+MDPL,Monarch Dividend Plus ETF,Mid-Cap Value,True
+MDST,Westwood Salient Enhanced Midstream Income ETF,Energy Limited Partnership,True
+MDY,State Street SPDR S&P MIDCAP 400 ETF Trust,Mid-Cap Blend,True
+MDYG,State Street SPDR S&P 400 Mid Cap Growth ETF,Mid-Cap Growth,True
+MDYV,State Street SPDR S&P 400 Mid Cap Value ETF,Mid-Cap Value,True
+MEDI,Harbor Health Care ETF,Health,True
+MEDX,Horizon Kinetics Medical ETF,Health,True
+MEM,Matthews Emerging Markets Equity Active ETF,Diversified Emerging Mkts,True
+MEMA,Man Active Emerging Markets Alternative ETF,Diversified Emerging Mkts,True
+MEMS,Matthews Emerging Markets Discovery Active ETF,Diversified Emerging Mkts,True
+MEMX,Matthews Emerging Markets Ex China Active ETF,Diversified Emerging Mkts,True
+METL,Sprott Active Metals & Miners ETF,Natural Resources,True
+METV,Roundhill Ball Metaverse ETF,Technology,True
+MFDX,PIMCO RAFI Dynamic Multi-Factor International Equity ETF,Foreign Large Blend,True
+MFEM,PIMCO RAFI Dynamic Multi-Factor Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+MFIG,Motley Fool Innovative Growth Factor ETF,Large Growth,True
+MFMO,Motley Fool Momentum Factor ETF,Large Growth,True
+MFSG,MFS Active Growth ETF,Large Growth,True
+MFSI,MFS Active International ETF,Foreign Large Blend,True
+MFSV,MFS Active Value ETF,Large Value,True
+MFUS,PIMCO RAFI Dynamic Multi-Factor U.S. Equity ETF,Large Value,True
+MFVL,Motley Fool Value Factor ETF,Large Value,True
+MGC,Vanguard Morningstar Mega Cap ETF,Large Blend,True
+MGIN,Man Active Global Infrastructure ETF,Infrastructure,False
+MGK,Vanguard Morningstar Mega Cap Growth ETF,Large Growth,True
+MGMT,Ballast Small/Mid Cap ETF,Small Blend,True
+MGNR,American Beacon GLG Natural Resources ETF,Natural Resources,True
+MGV,Vanguard Morningstar Mega Cap Value ETF,Large Value,True
+MHIP,Milliman Healthcare Inflation Plus ETF,Health,True
+MID,American Century Mid Cap Growth Insights ETF,Mid-Cap Growth,True
+MIDE,Xtrackers S&P MidCap 400 Scored & Screened ETF,Mid-Cap Blend,True
+MIGO,Mig Core ETF,Large Blend,True
+MILN,Global X Millennials Consumer ETF,Large Growth,True
+MINV,Matthews Asia Innovators Active ETF,Pacific/Asia ex-Japan Stk,True
+MISL,First Trust Indxx Aerospace & Defense ETF,Industrials,True
+MIVL,MFS Active International Value ETF,Foreign Large Value,True
+MJ,Amplify Alternative Harvest ETF,Miscellaneous Sector,True
+MJSC,MUFG Japan Small Cap Active ETF,Japan Stock,True
+MKOR,Matthews Korea Active ETF,Focused Region,True
+MLCC,Global X MLCC & Electronic Components ETF,Technology,True
+MLPA,Global X MLP ETF,Energy Limited Partnership,True
+MLPB,UBS ETRACS Alerian MLP Infrastructure Index ETN Series B,Energy Limited Partnership,False
+MLPI,Neos Mlp & Energy Infrastructure High Income ETF,Energy Limited Partnership,True
+MLPX,Global X MLP & Energy Infrastructure ETF,Energy Limited Partnership,True
+MLRG,iShares MSCI USA ETF,Large Blend,True
+MMID,MFS Active Mid Cap ETF,Mid-Cap Blend,True
+MMSC,First Trust Multi-Manager Small Cap Opportunities ETF,Small Growth,True
+MMTM,State Street SPDR S&P 1500 Momentum Tilt ETF,Large Blend,True
+MN,Corgi Mangos ETF,Technology,True
+MNVT,Moonvest ETF,Global Large-Stock Blend,True
+MNZL,Manzil Russell Halal USA Broad Market ETF,Large Blend,True
+MOAT,VanEck Morningstar Wide Moat ETF,Large Blend,True
+MODL,Victoryshares Westend U.S. Sector ETF,Large Blend,True
+MOO,VanEck Agribusiness ETF,Natural Resources,True
+MORT,VanEck Mortgage REIT Income ETF,Real Estate,True
+MOTG,VanEck Morningstar Global Wide Moat ETF,Global Large-Stock Blend,True
+MOTI,VanEck Morningstar International Moat ETF,Foreign Large Blend,True
+MOTO,Guinness Atkinson Smart Transportation & Technology ETF,Technology,True
+MPLY,Monopoly ETF,Large Blend,True
+MSLC,Morgan Stanley Pathway Large Cap Equity ETF,Large Blend,True
+MSML,iShares MSCI USA Small-Cap ETF,Small Blend,True
+MSSM,Morgan Stanley Pathway Small-Mid Cap Equity ETF,Small Blend,True
+MSSS,Monarch Select Subsector ETF,Mid-Cap Blend,True
+MTAW,Meta AI Lab Ecosystem ETF,Technology,True
+MTRA,Invesco International Growth Focus ETF,Foreign Large Growth,True
+MTUM,iShares MSCI USA Momentum Factor ETF,Large Blend,True
+MUSQ,MUSQ Global Music Industry Index ETF,Miscellaneous Sector,True
+MVAL,VanEck Morningstar Wide Moat Value ETF,Large Value,True
+MVFG,Monarch Volume Factor Global Unconstrained ETF,Global Large-Stock Blend,True
+MVPA,Miller Value Ptnrs Appreciation ETF,Small Value,True
+MXI,iShares Global Materials ETF,Natural Resources,True
+MYLD,Cambria Micro And Smallcap Shareholder Yield ETF,Small Value,True
+NACP,Impact Shares NAACP Minority Empowerment ETF,Large Blend,True
+NANC,Unusual Whales Subversive Democratic Trading ETF,Large Blend,True
+NANR,State Street SPDR S&P North American Natural Resources ETF,Natural Resources,True
+NASA,Tema Space Innovators ETF,Large Blend,True
+NATO,Themes Transatlantic Defense ETF,Industrials,True
+NBCE,Neuberger China Equity ETF,Greater China Region,True
+NBCR,Neuberger Core Equity ETF,Large Blend,True
+NBDS,Neuberger Disrupters ETF,Technology,True
+NBET,Neuberger Energy Transition & Infrastructure ETF,Equity Energy,True
+NBGX,Neuberger Growth ETF,Large Growth,True
+NBIE,Neuberger International Core Equity ETF,Foreign Large Blend,True
+NBJP,Neuberger Japan Equity ETF,Japan Stock,True
+NBSM,Neuberger Small-Mid Cap ETF,Mid-Cap Growth,True
+NCLD,Roundhill Neocloud ETF,Technology,True
+NDIA,Global X Funds - Global X India Active ETF,India Equity,True
+NECK,xETFs AI Bottlenecks ETF,Technology,True
+NELS,Nelson Select ETF,Large Blend,True
+NERD,Roundhill Video Games ETF,Communications,True
+NETL,Colterpoint Net Lease Real Estate ETF,Real Estate,True
+NEWZ,Stocksnips AI-Powered Sentiment US ALL Cap ETF,Mid-Cap Blend,True
+NFRA,Northern Trust STOXX Global Broad Infrastructure ETF,Infrastructure,True
+NFRX,Harrison Street Infrastructure Active ETF,Infrastructure,True
+NFTY,First Trust India NIFTY 50 Equal Weight ETF,India Equity,True
+NGIF,Nuveen Global Infrastructure Fund ETF Class,Infrastructure,True
+NICO,Hexis Active Nicotine Engagement ETF,Miscellaneous Sector,True
+NIKL,Sprott Nickel Miners ETF,Natural Resources,True
+NISM,NYLI International Small-Mid Cap Equity ETF,Foreign Small/Mid Blend,True
+NITE,The Nightview ETF,Large Growth,True
+NIXT,Research Affiliates Deletions ETF,Small Value,True
+NLR,VanEck Uranium and Nuclear ETF,Natural Resources,True
+NOBL,ProShares S&P 500 Dividend Aristocrats ETF,Large Value,True
+NOEQ,NORTHERN TRUST US EQUITY ETF,Large Blend,True
+NORW,Global X MSCI Norway ETF,Focused Region,True
+NPFE,NPF Core Equity ETF,Large Blend,True
+NQLT,Neuberger Quality Select ETF,Large Blend,True
+NRAM,Yorkville America Next Generation Memory ETF,Technology,True
+NRES,Xtrackers RREEF Global Natural Resources ETF,Natural Resources,True
+NRSH,Aztlan North America Nearshoring Stock Selection ETF,Industrials,True
+NSI,National Security Emerging Markets Index ETF,Diversified Emerging Mkts,True
+NSIG,North Square Growth Opportunities ETF,Large Growth,True
+NSIV,North Square Disciplined Value ETF,Large Value,True
+NUDG,Nuveen Dividend Growth Fund ETF Class,Large Blend,True
+NUDM,Nuveen ESG International Developed Markets Equity ETF,Foreign Large Blend,True
+NUDV,Nuveen ESG Dividend ETF,Large Value,True
+NUEM,Nuveen ESG Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+NUGO,Nuveen Growth Opportunities ETF,Large Growth,True
+NUKX,Nicholas Nuclear Income ETF,Equity Energy,True
+NUKZ,Range Nuclear Renaissance ETF,Miscellaneous Sector,True
+NULC,Nuveen ESG Large-Cap ETF,Large Blend,True
+NULG,Nuveen ESG Large-Cap Growth ETF,Large Growth,True
+NULV,Nuveen ESG Large-Cap Value ETF,Large Value,True
+NUMG,Nuveen ESG Mid-Cap Growth ETF,Mid-Cap Growth,True
+NUMV,Nuveen ESG Mid-Cap Value ETF,Mid-Cap Value,True
+NUSC,Nuveen ESG Small-Cap ETF,Small Blend,True
+NVIR,Horizon Kinetics Energy Remediation ETF,Equity Energy,True
+NVPS,PurePlay Nvidia Ecosystem Picks & Shovels Index ETF,Technology,True
+NXTE,Axs Green Alpha ETF,Global Large-Stock Blend,True
+NXTG,First Trust IndXX NextG ETF,Technology,True
+NXTI,Simplify Next Intangible Core Index ETF,Large Blend,True
+NYNY,Corgi NYC Based ETF,Large Blend,True
+NYSX,Global X NYSE 100 ETF,Large Growth,True
+NZAC,State Street SPDR MSCI ACWI Climate Paris Aligned ETF,Global Large-Stock Blend,True
+OAEM,OneAscent Emerging Markets ETF,Diversified Emerging Mkts,True
+OAIM,OneAscent International Equity ETF,Foreign Large Blend,True
+OAIW,OpenAI Lab Ecosystem ETF,Technology,True
+OAKG,Oakmark Global Large Cap ETF,Global Large-Stock Value,True
+OAKI,Oakmark International Large Cap ETF,Foreign Large Value,True
+OAKM,Oakmark U.S. Large Cap ETF,Large Value,True
+OALC,OneAscent Large Cap Core ETF,Large Blend,True
+OASC,OneAscent Enhanced Small and Mid Cap ETF,Small Blend,True
+OBOR,KraneShares MSCI One Belt One Road Index ETF,Greater China Region,True
+ODDS,Pacer BlueStar Digital Entertainment ETF,Technology,True
+ODDZ,Corgi Sports Betting & Gambling,Consumer Cyclical,True
+OEF,iShares S&P 100 ETF,Large Blend,True
+OEFA,ALPS O'Shares International Developed Quality Dividend ETF,Europe Stock,True
+OEI,Optimized Equity Income ETF,Large Value,True
+OGIG,ALPS O'Shares Global Internet Giants ETF Shares,Large Growth,True
+OIH,VanEck Oil Services ETF,Equity Energy,True
+OMFL,Invesco Russell 1000 Dynamic Multifactor ETF,Large Blend,True
+OMFS,Invesco Russell 2000 Dynamic Multifactor ETF,Small Blend,True
+OND,ProShares On-Demand ETF,Communications,True
+ONEO,State Street SPDR Russell 1000 Momentum Focus ETF,Mid-Cap Blend,True
+ONEQ,Fidelity Nasdaq Composite Index ETF,Large Growth,True
+ONEV,State Street SPDR Russell 1000 Low Volatility Focus ETF,Mid-Cap Value,True
+ONEY,State Street SPDR Russell 1000 Yield Focus ETF,Mid-Cap Value,True
+ONLN,ProShares Online Retail ETF,Consumer Cyclical,True
+OPPE,WisdomTree European Opportunities Fund,Europe Stock,True
+OPPJ,WisdomTree Japan Opportunities Fund,Japan Stock,True
+OPTZ,Optimize Strategy Index ETF,Mid-Cap Blend,True
+ORBX,Global X Space Tech ETF,Industrials,True
+OSCV,Opus Small Cap Value Plus ETF,Small Blend,True
+OSEA,Harbor International Compounders ETF,Foreign Large Growth,True
+OTAX,Optimal Tax Managed Equity ETF,Large Blend,True
+OTGL,OTG Latin America ETF,Focused Region,True
+OUSA,ALPS O'Shares U.S. Quality Dividend ETF Shares,Large Value,True
+OUSM,ALPS O'Shares U.S. Small-Cap Quality Dividend ETF Shares,Small Blend,True
+OWN,Inside Ownership 100 ETF,Large Blend,True
+OZEM,Roundhill Glp-1 & Weight Loss ETF,Health,True
+PABD,iShares Paris-Aligned Climate Optimized MSCI World ex USA ETF,Foreign Large Blend,True
+PABU,iShares Paris-Aligned Climate Optimized MSCI USA ETF,Large Growth,True
+PALC,Pacer Lunt Large Cap Multi-Factor Alternator ETF,Large Blend,True
+PAMC,Pacer Lunt MidCap Multi-Factor Alternator ETF,Mid-Cap Blend,True
+PATN,Pacer Nasdaq International Patent Leaders ETF,Foreign Large Blend,True
+PAVE,Global X U.S. Infrastructure Development ETF,Infrastructure,True
+PAWZ,ProShares Pet Care ETF,Miscellaneous Sector,True
+PBD,Invesco Global Clean Energy ETF,Global Small/Mid Stock,True
+PBDC,Putnam BDC Income ETF,Financial,True
+PBE,Invesco Biotechnology & Genome ETF,Health,True
+PBEU,Portfolio Building Block European Banks Index ETF,Financial,True
+PBJ,Invesco Food & Beverage ETF,Consumer Defensive,True
+PBOG,Portfolio Building Block Integrated Oil And Gas And Exploration And Production Index ETF,Equity Energy,True
+PBOT,Pictet AI & Automation ETF,Technology,True
+PBPH,Portfolio Building Block World Pharma And Biotech Index ETF,Health,True
+PBUB,Portfolio Building Block US Banks ETF,Financial,True
+PBUS,Invesco MSCI USA ETF,Large Blend,True
+PBW,Invesco WilderHill Clean Energy ETF,Small Growth,True
+PCLC,Polen 5Perspectives Large Growth ETF,Large Growth,True
+PCLG,Polen Focus Growth ETF,Large Growth,True
+PCLN,Pictet Cleaner Planet ETF,Global Small/Mid Stock,True
+PCPC,Porter & Company Property & Casualty ETF,Financial,True
+PCSG,Polen 5Perspectives Small-Mid Growth ETF,Mid-Cap Growth,True
+PDN,Invesco RAFI Developed Markets ex-U.S. Small-Mid ETF,Foreign Small/Mid Value,True
+PDP,Invesco Dorsey Wright Momentum ETF,Large Growth,True
+PEJ,Invesco Dynamic Leisure and Entertainment ETF,Consumer Cyclical,True
+PEMX,Putnam Emerging Markets Ex-China ETF,Diversified Emerging Mkts,True
+PEVC,Pacer PE/VC ETF,Large Growth,True
+PEX,ProShares Global Listed Private Equity ETF,Financial,True
+PEXL,Pacer US Export Leaders ETF,Mid-Cap Blend,True
+PEY,Invesco High Yield Equity Dividend Achievers ETF,Mid-Cap Value,True
+PEZ,Invesco Dorsey Wright Consumer Cyclicals Momentum ETF,Consumer Cyclical,True
+PFDE,Pathfinder Disciplined US Equity ETF,Large Blend,True
+PFI,Invesco Dorsey Wright Financial Momentum ETF,Financial,True
+PFM,Invesco Dividend Achievers ETF,Large Value,True
+PFOE,Pathfinder Focused Opportunities ETF,Large Growth,True
+PGJ,Invesco Golden Dragon China ETF,Greater China Region,True
+PGRI,Putnam International Stock ETF,Foreign Large Growth,True
+PGRO,Putnam Focused Large Cap Growth ETF,Large Growth,True
+PHO,Invesco Water Resources ETF,Miscellaneous Sector,True
+PHOX,Aura AI Photonics ETF,Technology,True
+PICK,iShares MSCI Global Metals & Mining Producers ETF,Natural Resources,True
+PID,Invesco International Dividend Achievers ETF,Foreign Large Value,True
+PIE,Invesco Dorsey Wright Emerging Markets Momentum ETF,Diversified Emerging Mkts,True
+PIEQ,Principal International Equity ETF,Foreign Large Blend,True
+PINK,Simplify Health Care ETF,Health,True
+PIO,Invesco Global Water ETF,Miscellaneous Sector,True
+PIPE,Invesco SteelPath MLP & Energy Infrastructure ETF,Energy Limited Partnership,True
+PIZ,Invesco Dorsey Wright Developed Markets Momentum ETF,Foreign Large Growth,True
+PJFG,PGIM Jennison Focused Growth ETF,Large Growth,True
+PJFM,PGIM Jennison Focused Mid-Cap ETF,Mid-Cap Growth,True
+PJFV,PGIM Jennison Focused Value ETF,Large Value,True
+PJIN,PGIM Jennison International Core Equity ETF,Global Large-Stock Blend,False
+PJIO,PGIM Jennison International Opportunities ETF,Foreign Large Growth,True
+PJP,Invesco Pharmaceuticals ETF,Health,True
+PJSM,PGIM Jennison Small-Mid Cap Core Equity ETF,Mid-Cap Blend,False
+PJUS,PGIM Jennison U.S. Core Equity ETF,Large Blend,True
+PKB,Invesco Building & Construction ETF,Industrials,True
+PKW,Invesco BuyBack Achievers ETF,Mid-Cap Value,True
+PMTL,First Trust Indxx Quality Precious Metals Miners ETF,Equity Precious Metals,True
+PNQI,Invesco NASDAQ Internet ETF,Large Growth,True
+POW,VistaShares Electrification Supercycle ETF,Industrials,True
+POWA,Invesco Bloomberg Pricing Power,Large Blend,True
+POWR,iShares U.S. Power Infrastructure ETF,Infrastructure,True
+PPA,Invesco Aerospace & Defense ETF,Industrials,True
+PPH,VanEck Pharmaceutical ETF,Health,True
+PPTY,Vident U.S. Diversified Real Estate ETF,Real Estate,True
+PQNT,Pictet AI Enhanced International Equity ETF,Foreign Large Blend,True
+PQUS,Pictet AI Enhanced US Equity ETF,Large Blend,True
+PRAY,FIS Christian Stock Fund ETF,Large Blend,True
+PRCS,Parnassus Core Select ETF,Large Blend,True
+PRF,Invesco RAFI US 1000 ETF,Large Value,True
+PRFZ,Invesco RAFI US 1500 Small-Mid ETF,Small Blend,True
+PRMR,PeakShares RMR Prime Equity ETF,Large Blend,True
+PRN,Invesco Dorsey Wright Industrials Momentum ETF,Industrials,True
+PRNT,The 3D Printing ETF,Miscellaneous Sector,True
+PRVS,Parnassus Value Select ETF,Large Value,True
+PRXG,Praxis Impact Large Cap Growth ETF,Large Growth,True
+PRXI,Praxis Impact International ETF,Foreign Large Blend,True
+PRXV,Praxis Impact Large Cap Value ETF,Large Value,True
+PSAI,Pacer S&P 500 3AI TOP 100 ETF,Large Growth,True
+PSC,Principal U.S. Small-Cap ETF,Small Blend,True
+PSCC,Invesco S&P SmallCap Consumer Staples ETF,Consumer Defensive,True
+PSCD,Invesco S&P SmallCap Consumer Discretionary ETF,Consumer Cyclical,True
+PSCE,Invesco S&P SmallCap Energy ETF,Equity Energy,True
+PSCF,Invesco S&P SmallCap Financials ETF,Financial,True
+PSCH,Invesco S&P SmallCap Health Care ETF,Health,True
+PSCI,Invesco S&P SmallCap Industrials ETF,Industrials,True
+PSCM,Invesco S&P SmallCap Materials ETF,Natural Resources,True
+PSCT,Invesco S&P SmallCap Information Technology ETF,Technology,True
+PSCU,Invesco S&P SmallCap Utilities & Communication Services ETF,Miscellaneous Sector,True
+PSET,Principal Quality ETF,Large Blend,True
+PSI,Invesco Semiconductors ETF,Technology,True
+PSIL,AdvisorShares Psychedelics ETF,Miscellaneous Sector,True
+PSL,Invesco Dorsey Wright Consumer Staples Momentum ETF,Consumer Defensive,True
+PSP,Invesco Global Listed Private Equity ETF,Financial,True
+PSR,Invesco Active U.S. Real Estate Fund,Real Estate,True
+PSWD,Xtrackers Cybersecurity Select Equity ETF,Technology,True
+PTEU,Pacer Trendpilot European Index ETF,Europe Stock,True
+PTF,Invesco Dorsey Wright Technology Momentum ETF,Technology,True
+PTH,Invesco Dorsey Wright Healthcare Momentum ETF,Health,True
+PTIN,Pacer Trendpilot International ETF,Foreign Large Blend,True
+PTL,Inspire 500 ETF,Large Blend,True
+PTLC,Pacer Trendpilot US Large Cap ETF,Large Blend,True
+PTMC,Pacer Trendpilot US Mid Cap ETF,Mid-Cap Blend,True
+PTNQ,Pacer Trendpilot 100 ETF,Large Growth,True
+PTNT,Corgi IP Licensing & Royalties ETF,Global Large-Stock Blend,True
+PUI,Invesco Dorsey Wright Utilities Momentum ETF,Utilities,True
+PVAL,Putnam Focused Large Cap Value ETF,Large Value,True
+PVEX,TrueShares ConVequity ETF,Large Blend,True
+PWB,Invesco Large Cap Growth ETF,Large Growth,True
+PWER,Nomura Energy Transition ETF,Equity Energy,True
+PWRD,TCW Transform Systems ETF,Large Blend,True
+PWRZ,TrueShares Eagle Global Next Gen Power Infrastructure ETF,Equity Energy,True
+PWV,Invesco Large Cap Value ETF,Large Value,True
+PXE,Invesco Energy Exploration & Production ETF,Equity Energy,True
+PXF,Invesco RAFI Developed Markets ex-U.S. ETF,Foreign Large Value,True
+PXH,Invesco RAFI Emerging Markets ETF,Diversified Emerging Mkts,True
+PXI,Invesco Dorsey Wright Energy Momentum ETF,Equity Energy,True
+PXJ,Invesco Oil & Gas Services ETF,Equity Energy,True
+PY,Principal Value ETF,Large Value,True
+PYZ,Invesco Dorsey Wright Basic Materials Momentum ETF,Natural Resources,True
+PZIV,Pzena International Value ETF,Foreign Large Value,True
+PZLV,Pzena U.S. Large Cap Value ETF,Large Value,True
+QABA,First Trust NASDAQ ABA Community Bank Index Fund,Financial,True
+QARP,Xtrackers Russell 1000 US QARP ETF,Large Blend,True
+QAT,iShares MSCI Qatar ETF,Focused Region,True
+QCLN,First Trust NASDAQ Clean Edge Green Energy Index Fund,Miscellaneous Sector,True
+QDEF,Northern Trust Quality Dividend Defensive ETF,Large Value,True
+QDF,Northern Trust Quality Dividend ETF,Large Value,True
+QDIV,Global X S&P 500 Quality Dividend ETF,Large Value,True
+QDPL,Pacer Metaurus US Large Cap Dividend Multiplier 400 ETF,Large Blend,True
+QEFA,State Street SPDR MSCI EAFE StrategicFactors ETF,Foreign Large Blend,True
+QEMM,State Street SPDR MSCI Emerging Markets StrategicFactors ETF,Diversified Emerging Mkts,True
+QEW,Invesco QQQ Equal Weight ETF,Large Growth,True
+QFF,Qualivian Focus Fund ETF,Large Growth,True
+QFHD,Pacer S&P 500 Quality FCF High Dividend ETF,Large Blend,True
+QFRD,Pacer S&P 500 Quality FCF R&D Leaders ETF,Large Growth,True
+QGRO,American Century U.S. Quality Growth ETF,Large Growth,True
+QGRW,Wisdomtree U.S. Quality Growth Fund,Large Growth,True
+QIDX,Indexperts Quality Earnings Focused ETF,Mid-Cap Blend,True
+QINT,American Century Quality Diversified International ETF,Foreign Large Blend,True
+QLC,Northern Trust US Quality Large Cap ETF,Large Blend,True
+QLTI,GMO International Quality ETF,Foreign Large Growth,True
+QLTY,GMO U.S. Quality ETF,Large Blend,True
+QLV,Northern Trust US Quality Low Volatility ETF,Large Blend,True
+QLVD,Northern Trust Developed Markets ex-US Quality Low Volatility ETF,Foreign Large Blend,True
+QLVE,Northern Trust Emerging Markets Quality Low Volatility ETF,Diversified Emerging Mkts,True
+QMID,Wisdomtree U.S. Midcap Quality Growth Fund,Mid-Cap Growth,True
+QMOM,Alpha Architect U.S. Quantitative Momentum ETF,Mid-Cap Growth,True
+QNDX,State Street SPDR Portfolio Nasdaq 100 ETF,Large Growth,True
+QNXT,iShares Nasdaq-100 ex Top 30 ETF,Large Growth,True
+QOWZ,Invesco Nasdaq Free Cash Flow Achievers ETF,Large Growth,True
+QQEW,First Trust Nasdaq-100 Select Equal Weight ETF,Large Growth,True
+QQH,HCM Defender 100 Index ETF,Large Growth,True
+QQI,Invesco Nasdaq International Innovators 100 ETF,Foreign Large Growth,True
+QQLV,Invesco QQQ Low Volatility ETF,Large Blend,True
+QQMG,Invesco ESG NASDAQ 100 ETF,Large Growth,True
+QQQ,Invesco QQQ Trust,Large Growth,True
+QQQA,ProShares Nasdaq-100 Dorsey Wright Momentum ETF,Large Growth,True
+QQQB,Vistashares Shieldtm NASDAQ 100 Enhanced Protection ETF,Large Growth,True
+QQQE,Direxion NASDAQ-100 Equal Weighted Index Shares,Large Growth,True
+QQQG,Pacer Nasdaq 100 Top 50 Cash Cows Growth Leaders ETF,Large Growth,True
+QQQJ,Invesco NASDAQ Next Gen 100 ETF,Mid-Cap Growth,True
+QQQM,Invesco NASDAQ 100 ETF,Large Growth,True
+QQQS,Invesco NASDAQ Future Gen 200 ETF,Small Blend,True
+QQWZ,Pacer Cash COWZ 100-Nasdaq 100 Rotator ETF,Large Value,True
+QQXT,First Trust NASDAQ-100 Ex-Technology Sector Index Fund,Large Blend,True
+QSML,Wisdomtree U.S. Smallcap Quality Growth Fund,Small Blend,True
+QTEC,First Trust NASDAQ-100-Technology Sector Index Fund,Technology,True
+QTOP,iShares Nasdaq Top 30 Stocks ETF,Large Growth,True
+QTUM,Defiance Quantum ETF,Technology,True
+QTUP,Defiance Pure Quantum ETF,Technology,True
+QUAL,iShares MSCI USA Quality Factor ETF,Large Blend,True
+QUIZ,Zacks Quality International ETF,Foreign Large Blend,True
+QUS,State Street SPDR MSCI USA StrategicFactors ETF,Large Blend,True
+QVAL,Alpha Architect U.S. Quantitative Value ETF,Mid-Cap Value,True
+QVML,Invesco S&P 500 QVM Multi-factor ETF,Large Blend,True
+QVMM,Invesco S&P MidCap 400 QVM Multi-factor ETF,Mid-Cap Blend,True
+QVMS,Invesco S&P SmallCap 600 QVM Multi-factor ETF,Small Blend,True
+QVMT,Invesco S&P S&P 500 Concentrated QVM ETF,Large Value,True
+QWLD,State Street SPDR MSCI World St,Global Large-Stock Blend,True
+RACK,Vaneck Data Center Supply Chain ETF,Technology,True
+RAFE,PIMCO RAFI ESG U.S. ETF PIMCO RAFI ESG U.S. ETF,Large Value,True
+RANK,Defiance KSM TipRanks Analyst ETF,Large Blend,True
+RAUS,RACWI US ETF,Large Blend,True
+RBLD,First Trust Alerian U.S. NextGen Infrastructure ETF,Miscellaneous Sector,True
+RCGE,RockCreek Global Equality ETF,Global Large-Stock Blend,True
+RCTR,First Trust Bloomberg Nuclear Power ETF,Miscellaneous Sector,True
+RDOG,ALPS REIT Dividend Dogs ETF,Real Estate,True
+RDVY,First Trust Rising Dividend Achievers ETF,Large Value,True
+RECS,Columbia Research Enhanced Core ETF,Large Blend,True
+REET,iShares Global REIT ETF,Global Real Estate,True
+REFA,Columbia Research Enhanced Inte,Foreign Large Blend,True
+REGL,ProShares S&P MidCap 400 Dividend Aristocrats ETF,Small Value,True
+REGS,Columbia Large Cap Growth ETF,Large Growth,True
+REIT,ALPS Active REIT ETF,Real Estate,True
+REIX,NYLIM CBRE Real Estate & Infrastructure ETF,Global Real Estate,True
+REM,iShares Mortgage Real Estate Capped ETF,Real Estate,True
+REMC,Columbia Research Enhanced Mid Cap ETF,Mid-Cap Blend,True
+REMG,Russell Investments Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+REMX,VanEck Rare Earth and Strategic Metals ETF,Natural Resources,True
+RESM,Columbia Research Enhanced Small Cap ETF,Small Blend,True
+REVS,Columbia Research Enhanced Value ETF,Large Value,True
+REXC,Sprott Rare Earths Ex-China ETF,Natural Resources,True
+REZ,iShares Residential and Multisector Real Estate ETF,Real Estate,True
+RFDA,ALPS Dynamic US Dividend Advantage ETF,Large Value,True
+RFFC,ALPS Active Equity Opportunity ETF,Large Blend,True
+RFG,Invesco S&P MidCap 400 Pure Growth ETF,Mid-Cap Growth,True
+RFV,Invesco S&P MidCap 400 Pure Value ETF,Small Value,True
+RGEF,Rockefeller Global Equity ETF,Global Large-Stock Blend,True
+RGLO,Russell Investments Global Equity ETF,Global Large-Stock Blend,True
+RIET,Hoya Capital High Dividend Yield ETF,Real Estate,True
+RIFR,Russell Investments Global Infrastructure ETF,Infrastructure,True
+RILA,Indexperts Gorilla Aggressive Growth ETF,Large Growth,True
+RING,iShares MSCI Global Gold Miners ETF,Equity Precious Metals,True
+RINT,Russell Investments International Developed Equity ETF,Foreign Large Blend,True
+RISE,Pictet Emerging Markets Rising Economies ETF,Diversified Emerging Mkts,True
+RITA,ETFB Green SRI REITs ETF,Real Estate,True
+RJCA,Carillon Series Trust - Rj Clarivest Capital Appreciation Etf,Large Growth,True
+RJDI,RJ Eagle GCM Dividend Select Income ETF,Large Value,True
+RKNG,Defiance Retail Kings ETF,Consumer Cyclical,True
+RKSG,Ruk Strategic Growth ETF,Large Growth,True
+RND,First Trust Bloomberg R&D Leaders ETF,Large Blend,True
+RNEM,First Trust Emerging Markets Equity Select ETF,Diversified Emerging Mkts,True
+RNIN,Bushido Capital US SMID Cap Equity ETF,Mid-Cap Value,True
+RNRG,Global X Renewable Energy Producers ETF,Equity Energy,True
+ROAM,Hartford Multifactor Emerging Markets ETF,Diversified Emerging Mkts,True
+ROBO,Robo Global Robotics and Automation Index ETF,Technology,True
+ROBT,First Trust Nasdaq Artificial Intelligence and Robotics ETF,Technology,True
+ROBX,Amplify Top 10 Robotics ETF,Industrials,True
+RODM,Hartford Multifactor Developed Markets (ex-US) ETF,Foreign Large Value,True
+ROE,Astoria US Equal Weight Quality Kings ETF,Large Blend,True
+ROKT,State Street SPDR S&P Kensho Final Frontiers ETF,Industrials,True
+RONB,Baron First Principles ETF,Large Growth,True
+ROSC,Hartford Multifactor Small Cap ETF,Small Value,True
+ROUS,Hartford Multifactor US Equity ETF,Large Value,True
+RPG,Invesco S&P 500 Pure Growth ETF,Large Growth,True
+RPV,Invesco S&P 500 Pure Value ETF,Mid-Cap Value,True
+RSMC,Rockefeller U.S. Small-Mid Cap ETF,Small Growth,True
+RSMV,Relative Strength Managed Volatility Strategy ETF,Large Growth,True
+RSP,Invesco S&P 500 Equal Weight ETF,Large Blend,True
+RSPC,Invesco S&P 500 Equal Weight Communication Services ETF,Communications,True
+RSPD,Invesco S&P 500 Equal Weight Consumer Discretionary ETF,Consumer Cyclical,True
+RSPE,Invesco ESG S&P 500 Equal Weight ETF,Large Value,True
+RSPF,Invesco S&P 500 Equal Weight Financials ETF,Financial,True
+RSPG,Invesco S&P 500 Equal Weight Energy ETF,Equity Energy,True
+RSPH,Invesco S&P 500 Equal Weight Health Care ETF,Health,True
+RSPM,Invesco S&P 500 Equal Weight Materials ETF,Natural Resources,True
+RSPN,Invesco S&P 500 Equal Weight Industrials ETF,Industrials,True
+RSPR,Invesco S&P 500 Equal Weight Real Estate ETF,Real Estate,True
+RSPS,Invesco S&P 500 Equal Weight Consumer Staples ETF,Consumer Defensive,True
+RSPT,Invesco S&P 500 Equal Weight Technology ETF,Technology,True
+RSPU,Invesco S&P 500 Equal Weight Utilities ETF,Utilities,True
+RSSL,Global X Russell 2000 ETF,Small Blend,True
+RTH,VanEck Retail ETF,Consumer Cyclical,True
+RTOO,VistaShares Robotics Supercycle ETF,Technology,True
+RUNN,Running Oak Efficient Growth ETF,Mid-Cap Blend,True
+RUSC,Russell Investments U.S. Small Cap Equity ETF,Small Blend,True
+RVER,Trenchless Fund ETF,Large Growth,True
+RW,Rainwater Equity ETF,Global Large-Stock Growth,True
+RWEM,Rayliant NxtGen Multifactor Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+RWIN,Rayliant NxtGen Multifactor International Equity ETF,Foreign Large Blend,True
+RWJ,Invesco S&P SmallCap 600 Revenue ETF,Small Value,True
+RWK,Invesco S&P MidCap 400 Revenue ETF,Mid-Cap Value,True
+RWL,Invesco S&P 500 Revenue ETF,Large Value,True
+RWLC,Rayliant NxtGen Multifactor US Equity ETF,Global Large-Stock Blend,True
+RWO,State Street SPDR Dow Jones Global Real Estate ETF,Global Real Estate,True
+RWR,State Street SPDR Dow Jones REIT ETF,Real Estate,True
+RWX,State Street SPDR Dow Jones International Real Estate ETF,Global Real Estate,True
+RXI,iShares Global Consumer Discretionary ETF,Consumer Cyclical,True
+RZG,Invesco S&P SmallCap 600 Pure Growth ETF,Small Growth,True
+RZV,Invesco S&P SmallCap 600 Pure Value ETF,Small Value,True
+SAGP,Strategas Global Policy Opportunities ETF,Global Small/Mid Stock,True
+SAMM,Strategas Macro Momentum ETF,Large Blend,True
+SAMT,Strategas Macro Thematic Opportunities ETF,Large Blend,True
+SASS,M.D. Sass Concentrated Equities ETF,Large Blend,True
+SAWG,AAM Sawgrass U.S. Large Cap Quality Growth ETF,Large Blend,True
+SAWS,AAM Sawgrass U.S. Small Cap Quality Growth ETF,Small Growth,True
+SBIO,ALPS Medical Breakthroughs ETF,Health,True
+SCAP,Infrastructure Capital Small Cap Income ETF,Small Value,True
+SCDS,JPMorgan Fundamental Data Science Small Core ETF,Small Blend,True
+SCDV,Bahl & Gaynor Small Cap Dividend ETF,Small Blend,True
+SCHA,Schwab U.S. Small-Cap ETF,Small Blend,True
+SCHB,Schwab U.S. Broad Market ETF,Large Blend,True
+SCHC,Schwab International Small-Cap Equity ETF,Foreign Small/Mid Blend,True
+SCHD,Schwab U.S. Dividend Equity ETF,Large Value,True
+SCHE,Schwab Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+SCHF,Schwab International Equity ETF,Foreign Large Blend,True
+SCHG,Schwab U.S. Large-Cap Growth ETF,Large Growth,True
+SCHH,Schwab U.S. REIT ETF,Real Estate,True
+SCHK,Schwab 1000 ETF,Large Blend,True
+SCHM,Schwab U.S. Mid-Cap ETF,Mid-Cap Blend,True
+SCHV,Schwab U.S. Large-Cap Value ETF,Large Value,True
+SCHX,Schwab U.S. Large-Cap ETF,Large Blend,True
+SCHY,Schwab International Dividend Equity ETF,Foreign Large Value,True
+SCJ,iShares MSCI Japan Small-Cap ETF,Japan Stock,True
+SCOW,Pacer S&P SmallCap 600 Quality FCF Aristocrats ETF,Small Blend,True
+SCZ,iShares MSCI EAFE Small-Cap ETF,Foreign Small/Mid Blend,True
+SDEM,Global X MSCI SuperDividend Emerging Markets ETF,Diversified Emerging Mkts,True
+SDG,iShares MSCI Global Sustainable Development Goals ETF,Global Large-Stock Blend,True
+SDIV,Global X SuperDividend ETF,Global Small/Mid Stock,True
+SDOG,ALPS Sector Dividend Dogs ETF,Large Value,True
+SDVY,First Trust SMID Cap Rising Dividend Achievers ETF,Small Value,True
+SDY,State Street SPDR S&P Dividend ETF,Mid-Cap Value,True
+SEA,U.S. Global Sea to Sky Cargo ETF,Industrials,True
+SECA,Main Active Rotation ETF,Large Blend,True
+SECT,Main Sector Rotation ETF,Large Blend,True
+SEEM,SEI Select Emerging Markets Equity ETF,Diversified Emerging Mkts,True
+SEIE,SEI Select International Equity ETF,Foreign Large Blend,True
+SEIM,SEI QiM U.S. Large Cap Momentum Active ETF,Large Growth,True
+SEIQ,SEI QiM U.S. Large Cap Quality Active ETF,Large Blend,True
+SEIS,SEI Select Small Cap ETF,Small Blend,True
+SEIV,SEI QiM U.S. Large Cap Value Active ETF,Large Value,True
+SELV,SEI QiM U.S. Large Cap Low Volatility Active ETF,Large Value,True
+SEMG,Suncoast Select Growth ETF,Large Growth,True
+SEMI,Columbia Select Technology ETF,Technology,True
+SETM,Sprott Critical Materials ETF,Natural Resources,True
+SFGV,Sequoia Global Value ETF,Global Large-Stock Value,True
+SFLO,Victoryshares Small Cap Free Cash Flow ETF,Small Value,True
+SFY,SoFi Select 500 ETF,Large Growth,True
+SFYF,SoFi Social 50 ETF,Large Growth,True
+SGDJ,Sprott Junior Gold Miners ETF,Equity Precious Metals,True
+SGDM,Sprott Gold Miners ETF,Equity Precious Metals,True
+SGLC,SGI U.S. Large Cap Core ETF,Large Blend,True
+SGRT,SMART Earnings Growth 30 ETF,Large Growth,True
+SGRW,Harbor Active Small Cap Growth ETF,Small Growth,True
+SHE,State Street SPDR MSCI USA Gender Diversity ETF,Large Blend,True
+SHLD,Global X Defense Tech ETF,Industrials,True
+SHOC,Strive U.S. Semiconductor ETF,Technology,True
+SHPP,Pacer Industrials and Logistics ETF,Industrials,True
+SHRY,First Trust Bloomberg Shareholder Yield ETF,Large Value,True
+SIL,Global X Silver Miners ETF,Equity Precious Metals,True
+SILJ,Amplify Junior Silver Miners ETF,Equity Precious Metals,True
+SIMS,State Street SPDR S&P Kensho Intelligent Structures ETF,Infrastructure,True
+SIXA,ETC 6 Meridian Mega Cap Equity ETF,Large Value,True
+SIXL,ETC 6 Meridian Low Beta Equity Strategy ETF,Mid-Cap Blend,True
+SIXS,ETC 6 Meridian Small Cap Equity ETF,Small Value,True
+SIZE,iShares MSCI USA Size Factor ETF,Mid-Cap Blend,True
+SKYY,First Trust Cloud Computing ETF,Technology,True
+SLVP,iShares MSCI Global Silver and Metals Miners ETF,Equity Precious Metals,True
+SLVX,Nicholas Silver Income ETF,Equity Precious Metals,True
+SLX,VanEck Steel ETF,Natural Resources,True
+SLYG,State Street SPDR S&P 600 Small Cap Growth ETF,Small Growth,True
+SLYV,State Street SPDR S&P 600 Small Cap Value ETF,Small Value,True
+SMCO,Hilton Small-Midcap Opportunity ETF,Mid-Cap Blend,True
+SMCP,SMART Mid Cap ETF,Mid-Cap Growth,True
+SMDV,ProShares S&P SmallCap 600 Dividend Aristocrats ETF,Small Value,True
+SMDX,Intech S&P Small-Mid Cap Diversified Alpha ETF,Small Blend,True
+SMH,VanEck Semiconductor ETF,Technology,True
+SMHC,VanEck China Semiconductor ETF,Uncategorized,True
+SMHX,VanEck Fabless Semiconductor ETF,Technology,True
+SMIG,Bahl & Gaynor Small/Mid Cap Income Growth ETF,Mid-Cap Value,True
+SMIN,iShares MSCI India Small-Cap ETF,India Equity,True
+SMIZ,Zacks Small/Mid Cap ETF,Small Blend,True
+SMLF,iShares U.S. Small-Cap Equity Factor ETF,Small Blend,True
+SMLL,Harbor Active Small Cap ETF,Small Blend,True
+SMLV,State Street SPDR US Small Cap Low Volatility Index ETF,Small Value,True
+SMMD,iShares Russell 2500 ETF,Small Blend,True
+SMMV,iShares MSCI USA Small-Cap Min Vol Factor ETF,Small Blend,True
+SMOG,VanEck Low Carbon Energy ETF,Miscellaneous Sector,True
+SMOM,Symmetry Panoramic Sector Momentum ETF,Large Blend,True
+SMOT,VanEck Morningstar SMID Moat ETF,Mid-Cap Blend,True
+SMOX,Horizon Small/Mid Cap Core Equity ETF,Mid-Cap Blend,True
+SMRF,"ALPS Nautilus SMR, Nuclear & Technology ETF",Large Blend,True
+SMRI,Bushido Capital US Equity ETF,Mid-Cap Value,True
+SMTJ,Synera Funds Japan Active+ ETF,Japan Stock,True
+SNAV,Mohr Sector Nav ETF,Large Blend,True
+SNPD,Xtrackers S&P Dividend Aristocrats Screened ETF,Mid-Cap Value,True
+SNPE,Xtrackers S&P 500 Scored & Screened ETF,Large Blend,True
+SNPG,Xtrackers S&P 500 Growth Scored & Screened ETF,Large Growth,True
+SNSR,Global X Internet of Things ETF,Technology,True
+SOCL,Global X Social Media ETF,Communications,True
+SOVF,Sovereign's Capital Flourish Fund,Mid-Cap Blend,True
+SOXQ,Invesco PHLX Semiconductor ETF,Technology,True
+SOXX,iShares Semiconductor ETF,Technology,True
+SPAM,Themes Cybersecurity ETF,Technology,True
+SPCI,Tuttle Capital Space Industry Income Blast ETF,Industrials,True
+SPCT,Liberty One Spectrum ETF,Large Blend,True
+SPDG,State Street SPDR Portfolio S&P Sector Neutral Dividend ETF,Large Value,True
+SPDV,AAM S&P 500 High Dividend Value ETF,Mid-Cap Value,True
+SPDW,State Street SPDR Portfolio Developed World ex-US ETF,Foreign Large Blend,True
+SPEM,State Street SPDR Portfolio Emerging Markets ETF,Diversified Emerging Mkts,True
+SPEU,State Street SPDR Portfolio Europe ETF,Europe Stock,True
+SPGM,State Street SPDR Portfolio MSCI Global Stock Market ETF,Global Large-Stock Blend,True
+SPGP,Invesco S&P 500 GARP ETF,Large Value,True
+SPHB,Invesco S&P 500 High Beta ETF,Mid-Cap Blend,True
+SPHD,Invesco S&P 500 High Dividend Low Volatility ETF,Large Value,True
+SPHQ,Invesco S&P 500 Quality ETF,Large Blend,True
+SPIT,F/m Emerald Special Situations ETF,Large Growth,True
+SPLV,Invesco S&P 500 Low Volatility ETF,Large Value,True
+SPMD,State Street SPDR Portfolio S&P 400 Mid Cap ETF,Mid-Cap Blend,True
+SPMO,Invesco S&P 500 Momentum ETF,Large Blend,True
+SPRE,SP Funds S&P Global REIT Sharia ETF,Real Estate,True
+SPRX,Spear Alpha ETF,Technology,True
+SPSM,State Street SPDR Portfolio S&P 600 Small Cap ETF,Small Blend,True
+SPTE,SP Funds S&P Global Technology ETF,Technology,True
+SPTM,State Street SPDR Portfolio S&P 1500 Composite Stock Market ETF,Large Blend,True
+SPUS,SP Funds S&P 500 Sharia Industry Exclusions ETF,Large Growth,True
+SPVM,Invesco S&P 500 Value with Momentum ETF,Mid-Cap Value,True
+SPWO,SP Funds S&P World ETF,Foreign Large Growth,True
+SPXD,Xtrackers S&P 500 Diversified Sector Weight ETF,Large Value,True
+SPXE,ProShares S&P 500 ex-Energy ETF,Large Blend,True
+SPXN,ProShares S&P 500 ex-Financials ETF,Large Blend,True
+SPXT,ProShares S&P 500 ex-Technology ETF,Large Blend,True
+SPXV,ProShares S&P 500 ex-Health Care ETF,Large Blend,True
+SPY,State Street SPDR S&P 500 ETF Trust,Large Blend,True
+SPYD,State Street SPDR Portfolio S&P 500 High Dividend ETF,Mid-Cap Value,True
+SPYG,State Street SPDR Portfolio S&P 500 Growth ETF,Large Growth,True
+SPYM,State Street SPDR Portfolio S&P 500 ETF,Large Blend,True
+SPYV,State Street SPDR Portfolio S&P 500 Value ETF,Large Value,True
+SPYX,State Street SPDR S&P 500 Fossil Fuel Reserves Free ETF,Large Blend,True
+SQLT,Ishares MSCI USA Small-Cap Quality Factor ETF,Small Blend,True
+SQLV,Royce Quant Small-Cap Quality Value ETF,Small Value,True
+SQS,Sapient Quality Select ETF,Large Blend,True
+SRET,Global X SuperDividend REIT ETF,Real Estate,True
+SRHQ,SRH U.S. Quality GARP ETF,Mid-Cap Blend,True
+SROI,Calamos Antetokounmpo Global Sustainable Equities ETF,Global Large-Stock Blend,True
+SRVR,Pacer Data & Infrastructure Real Estate ETF,Real Estate,True
+SSCP,SMART Small Cap ETF,Small Growth,True
+SSMG,Virtus Silvant Small/Mid Growth ETF,Mid-Cap Growth,True
+SSPY,Stratified LargeCap Index ETF,Large Value,True
+SSUS,Day Hagan Smart Sector ETF,Large Blend,True
+SSXU,Day Hagan Smart Sector International ETF,Foreign Large Blend,True
+STNC,Hennessy Sustainable ETF,Large Blend,True
+STOX,Horizon Core Equity ETF,Large Blend,True
+STRN,SMART Trend 25 ETF,Large Blend,True
+STXD,Strive 1000 Dividend Growth ETF,Large Blend,True
+STXE,Strive Emerging Markets Ex-China ETF,Diversified Emerging Mkts,True
+STXF,Strive 500 ETF,Large Blend,True
+STXG,Strive 1000 Growth ETF,Large Growth,True
+STXK,Strive Small-Cap ETF,Small Blend,True
+STXV,Strive 1000 Value ETF,Large Value,True
+STYL,Corgi Lifestyle Brands ETF,Consumer Cyclical,True
+SUPL,ProShares Supply Chain Logistics ETF,Industrials,True
+SURE,AdvisorShares Insider Advantage ETF,Mid-Cap Blend,True
+SURI,Simplify Propel Opportunities ETF,Health,True
+SUSA,iShares ESG Optimized MSCI USA ETF,Large Blend,True
+SUSL,iShares ESG MSCI USA Leaders ETF,Large Blend,True
+SVAL,iShares US Small Cap Value Factor ETF,Small Value,True
+SWP,SWP Growth & Income ETF,Large Blend,True
+SXQG,ETC 6 Meridian Quality Growth ETF,Large Growth,True
+SYLD,Cambria Shareholder Yield ETF,Mid-Cap Value,True
+SYZ,Lazard US Systematic Small Cap Equity ETF,Small Blend,True
+TACN,T. Rowe Price Active Core International Equity ETF,Foreign Large Blend,True
+TACU,T. Rowe Price Active Core U.S. Equity ETF,Large Blend,True
+TALV,Transamerica Large Value Active ETF,Large Value,True
+TAN,Invesco Solar ETF,Miscellaneous Sector,True
+TAOZ,Thornburg American Opportunities Fund ETF Class,Large Value,True
+TAX,Cambria Tax Aware ETF,Mid-Cap Blend,True
+TBG,TBG Dividend Focus ETF,Large Value,True
+TBLU,Tortoise Global Water Fund,Miscellaneous Sector,True
+TCAF,T. Rowe Price Capital Appreciation Equity ETF,Large Blend,True
+TCAI,Tortoise AI Infrastructure ETF,Infrastructure,True
+TCHI,iShares MSCI China Multisector Tech ETF,Greater China Region,True
+TCHP,T. Rowe Price Blue Chip Growth ETF,Large Growth,True
+TCV,Towle Value ETF,Small Value,True
+TDI,Touchstone Dynamic International ETF,Foreign Large Blend,True
+TDIV,First Trust NASDAQ Technology Dividend Index Fund,Technology,True
+TDV,ProShares S&P Technology Dividend Aristocrats ETF,Technology,True
+TDVG,T. Rowe Price Dividend Growth ETF,Large Blend,True
+TEC,Harbor Transformative Technologies ETF,Technology,True
+TECB,iShares U.S. Tech Breakthrough Multisector ETF,Technology,True
+TEK,iShares Technology Opportunities Active ETF,Technology,True
+TEKX,State Street Galaxy Transformative Tech Accelerators ETF,Mid-Cap Growth,True
+TEKY,Lazard Next Gen Technologies ETF,Technology,True
+TEMR,T. Rowe Price Emerging Markets Equity Research ETF,Diversified Emerging Mkts,True
+TEMX,Touchstone Sands Capital Emerging Markets ex-China Growth ETF,Diversified Emerging Mkts,True
+TEQI,T. Rowe Price Equity Income ETF,Large Value,True
+TEXN,iShares Texas Equity ETF,Large Blend,True
+TEXX,Horizon Kinetics Texas ETF,Equity Energy,True
+TFGZ,Thornburg Focus Growth Fund ETF Class,Large Growth,True
+TFNS,T. Rowe Price Financials ETF,Financial,True
+TGLB,T. Rowe Price Global Equity ETF,Global Large-Stock Blend,True
+TGLR,Wedbush Laffer Tengler New Era Value ETF,Large Value,True
+TGRT,T. Rowe Price Growth ETF,Large Growth,True
+TGRW,T. Rowe Price Growth Stock ETF,Large Growth,True
+THD,iShares MSCI Thailand ETF,Focused Region,True
+THMZ,Lazard Equity Megatrends ETF,Global Large-Stock Blend,True
+THNQ,Robo Global Artificial Intelligence ETF,Technology,True
+THNR,Amplify Weight Loss Drug & Treatment ETF,Health,True
+THRO,iShares U.S. Thematic Rotation Active ETF,Large Blend,True
+TIER,T. Rowe Price International Equity Research ETF,Foreign Large Blend,True
+TIH,The Investment House ETF,Large Growth,True
+TIIV,AAM Todd International Intrinsic Value ETF,Foreign Large Value,True
+TILC,Thrivent International Large Cap ETF,Foreign Large Blend,True
+TILT,Northern Trust Morningstar US Market Factors Tilt ETF,Large Blend,True
+TIME,Clockwise U.S. Core Equity ETF,Large Growth,True
+TINS,Templeton International Insights ETF,Foreign Large Blend,True
+TINT,ProShares Smart Materials ETF,Natural Resources,True
+TINY,ProShares Nanotechnology ETF,Technology,True
+TISC,Thrivent International Small Cap ETF,Foreign Small/Mid Blend,True
+TLCI,Touchstone International Equity ETF,Foreign Large Blend,True
+TLG,Touchstone Large Company Growth ETF,Large Growth,True
+TLIE,American Beacon The London Company Income Equity ETF,Large Value,True
+TLTD,Northern Trust Morningstar Developed Markets ex-US Factor Tilt ETF,Foreign Large Value,True
+TLTE,Northern Trust Morningstar Emerging Markets Factor Tilt ETF,Diversified Emerging Mkts,True
+TMAT,Main Thematic Innovation ETF,Global Small/Mid Stock,True
+TMDV,ProShares Russell US Dividend Growers ETF,Mid-Cap Value,True
+TMED,T. Rowe Price Health Care ETF,Health,True
+TMFC,Motley Fool 100 Index ETF,Large Growth,True
+TMFE,Motley Fool Capital Efficiency 100 Index ETF,Large Blend,True
+TMFG,Motley Fool Global Opportunities ETF,Global Large-Stock Growth,True
+TMFM,Motley Fool Mid-Cap Growth ETF,Mid-Cap Growth,True
+TMFS,Motley Fool Small-Cap Growth ETF,Small Growth,True
+TMFX,Motley Fool Next Index ETF,Mid-Cap Growth,True
+TMLP,Tortoise MLP ETF,Energy Limited Partnership,True
+TMSL,T. Rowe Price Small-Mid Cap ETF,Mid-Cap Blend,True
+TMVE,Thrivent Mid Cap Value ETF,Mid-Cap Value,True
+TNGY,Tortoise Energy Fund,Equity Energy,True
+TNUK,Tortoise Nuclear Renaissance ETF,Equity Energy,True
+TNXT,T. Rowe Price Innovation Leaders ETF,Large Growth,True
+TOGA,Tremblant Global ETF,Global Large-Stock Growth,True
+TOK,iShares MSCI Kokusai ETF,Global Large-Stock Blend,True
+TOLL,Tema Durable Quality ETF,Large Blend,True
+TOLZ,ProShares DJ Brookfield Global Infrastructure ETF,Infrastructure,True
+TOPC,iShares S&P 500 3% Capped ETF,Large Blend,True
+TOPT,iShares Top 20 U.S. Stocks ETF,Large Blend,True
+TOS,Twin Oak Strategic Solutions ETF,Large Blend,True
+TOUS,T. Rowe Price International Equity ETF,Foreign Large Blend,True
+TOV,JLens 500 Jewish Advocacy U.S. ETF,Large Blend,True
+TPAY,Roundhill ETF Trust - Roundhill S&P 500 Target 10 Managed Distribution ETF,Technology,False
+TPFC,Timothy Plan Free Cash Flow ETF,Large Blend,True
+TPFG,Timothy Plan Free Cash Flow Growth ETF,Large Growth,True
+TPHD,Timothy Plan High Dividend Stock ETF,Mid-Cap Value,True
+TPIF,Timothy Plan International ETF,Foreign Large Blend,True
+TPLC,Timothy Plan US Large/Mid Cap Core ETF,Mid-Cap Blend,True
+TPSC,Timothy Plan US Small Cap Core ETF,Small Blend,True
+TPYP,Tortoise North American Pipeline Fund,Energy Limited Partnership,True
+TPZ,Tortoise Electrification Infrastructure ETF,Equity Energy,True
+TRFK,Pacer Data and Digital Revolution ETF,Technology,True
+TRFM,AAM Transformers ETF,Global Large-Stock Growth,True
+TRIL,Vegashares Trillions ETF,Global Large-Stock Growth,False
+TRUH,Vaneck Healthcare TruSector ETF,Health,True
+TRUM,Vaneck Materials TruSector ETF,Natural Resources,True
+TRUN,Vaneck Energy TruSector ETF,Equity Energy,True
+TRUO,Vaneck Consumer Staples TruSector ETF,Consumer Defensive,True
+TRUR,Vaneck Real Estate TruSector ETF,Real Estate,True
+TRUT,Vaneck Technology Trusector ETF,Technology,True
+TRUU,Vaneck Utilities TruSector ETF,Utilities,True
+TSCM,TimesSquare Quality Mid Cap Growth ETF,Mid-Cap Growth,True
+TSCV,Thrivent Small Cap Value ETF,Small Value,True
+TSEL,Touchstone Sands Capital US Select Growth ETF,Large Growth,True
+TSES,Truth Social American Energy Security ETF,Equity Energy,True
+TSIC,Truth Social American Icons ETF,Large Blend,True
+TSME,Thrivent Small-Mid Cap Equity ETF,Mid-Cap Blend,True
+TSNF,Truth Social American Next Frontiers ETF,Technology,True
+TSPA,T. Rowe Price US Equity Research ETF,Large Blend,True
+TSRS,Truth Social American Red State REITs ETF,Real Estate,True
+TSSD,Truth Social American Security & Defense ETF,Industrials,True
+TTEQ,T. Rowe Price Technology ETF,Technology,True
+TUR,iShares MSCI Turkey ETF,Focused Region,True
+TURF,T. Rowe Price Natural Resources ETF,Natural Resources,True
+TVAL,T. Rowe Price Value ETF,Large Value,True
+TXUE,Thornburg International Equity ETF,Foreign Large Blend,True
+UAE,iShares MSCI UAE ETF,Focused Region,True
+UBIQ,AAM Ubiquitous ETF,Large Growth,False
+UDI,USCF Dividend Income ETF,Large Value,True
+UDIV,Franklin U.S. Core Dividend Tilt Index ETF,Large Blend,True
+UEVM,VictoryShares Emerging Markets Value Momentum ETF,Diversified Emerging Mkts,True
+UFO,Procure Space ETF,Miscellaneous Sector,True
+UFOD,Tuttle Capital UFO Disclosure ETF,Large Blend,True
+UFOX,Defiance Space and Connective Tech ETF,Technology,True
+UIVM,VictoryShares International Value Momentum ETF,Foreign Large Value,True
+ULVM,VictoryShares US Value Momentum ETF,Large Value,True
+UMI,USCF Midstream Energy Income Fund,Energy Limited Partnership,True
+UMMA,Wahed Dow Jones Islamic World ETF,Foreign Large Growth,True
+UPGD,Invesco Bloomberg Analyst Rating Improvers ETF,Mid-Cap Blend,True
+UPGR,Xtrackers US Green Infrastructure Select Equity ETF,Infrastructure,True
+URA,Global X Uranium ETF,Natural Resources,True
+URAN,Themes Uranium & Nuclear ETF,Miscellaneous Sector,True
+URNJ,Sprott Junior Uranium Miners ETF,Natural Resources,True
+URNM,Sprott Uranium Miners ETF,Natural Resources,True
+URTH,iShares MSCI World ETF,Global Large-Stock Blend,True
+USAI,Pacer American Energy Infrastructure ETF,Energy Limited Partnership,True
+USCA,Xtrackers MSCI USA Climate Action Equity ETF,Large Blend,True
+USCL,Ishares Climate Conscious & Transition MSCI USA ETF,Large Blend,True
+USEW,Cambria US EW ETF,Large Blend,True
+USFE,First Eagle US Equity ETF,Large Value,True
+USMC,Principal U.S. Mega-Cap ETF,Large Blend,True
+USMD,CoreValues America First Technology ETF,Technology,True
+USMF,WisdomTree U.S. Multifactor Fund,Mid-Cap Blend,True
+USMV,iShares MSCI USA Min Vol Factor ETF,Large Blend,True
+USNG,Amplify Samsung U.S. Natural Gas Infrastructure ETF,Equity Energy,True
+USNZ,Xtrackers Net Zero Pathway Paris Aligned US Equity ETF,Large Blend,True
+USPX,Franklin U.S. Equity Index ETF,Large Blend,True
+USRT,iShares Core U.S. REIT ETF,Real Estate,True
+USSE,Segall Bryant & Hamill Select Equity ETF,Large Blend,True
+USSG,Xtrackers MSCI USA Selection Equity ETF,Large Blend,True
+USVM,VictoryShares US Small Mid Cap Value Momentum ETF,Small Value,True
+USXF,iShares ESG Advanced MSCI USA ETF,Large Growth,True
+UTES,Virtus Reaves Utilities ETF,Utilities,True
+VALQ,American Century U.S. Quality Value ETF,Large Value,True
+VAW,Vanguard Materials Index Fund ETF Shares,Natural Resources,True
+VB,Vanguard Morningstar Small-Cap ETF,Small Blend,True
+VBK,Vanguard Morningstar Small-Cap Growth ETF,Small Growth,True
+VBR,Vanguard Morningstar Small-Cap Value ETF,Small Value,True
+VCLN,Virtus Duff & Phelps Clean Energy ETF,Miscellaneous Sector,True
+VCR,Vanguard Consumer Discretionary Index Fund ETF Shares,Consumer Cyclical,True
+VDC,Vanguard Consumer Staples Index Fund ETF Shares,Consumer Defensive,True
+VDE,Vanguard Energy Index Fund ETF Shares,Equity Energy,True
+VDG,Vanguard Developed Markets ex US Growth Index ETF,Foreign Large Growth,False
+VDI,Virtus International Dividend ETF,Foreign Large Blend,True
+VDIG,Vanguard Wellington Dividend Growth Active ETF,Large Value,True
+VDV,Vanguard Developed Markets ex US Value Index ETF,Foreign Large Value,False
+VEA,Vanguard FTSE Developed Markets Index Fund ETF Shares,Foreign Large Blend,True
+VEEM,VanEck MSCI EM Analyst Sentiment ETF,Diversified Emerging Mkts,True
+VEFA,VanEck MSCI EAFE Analyst Sentiment ETF,Foreign Large Blend,True
+VEGI,iShares MSCI Agriculture Producers ETF,Natural Resources,True
+VEGN,US Vegan Climate ETF,Large Growth,True
+VEGX,International Vegan Climate ETF,Foreign Large Blend,True
+VEM,Virtus Emerging Markets Dividend ETF,Diversified Emerging Mkts,True
+VERS,ProShares Metaverse ETF,Technology,True
+VEU,Vanguard FTSE All-World ex-US Index Fund ETF Shares,Foreign Large Blend,True
+VEXC,Vanguard Emerging Markets Ex-China ETF,Diversified Emerging Mkts,True
+VFH,Vanguard Financials Index Fund ETF Shares,Financial,True
+VFLO,Victoryshares Free Cash Flow ETF,Mid-Cap Value,True
+VFMF,Vanguard U.S. Multifactor ETF Shares,Mid-Cap Value,True
+VFMO,Vanguard U.S. Momentum Factor ETF ETF Shares,Mid-Cap Blend,True
+VFMV,Vanguard U.S. Minimum Volatility ETF ETF Shares,Mid-Cap Blend,True
+VFQY,Vanguard U.S. Quality Factor ETF Shares,Mid-Cap Blend,True
+VFVA,Vanguard U.S. Value Factor ETF Shares,Mid-Cap Value,True
+VGK,Vanguard FTSE Europe ETF,Europe Stock,True
+VGRO,Virtus Silvant Growth Opportunities ETF,Large Growth,True
+VGSR,Vert Global Sustainable Real Estate ETF,Global Real Estate,True
+VGT,Vanguard Information Technology Index Fund ETF Shares,Technology,True
+VGTX,XFUNDS Technology Income ETF,Technology,False
+VHT,Vanguard Health Care Index Fund ETF Shares,Health,True
+VIDI,Vident International Equity Strategy ETF,Foreign Large Value,True
+VIG,Vanguard Dividend Appreciation Index Fund ETF Shares,Large Blend,True
+VIGI,Vanguard International Dividend Appreciation Index Fund ETF Shares,Foreign Large Growth,True
+VIOG,Vanguard S&P Small-Cap 600 Growth Index Fund ETF Shares,Small Growth,True
+VIOO,Vanguard S&P Small-Cap 600 Index Fund ETF Shares,Small Blend,True
+VIOV,Vanguard S&P Small-Cap 600 Value Index Fund ETF Shares,Small Value,True
+VIS,Vanguard Industrials Index Fund ETF Shares,Industrials,True
+VLU,State Street SPDR S&P 1500 Value Tilt ETF,Large Value,True
+VLUE,iShares MSCI USA Value Factor ETF,Large Value,True
+VMAX,Hartford US Value ETF,Large Value,True
+VNAM,Global X MSCI Vietnam ETF,Focused Region,True
+VNIE,Vontobel International Equity Active ETF,Foreign Large Growth,True
+VNM,VanEck Vietnam ETF,Focused Region,True
+VNQ,Vanguard Real Estate Index Fund ETF Shares,Real Estate,True
+VNQI,Vanguard Global ex-U.S. Real Estate Index Fund ETF Shares,Global Real Estate,True
+VNSE,Natixis Vaughan Nelson Select ETF,Large Blend,True
+VO,Vanguard Morningstar Mid-Cap ETF,Mid-Cap Blend,True
+VOE,Vanguard Morningstar Mid-Cap Value ETF,Mid-Cap Value,True
+VOLT,Tema Electrification ETF,Mid-Cap Blend,True
+VONE,Vanguard Russell 1000 Index Fund ETF Shares,Large Blend,True
+VONG,Vanguard Russell 1000 Growth Index Fund ETF Shares,Large Growth,True
+VONV,Vanguard Russell 1000 Value Index Fund ETF Shares,Large Value,True
+VOO,Vanguard S&P 500 ETF,Large Blend,True
+VOOG,Vanguard S&P 500 Growth Index Fund ETF Shares,Large Growth,True
+VOOV,Vanguard S&P 500 Value Index Fund ETF Shares,Large Value,True
+VOT,Vanguard Morningstar Mid-Cap Growth ETF,Mid-Cap Growth,True
+VOTE,TCW Transform 500 ETF,Large Blend,True
+VOX,Vanguard Communication Services Index Fund ETF Shares,Communications,True
+VPL,Vanguard FTSE Pacific Index Fund ETF Shares,Focused Region,True
+VPU,Vanguard Utilities Index Fund ETF Shares,Utilities,True
+VPX,Variant Perception Cycle Aware US Equity ETF,Large Blend,True
+VRAI,Virtus Real Asset Income ETF,Global Small/Mid Stock,True
+VSDA,VictoryShares Dividend Accelerator ETF,Large Value,True
+VSGX,Vanguard ESG International Stock ETF,Foreign Large Blend,True
+VSLU,Applied Finance Valuation Large Cap US ETF,Large Blend,True
+VSMV,VictoryShares US Multi-Factor Minimum Volatility ETF,Large Value,True
+VSS,Vanguard FTSE All-World ex-US Small-Cap Index Fund ETF Shares,Foreign Small/Mid Blend,True
+VT,Vanguard Total World Stock Index Fund ETF Shares,Global Large-Stock Blend,True
+VTHR,Vanguard Russell 3000 Index Fund ETF Shares,Large Blend,True
+VTI,Vanguard Morningstar Total Stock Market ETF,Large Blend,True
+VTV,Vanguard Morningstar Value ETF,Large Value,True
+VTWG,Vanguard Russell 2000 Growth Index Fund ETF Shares,Small Growth,True
+VTWO,Vanguard Russell 2000 Index Fund ETF Shares,Small Blend,True
+VTWV,Vanguard Russell 2000 Value Index Fund ETF Shares,Small Value,True
+VUG,Vanguard Morningstar Growth ETF,Large Growth,True
+VUS,Virtus U.S. Dividend ETF,Large Blend,True
+VUSE,Vident U.S. Equity Strategy ETF,Large Blend,True
+VUSG,Vanguard Wellington U.S. Growth Active ETF,Large Growth,True
+VUSV,Vanguard Wellington U.S. Value Active ETF,Large Value,True
+VV,Vanguard Morningstar Large-Cap ETF,Large Blend,True
+VWO,Vanguard FTSE Emerging Markets Index Fund ETF Shares,Diversified Emerging Mkts,True
+VXF,Vanguard Extended Market Index Fund ETF Shares,Mid-Cap Blend,True
+VXUS,Vanguard Total International Stock Index Fund ETF Shares,Foreign Large Blend,True
+VYM,Vanguard High Dividend Yield Index Fund ETF Shares,Large Value,True
+VYMI,Vanguard International High Dividend Yield Index Fund ETF Shares,Foreign Large Value,True
+WAGN,Pabrai Wagons ETF,Global Small/Mid Stock,True
+WAMA,Wisdomtree U.S. Adaptive Moving Average Fund,Large Blend,True
+WAR,U.S. Global Technology and Aerospace & Defense ETF,Technology,True
+WARP,VanEck Space ETF,Industrials,True
+WATS,Corgi Battery Energy Storage Sy,Equity Energy,True
+WBIY,WBI Power Factor High Dividend ETF,Mid-Cap Value,True
+WCAP,Warcap Unconstrained Equity ETF,Large Blend,True
+WCBR,WisdomTree Cybersecurity Fund,Technology,True
+WCEO,Hypatia Women Ceo ETF,Small Blend,True
+WCLD,WisdomTree Cloud Computing Fund,Technology,True
+WCME,First Trust WCM Developing World Equity ETF,Diversified Emerging Mkts,True
+WCMG,First Trust WCM Global Equity ETF,Global Large-Stock Value,True
+WCMI,First Trust WCM International Equity ETF,Foreign Large Growth,True
+WDAF,WisdomTree Asia Defense Fund,Industrials,True
+WDAI,Pacer S&P World 3AI TOP 300 ETF,Global Large-Stock Growth,True
+WDEF,WisdomTree Trust,Industrials,True
+WDGF,WisdomTree Global Defense Fund,Industrials,True
+WDIV,State Street SPDR S&P Global Dividend ETF,Global Large-Stock Value,True
+WDNA,WisdomTree BioRevolution Fund,Health,True
+WEED,Roundhill Cannabis ETF,Miscellaneous Sector,True
+WEEI,Westwood Salient Enhanced Energy Income ETF,Equity Energy,True
+WELD,Tema U.S. Manufacturing & Reshoring ETF,Mid-Cap Blend,True
+WEPN,Nicholas Defense and Rare Earth,Industrials,True
+WIMA,Wisdomtree International Adaptive Moving Average Fund,Foreign Large Blend,True
+WINN,Harbor Long-Term Growers ETF,Large Growth,True
+WISE,Themes Generative Artificial Intelligence ETF,Technology,True
+WLDR,Simplify Affinity World Leaders Equity ETF,Global Large-Stock Value,True
+WLTG,WealthTrust DBS Long Term Growth ETF,Large Blend,True
+WNDR,Corgi Travel & Leisure ETF,Consumer Cyclical,True
+WOMN,Impact Shares Women’s Empowerment ETF,Large Blend,True
+WOOD,iShares Global Timber & Forestry ETF,Natural Resources,True
+WQTM,WisdomTree Quantum Computing Fund,Technology,True
+WR,Corgi U.S. War Machine ETF,Large Blend,True
+WRND,NYLI Global Equity R&D Leaders ETF,Global Large-Stock Growth,True
+WSGE,Warren Street Global Equity ETF,Global Large-Stock Blend,True
+WSMD,Wasatch Small/Mid Cap ETF,Mid-Cap Growth,False
+WTAI,WisdomTree Artificial Intelligence and Innovation Fund,Technology,True
+WTRE,WisdomTree New Economy Real Estate ETF,Global Real Estate,True
+WTV,WisdomTree U.S. Value Fund,Mid-Cap Value,True
+WUGI,AXS Esoterica NextG Economy ETF,Technology,True
+WWJD,Inspire International ETF,Foreign Large Blend,True
+WZRD,Opportunistic Trader ETF,Large Blend,True
+XA,Corgi AI Cybersecurity ETF,Technology,True
+XAIW,SpaceXAI Lab Ecosystem ETF,Technology,True
+XAIX,Xtrackers Artificial Intelligence and Big Data ETF,Technology,True
+XAR,State Street SPDR S&P Aerospace & Defense ETF,Industrials,True
+XBI,State Street SPDR S&P Biotech ETF,Health,True
+XC,WisdomTree True Emerging Markets Fund,Diversified Emerging Mkts,True
+XCEM,Columbia EM Core ex-China ETF,Diversified Emerging Mkts,True
+XCHG,Ab US Equity ETF,Large Blend,True
+XCNY,State Street SPDR S&P Emerging Markets ex-China ETF,Diversified Emerging Mkts,True
+XCOR,Fundx ETF,Large Growth,True
+XDAT,Franklin Exponential Data ETF,Technology,True
+XDEF,Xtrackers Europe Defense Technologies ETF,Industrials,True
+XEML,Xtrackers Europe Market Leaders ETF,Europe Stock,True
+XES,State Street SPDR S&P Oil & Gas Equipment & Services ETF,Equity Energy,True
+XHB,State Street SPDR S&P Homebuilders ETF,Consumer Cyclical,True
+XHE,State Street SPDR S&P Health Care Equipment ETF,Health,True
+XHS,State Street SPDR S&P Health Care Services ETF,Health,True
+XIDV,Franklin International Dividend Booster Index ETF,Foreign Large Value,True
+XIGV,Defiance US 100 Tech Ex Software ETF,Technology,True
+XITK,State Street SPDR FactSet Innovative Technology ETF,Technology,True
+XJH,iShares ESG Select Screened S&P Mid-Cap ETF,Mid-Cap Blend,True
+XJR,iShares ESG Select Screened S&P Small-Cap ETF,Small Blend,True
+XLB,State Street Materials Select Sector SPDR ETF,Natural Resources,True
+XLC,State Street Communication Services Select Sector SPDR ETF,Communications,True
+XLE,State Street Energy Select Sector SPDR ETF,Equity Energy,True
+XLF,State Street Financial Select Sector SPDR ETF,Financial,True
+XLG,Invesco S&P 500 Top 50 ETF,Large Blend,True
+XLI,State Street Industrial Select Sector SPDR ETF,Industrials,True
+XLK,State Street Technology Select Sector SPDR ETF,Technology,True
+XLP,State Street Consumer Staples Select Sector SPDR ETF,Consumer Defensive,True
+XLRE,State Street Real Estate Select Sector SPDR ETF,Real Estate,True
+XLSR,State Street US Sector Rotation ETF,Large Blend,True
+XLU,State Street Utilities Select Sector SPDR ETF,Utilities,True
+XLV,State Street Health Care Select Sector SPDR ETF,Health,True
+XLY,State Street Consumer Discretionary Select Sector SPDR ETF,Consumer Cyclical,True
+XMAG,Defiance Large Cap ex-Mag 7 ETF,Large Blend,True
+XME,State Street SPDR S&P Metals & Mining ETF,Natural Resources,True
+XMHQ,Invesco S&P MidCap Quality ETF,Mid-Cap Blend,True
+XMLV,Invesco S&P MidCap Low Volatility ETF,Small Blend,True
+XMMO,Invesco S&P MidCap Momentum ETF,Mid-Cap Blend,True
+XMVM,Invesco S&P MidCap Value with Momentum ETF,Small Value,True
+XNAV,FundX Aggressive ETF,Large Growth,True
+XNTK,State Street SPDR NYSE Technology ETF,Technology,True
+XOEF,iShares S&P 500 ex S&P 100 ETF,Large Blend,True
+XOP,State Street SPDR S&P Oil & Gas Exploration & Production ETF,Equity Energy,True
+XOVR,ERShares Private-Public Crossover ETF,Large Growth,True
+XPH,State Street SPDR S&P Pharmaceuticals ETF,Health,True
+XPND,First Trust Expanded Technology ETF,Technology,True
+XQBT,Amplify Top 10 Quantum ETF,Technology,True
+XRT,State Street SPDR S&P Retail ETF,Consumer Cyclical,True
+XSD,State Street SPDR S&P Semiconductor ETF,Technology,True
+XSHD,Invesco S&P SmallCap High Dividend Low Volatility ETF,Small Value,True
+XSHQ,Invesco S&P SmallCap Quality ETF,Small Blend,True
+XSLV,Invesco S&P SmallCap Low Volatility ETF,Small Blend,True
+XSMO,Invesco S&P SmallCap Momentum ETF,Small Blend,True
+XSOE,WisdomTree Emerging Markets ex-State-Owned Enterprises Fund,Diversified Emerging Mkts,True
+XSPC,VegaShares Space & AI ETF,Technology,True
+XSVM,Invesco S&P SmallCap Value with Momentum ETF,Small Value,True
+XSW,State Street SPDR S&P Software & Services ETF,Technology,True
+XT,iShares Future Exponential Technologies ETF,Technology,True
+XTL,State Street SPDR S&P Telecom ETF,Communications,True
+XTN,State Street SPDR S&P Transportation ETF,Industrials,True
+XUDV,Franklin U.S. Dividend Booster Index ETF,Large Value,True
+XUSM,MarketDesk International Momentum ETF,Foreign Large Blend,True
+XVV,iShares ESG Select Screened S&P 500 ETF,Large Blend,True
+XWNG,Amplify Top 10 Space ETF,Industrials,True
+XXQQ,Subversive Growth 100 Redacted ETF,Large Growth,False
+XXSP,Subversive S&P 500 Redacted ETF,Large Blend,False
+YALL,Truth Social God Bless America ETF,Large Blend,True
+YNOT,Horizon Digital Frontier ETF,Technology,True
+YOKE,Yoke Core ETF,Large Blend,True
+YUNG,Corgi Longevity Consumer ETF,Consumer Cyclical,True
+ZAP,Global X U.S. Electrification ETF,Utilities,True
+ZDIS,Virtus Zevenbergen Discovery Growth ETF,Large Growth,True
+ZECP,Zacks Earnings Consistent Portfolio ETF,Large Blend,True
+ZIG,The Acquirers Fund ETF,Mid-Cap Value,True
+ZINC,Zacks Income ETF,Large Value,True
+ZINN,Virtus Zevenbergen Innovative Growth ETF,Large Growth,True

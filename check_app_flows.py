@@ -2,8 +2,9 @@
 Headless checks of the REAL app on the cached data (streamlit.testing AppTest; no browser, no network for cached groups).
   ./venv/bin/python3 check_app_flows.py          (about 1-2 minutes)
 Stocks: Compare with two industries (Semiconductors + Gold) in both modes - own-mode scores equal each industry page.
-ETFs: Morningstar "Large Blend" loads and ranks ESGV; the ESG and low-volatility themes load; ranges never leak between
-groups, groupings (industry / Morningstar) or pages; ETF Compare own mode equals the Large Blend page; pooled = each fund once.
+ETFs: grouping is Morningstar category + themes only (no industry picker); "Large Blend" loads with USMV, ESMV and ESGV,
+tier and why-not-higher columns; USMV / ESMV / ESGV are in their themes; Find-a-fund works without industries; ranges never
+leak between groups or pages; ETF Compare own mode equals the Large Blend page; pooled = each fund once.
 """
 import html
 import os
@@ -64,16 +65,29 @@ chk("Gold page unchanged after pooled compare", page_scores(at) == pages["Gold"]
 # ======================= ETFs
 at.sidebar.radio(key="asset_type").set_value("ETFs").run()
 chk("ETF page no exception", not at.exception, [e.value for e in at.exception][:1])
-at.sidebar.radio(key="etf2_groupby").set_value("morningstar").run()
+chk("no industry grouping widgets on the ETF page", not any(w.key in ("etf2_groupby", "etf2_industry", "etf2_only_with") for w in list(at.sidebar.radio) + list(at.sidebar.selectbox) + list(at.sidebar.checkbox)),
+    [w.key for w in at.sidebar.selectbox])
+chk("ETF picker lists Morningstar categories + themes only", all(not o.startswith(("Whole sector", "Broad US market", "International / global")) for o in at.sidebar.selectbox(key="etf2_mscat").options))
 at.sidebar.selectbox(key="etf2_mscat").set_value("Large Blend").run()
 chk("Morningstar Large Blend loads", not at.exception and "Large Blend" in at.title[0].value, at.title[0].value)
 lb = at.dataframe[0].value
-chk("ESGV ranked in Large Blend", "ESGV" in set(lb.ticker), f"ESGV rank {int(lb[lb.ticker=='ESGV']['rank'].iloc[0])} of {len(lb)}" if "ESGV" in set(lb.ticker) else "")
+chk("USMV, ESMV, ESGV listed in Large Blend", {"USMV", "ESMV", "ESGV"} <= set(lb.ticker),
+    "; ".join(f"{t} rank {int(lb[lb.ticker == t]['rank'].iloc[0])} {lb[lb.ticker == t]['tier'].iloc[0]}" for t in ("USMV", "ESMV", "ESGV") if t in set(lb.ticker)) + f" of {len(lb)}")
+chk("tier + why-not-higher columns", {"tier", "why not higher"} <= set(lb.columns) and lb["tier"].notna().all())
+chk("ESMV (4.9 yrs) is too new for the 5-yr window and listed after fully scored funds",
+    "too new" in lb[lb.ticker == "ESMV"]["flags"].iloc[0] and int(lb[lb.ticker == "ESMV"]["rank"].iloc[0]) > max(int(x) for x, f in zip(lb["rank"], lb["flags"]) if "too new" not in f and "low data" not in f))
 lb_scores = page_scores(at)
-for th in ["Theme: ESG / sustainable", "Theme: Low / min volatility"]:
+for th, need in [("Theme: ESG / sustainable", {"ESGV", "ESMV"}), ("Theme: Low / min volatility", {"USMV", "ESMV"})]:
     at.sidebar.selectbox(key="etf2_mscat").set_value(th).run()
     t = at.dataframe[0].value
-    chk(f"{th} loads", not at.exception and len(t) > 0, f"{len(t)} funds; top 5 {list(t.ticker[:5])}; ESGV in={('ESGV' in set(t.ticker))}, USMV in={('USMV' in set(t.ticker))}, SPLV in={('SPLV' in set(t.ticker))}")
+    chk(f"{th} loads with {sorted(need)}", not at.exception and need <= set(t.ticker), f"{len(t)} funds; top 5 {list(t.ticker[:5])}")
+at.sidebar.text_input(key="etf2_lookup").set_value("USMV").run()
+found = " ".join(m.value for m in at.sidebar.markdown)
+chk("Find a fund: USMV → Morningstar Large Blend + low-vol theme, no industry", "Morningstar: *Large Blend*" in found and "Low / min volatility" in found and "Industry" not in found, found[-160:])
+at.sidebar.text_input(key="etf2_lookup").set_value("min vol").run()
+found = " ".join(m.value for m in at.sidebar.markdown)
+chk("Find a fund by name ('min vol') lists USMV", "**USMV**" in found and not at.exception)
+at.sidebar.text_input(key="etf2_lookup").set_value("").run()
 # set a custom range on the Morningstar Large Blend page, then check it doesn't leak into industry mode or the theme
 at.sidebar.selectbox(key="etf2_mscat").set_value("Large Blend").run()
 k = "etflo|ms:Large Blend|max_drawdown"
@@ -84,19 +98,20 @@ strict = page_scores(at)
 chk("custom range changes Large Blend Fit", any(strict[t][1] != lb_scores[t][1] for t in strict if lb_scores.get(t)))
 at.sidebar.selectbox(key="etf2_mscat").set_value("Theme: ESG / sustainable").run()
 chk("theme's range untouched by Large Blend range", at.session_state["etfhi|ms:Theme: ESG / sustainable|max_drawdown"] != 5.0)
-at.sidebar.radio(key="etf2_groupby").set_value("industry").run()
-at.sidebar.selectbox(key="etf2_industry").set_value("Broad US market (diversified)").run()
-chk("industry-mode Broad US group has its own range", at.session_state["etfhi|Broad US market (diversified)|max_drawdown"] != 5.0)
-at.sidebar.selectbox(key="etf2_industry").set_value("Theme: ESG / sustainable").run()
-chk("industry-mode ESG theme range separate from Morningstar-mode", at.session_state["etfhi|Theme: ESG / sustainable|max_drawdown"] != 5.0)
+at.sidebar.selectbox(key="etf2_mscat").set_value("Large Value").run()
+chk("Large Value has its own range", at.session_state["etfhi|ms:Large Value|max_drawdown"] != 5.0)
+at.sidebar.selectbox(key="etf2_mscat").set_value("Theme: ESG / sustainable").run()
 at.sidebar.radio(key="asset_type").set_value("Stocks").run()
 at.sidebar.radio(key="asset_type").set_value("ETFs").run()
-at.sidebar.radio(key="etf2_groupby").set_value("morningstar").run()
 chk("Large Blend custom range survives page switches", at.session_state["etfhi|ms:Large Blend|max_drawdown"] == 5.0 and at.sidebar.selectbox(key="etf2_mscat").value == "Theme: ESG / sustainable")
 at.sidebar.selectbox(key="etf2_mscat").set_value("Large Blend").run()
 # ETF compare in Morningstar mode: own vs page (with page at Laura -> reset Large Blend first)
 at.button(key="etf_btn_laura|ms:Large Blend").click().run()
 lb_scores = page_scores(at)
+at.toggle(key="etf2_diag|Large Blend").set_value(True).run()
+chk("history-window diagnostic runs", not at.exception and any("move more than 10 ranks" in m.value for m in at.markdown),
+    next((m.value for m in at.markdown if "move more than 10 ranks" in m.value), ""))
+at.toggle(key="etf2_diag|Large Blend").set_value(False).run()
 at.multiselect(key="etfcmp_|morningstar_sel").set_value(["Large Blend", "Theme: Low / min volatility"]).run()
 chk("ETF compare no exception", not at.exception, [e.value for e in at.exception][:1])
 rows = cmp_table(at)

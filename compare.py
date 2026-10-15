@@ -219,7 +219,7 @@ def run_self_tests():
     ga = [es._fake_fund(i) for i in range(12)]
     gb = [es._fake_fund(i) for i in range(30, 42)]
     for f in gb:
-        f["px"]["mdd_10"] += 0.15
+        f["px"]["mdd_5"] += 0.15
     gb.append(dict(ga[0]))  # E00 is in both groups
     eset = dict(es.DEFAULT_SETTINGS)
     ew = dict(es.DEFAULT_WEIGHTS)
@@ -233,7 +233,7 @@ def run_self_tests():
           not ed_ and len(eo["rows"]) == 25 and sum(r["ticker"] == "E00" for r in eo["rows"]) == 2, f"{len(eo['rows'])} rows, mismatches {ed_[:3]}")
     ep = etf_compare(rb, eset, ew, 0.5, {}, {}, "pooled")
     e00 = next(r for r in ep["rows"] if r["ticker"] == "E00")
-    vals = sorted(f["px"]["mdd_10"] * 100 for f in {x["ticker"]: x for g in rb.values() for x in g}.values())
+    vals = sorted(f["px"]["mdd_5"] * 100 for f in {x["ticker"]: x for g in rb.values() for x in g}.values())
     check("C6. ETFs 'pooled': one peer group (fund in both groups counted once), Laura bound = pooled median",
           len(ep["rows"]) == 24 and e00["groups"] == ["Cat A", "Theme B"] and ep["bench"][POOLED]["max_drawdown"]["pool_n"] == 24
           and abs(e00["metrics"]["max_drawdown"]["range"][1] - float(np.median(vals))) < 1e-9,

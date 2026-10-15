@@ -1,27 +1,32 @@
 """
-How ETFs are grouped into peer groups: by INDUSTRY or by MORNINGSTAR CATEGORY, plus THEMES.
-============================================================================================
+How ETFs are grouped into peer groups: MORNINGSTAR CATEGORY + THEMES (nothing else).
+====================================================================================
 Pure functions (no Streamlit, no network), used by etf_page.py and compare.py.
 
-  "industry"     -> the 145 stock industries (etf_industry.py tags, results/etf_industry_map.csv)
-  "morningstar"  -> the fund's Morningstar category from yfinance (Large Blend, Large Value, ...),
-                    already stored in the same map as `morningstar_category`
+  Universe     results/etf_universe.csv (ticker, name, morningstar_category, has_holdings), built by
+               build_universe() from the ETF membership table + cached top-10 holdings:
+               equity categories only (etf_data rules), funds under $5 / leveraged / inverse / VIX out,
+               single-stock funds (top holding >= 50%) out. Funds with no Morningstar category
+               ("Uncategorized") are kept only if listed in results/etf_uncategorized_keep.csv.
+  Category     the fund's Morningstar category from yfinance (Large Blend, Large Value, ...).
 
 THEMES are detected from the FUND NAME (yfinance gives no fund description for most ETFs):
 ESG / sustainable, low / min volatility, dividend / income, quality, equal weight. A theme is an
-EXTRA peer group: a fund keeps its industry or category AND appears in every theme it matches
-(ESGV is in "Large Blend" and in "Theme: ESG / sustainable"). Themes are offered in both modes.
+EXTRA peer group: a fund keeps its category AND appears in every theme it matches
+(ESGV is in "Large Blend" and in "Theme: ESG / sustainable").
 
-Peer pools are always the group you picked (the same < 10-peer fallback to all downloaded equity
-ETFs applies). Session keys are namespaced by mode (ns()), so a range set for "Theme: Quality" in
-one mode never shows up in the other.
+There is NO industry grouping for ETFs (the 145-industry tagger is in _retired/). Stock industries are
+used only inside holdings quality, where each top-10 holding is scored against its own stock industry.
+Peer pools are always the group you picked (the same < 10-peer fallback to all downloaded equity ETFs applies).
 """
 
+import json
+import os
 import re
+import sqlite3
 
 import pandas as pd
 
-MODES = {"industry": "Industry (145)", "morningstar": "Morningstar category"}
 THEME_PREFIX = "Theme: "
 
 # (label, include pattern, exclude pattern or None). Matched against the fund name, case-insensitive.
@@ -110,25 +115,70 @@ def override_report(imap, overrides):
     return pd.DataFrame(out, columns=["ticker", "theme", "action", "result"])
 
 
-def ns(mode, group):
-    """Session namespace for one peer group. Industry mode keeps the bare group name (unchanged keys);
-    Morningstar mode is prefixed so the same name in the two modes never shares ranges or picks."""
-    return group if mode == "industry" else f"ms:{group}"
+def ns(group):
+    """Session namespace for one peer group (range keys, picks, snapshots)."""
+    return f"ms:{group}"
 
 
-def membership(imap, mode, overrides=None):
-    """One row per (ticker, group) for the chosen grouping, themes included, AFTER the team overrides.
-    Columns: ticker, name, group, morningstar_category, industry_group, basis, matched_by
-    (matched_by = the keyword in the fund name for a theme, 'override: add' for a team addition, '' otherwise)."""
-    col = "group" if mode == "industry" else "morningstar_category"
-    base = pd.DataFrame({"ticker": imap["ticker"], "name": imap["name"], "group": imap[col].fillna("Uncategorized"),
-                         "morningstar_category": imap["morningstar_category"], "industry_group": imap["group"],
-                         "basis": imap["basis"] if mode == "industry" else "Morningstar category (yfinance)", "matched_by": ""})
+# ------------------------------------------------------------------ universe
+UNIVERSE_PATH = "results/etf_universe.csv"
+UNCAT_KEEP_PATH = "results/etf_uncategorized_keep.csv"  # ticker column: funds with no Morningstar category the team keeps
+SINGLE_STOCK_SHARE = 0.50
+# never equity ETFs, even if someone lists them in the keep file
+UNCAT_BAD_NAME = re.compile(r"bond|treasur|income|premium|covered|buffer|floor|bitcoin|\bbtc\b|ether|crypto|currency|"
+                            r"bullion|trust|municipal|\bmuni|credit|loan|yield|target|maturity|dividend|\bDB\b", re.I)
+
+
+def load_universe(path=UNIVERSE_PATH):
+    """DataFrame (ticker, name, morningstar_category, has_holdings) or None if not built yet."""
+    return pd.read_csv(path) if os.path.exists(path) else None
+
+
+def build_universe(db_path=None, path=UNIVERSE_PATH, keep_path=UNCAT_KEEP_PATH):
+    """Offline (no network): etf_membership + cached top-10 holdings (etf_tophold, etf_raw) -> results/etf_universe.csv."""
+    import etf_data as ed
+    conn = sqlite3.connect(db_path or ed.DB_PATH)
+    tables = {r[0] for r in conn.execute("SELECT name FROM sqlite_master WHERE type='table'")}
+    hold = {s: json.loads(j) for s, j in conn.execute("SELECT symbol, json FROM etf_tophold")} if "etf_tophold" in tables else {}
+    for (js,) in conn.execute("SELECT json FROM etf_raw").fetchall():
+        r = json.loads(js)
+        if r.get("holdings") and r["ticker"] not in hold:
+            hold[r["ticker"]] = r["holdings"]
+    members = conn.execute("SELECT symbol, category, json FROM etf_membership").fetchall()
+    conn.close()
+    keep = set(pd.read_csv(keep_path)["ticker"].str.upper()) if os.path.exists(keep_path) else set()
     rows = []
-    info = {t: (n, cat, ig) for t, n, cat, ig in zip(imap["ticker"], imap["name"], imap["morningstar_category"], imap["group"])}
-    for t, (n, cat, ig) in info.items():
+    for sym, cat, js in members:
+        q = json.loads(js)
+        name = q.get("longName") or q.get("shortName")
+        if cat == "Uncategorized":
+            if sym not in keep or UNCAT_BAD_NAME.search(name or ""):
+                continue
+        elif ed.category_exclusion_reason(cat):
+            continue
+        if ed.fund_exclusion_reason(name, q.get("regularMarketPrice")):
+            continue
+        h = hold.get(sym) or []
+        if h and max(x["weight"] for x in h) >= SINGLE_STOCK_SHARE:
+            continue  # (almost) one stock
+        rows.append({"ticker": sym, "name": name, "morningstar_category": cat, "has_holdings": bool(h)})
+    df = pd.DataFrame(rows).sort_values("ticker").reset_index(drop=True)
+    df.to_csv(path, index=False)
+    return df
+
+
+def membership(universe, overrides=None):
+    """One row per (ticker, group): the Morningstar category plus every matching theme, AFTER the team overrides.
+    Columns: ticker, name, group, morningstar_category, basis, matched_by
+    (matched_by = the keyword in the fund name for a theme, 'override: add' for a team addition, '' otherwise)."""
+    imap = universe
+    base = pd.DataFrame({"ticker": imap["ticker"], "name": imap["name"], "group": imap["morningstar_category"].fillna("Uncategorized"),
+                         "morningstar_category": imap["morningstar_category"], "basis": "Morningstar category (yfinance)", "matched_by": ""})
+    rows = []
+    info = {t: (n, cat) for t, n, cat in zip(imap["ticker"], imap["name"], imap["morningstar_category"])}
+    for t, (n, cat) in info.items():
         for g, kw in theme_matches(n):
-            rows.append({"ticker": t, "name": n, "group": g, "morningstar_category": cat, "industry_group": ig,
+            rows.append({"ticker": t, "name": n, "group": g, "morningstar_category": cat,
                          "basis": "fund name (theme)", "matched_by": kw})
     th = pd.DataFrame(rows, columns=base.columns)
     if overrides is not None and len(overrides):
@@ -137,9 +187,9 @@ def membership(imap, mode, overrides=None):
             if o["action"] == "remove":
                 th = th[~((th["ticker"] == o["ticker"]) & (th["group"] == o["theme"]))]
             else:
-                n, cat, ig = info[o["ticker"]]
+                n, cat = info[o["ticker"]]
                 th = pd.concat([th, pd.DataFrame([{"ticker": o["ticker"], "name": n, "group": o["theme"], "morningstar_category": cat,
-                                                   "industry_group": ig, "basis": "team override (theme_overrides.csv)",
+                                                   "basis": "team override (theme_overrides.csv)",
                                                    "matched_by": "override: add"}])], ignore_index=True)
     return pd.concat([base, th], ignore_index=True)
 
@@ -158,7 +208,6 @@ def group_raws(tickers, have, group):
 
 def run_self_tests():
     import etf_data as ed
-    import etf_industry as ei
     results = []
 
     def check(name, ok, detail=""):
@@ -180,31 +229,29 @@ def run_self_tests():
             "VictoryShares US 500 Volatility Wtd ETF", "AB US Low Volatility Equity ETF"]
     drop = ["ProShares VIX Short-Term Futures ETF", "Simplify Volatility Premium ETF", "Volatility Shares Trust - Volatility Premium Plus ETF",
             "iPath Series B S&P 500 VIX Short-Term Futures ETN"]
-    ok2 = (all(ed.fund_exclusion_reason(n, 50.0) is None and not ei.UNCAT_BAD_NAME.search(n) for n in keep)
-           and all(ed.fund_exclusion_reason(n, 50.0) or ei.UNCAT_BAD_NAME.search(n) for n in drop)
-           and ed.category_exclusion_reason("Alternative Volatility") and ed.category_exclusion_reason("Large Blend") is None)
-    check("G2. Low-volatility EQUITY funds pass the volatility exclusion; VIX / volatility-premium products are removed", ok2,
+    ok2 = (all(ed.fund_exclusion_reason(n, 50.0) is None and not UNCAT_BAD_NAME.search(n) for n in keep)
+           and all(ed.fund_exclusion_reason(n, 50.0) or UNCAT_BAD_NAME.search(n) for n in drop)
+           and ed.category_exclusion_reason("Alternative Volatility") and ed.category_exclusion_reason("Large Blend") is None
+           and UNCAT_BAD_NAME.search("Invesco DB Energy Fund"))
+    check("G2. Low-volatility EQUITY funds pass the volatility exclusion; VIX / volatility-premium products and DB commodity funds are removed", ok2,
           f"kept {len(keep)}, removed {len(drop)}")
 
-    imap = pd.DataFrame({"ticker": ["ESGV", "VOO", "SMH"], "name": ["Vanguard ESG U.S. Stock ETF", "Vanguard S&P 500 ETF", "VanEck Semiconductor ETF"],
-                         "morningstar_category": ["Large Blend", "Large Blend", "Technology"],
-                         "group": ["Broad US market (diversified)", "Broad US market (diversified)", "Semiconductors"],
-                         "basis": ["x", "x", "y"]})
-    ms, ind = membership(imap, "morningstar"), membership(imap, "industry")
+    uni = pd.DataFrame({"ticker": ["ESGV", "VOO", "SMH"], "name": ["Vanguard ESG U.S. Stock ETF", "Vanguard S&P 500 ETF", "VanEck Semiconductor ETF"],
+                        "morningstar_category": ["Large Blend", "Large Blend", "Technology"]})
+    ms = membership(uni)
     g = lambda m, tk: sorted(m.loc[m["ticker"] == tk, "group"])
-    ok3 = (g(ms, "ESGV") == sorted(["Large Blend", E]) and g(ind, "ESGV") == sorted(["Broad US market (diversified)", E])
-           and g(ms, "SMH") == ["Technology"] and g(ind, "SMH") == ["Semiconductors"]
-           and ns("industry", E) != ns("morningstar", E) and ns("industry", "Semiconductors") == "Semiconductors")
-    check("G3. Grouping: ESGV is in its category/industry AND the ESG theme; mode-specific session namespaces", ok3,
-          f"morningstar {g(ms, 'ESGV')}, industry {g(ind, 'ESGV')}")
+    ok3 = (g(ms, "ESGV") == sorted(["Large Blend", E]) and g(ms, "SMH") == ["Technology"] and g(ms, "VOO") == ["Large Blend"]
+           and set(ms.columns) == {"ticker", "name", "group", "morningstar_category", "basis", "matched_by"}
+           and ns(E) == "ms:" + E)
+    check("G3. Grouping = Morningstar category + themes only (no industry column): ESGV in Large Blend AND the ESG theme; SMH in Technology", ok3,
+          f"ESGV {g(ms, 'ESGV')}, SMH {g(ms, 'SMH')}, columns {sorted(ms.columns)}")
     ov = pd.DataFrame([{"ticker": "ESGV", "theme": "ESG / sustainable", "action": "remove"},
                        {"ticker": "voo", "theme": "Theme: Quality", "action": "add"},
                        {"ticker": "VOO", "theme": "Momentum", "action": "add"},
                        {"ticker": "ZZZZ", "theme": "Quality", "action": "add"}])
-    mo = membership(imap, "morningstar", ov)
-    rep = override_report(imap, ov)
-    mt = membership(pd.DataFrame({"ticker": ["USMV"], "name": ["iShares MSCI USA Min Vol Factor ETF"], "morningstar_category": ["Large Blend"],
-                                  "group": ["Broad US market (diversified)"], "basis": ["x"]}), "morningstar")
+    mo = membership(uni, ov)
+    rep = override_report(uni, ov)
+    mt = membership(pd.DataFrame({"ticker": ["USMV"], "name": ["iShares MSCI USA Min Vol Factor ETF"], "morningstar_category": ["Large Blend"]}))
     ok4 = (g(mo, "ESGV") == ["Large Blend"] and g(mo, "VOO") == sorted(["Large Blend", Q])
            and mo.loc[(mo.ticker == "VOO") & (mo.group == Q), "matched_by"].iloc[0] == "override: add"
            and list(rep["result"].str.split(":").str[0]) == ["applied", "applied", "ignored", "ignored"]
@@ -212,3 +259,9 @@ def run_self_tests():
     check("G4. Theme overrides (add/remove) apply after name matching, bad rows are listed not applied; matched_by keyword stored",
           ok4, f"ESGV {g(mo, 'ESGV')}, VOO {g(mo, 'VOO')}, results {list(rep['result'])}")
     return results
+
+
+if __name__ == "__main__":
+    u = build_universe()
+    print(f"wrote {UNIVERSE_PATH}: {len(u)} equity ETFs in {u['morningstar_category'].nunique()} Morningstar categories "
+          f"({int((u['morningstar_category'] == 'Uncategorized').sum())} uncategorized kept from {UNCAT_KEEP_PATH})")

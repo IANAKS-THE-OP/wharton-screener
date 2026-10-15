@@ -55,17 +55,19 @@ with a flag. Rank ascending, ties share the average rank, `p = (rank - 1)/(n - 1
 Higher-is-better score = p; lower-is-better = 100 - p. Forced scores applied after ranking.
 `Composite = sum(weight x score) / sum(weights of non-excluded metrics)`.
 
-## E. Fit (comfort ranges in real units)
-**Default range = Laura's standards, per industry** (`laura.LAURA_TIERS`). Only the bad-side bound affects Fit; Laura moves it to a
-stricter **percentile of the industry's own pool** (same pool as D, including the fallback pool):
-risk tier = industry median (downside deviation, max drawdown, net debt/EBITDA, Sloan: high = P50; interest coverage: low = P50);
+## E. Fit (comfort ranges in real units, graded)
+Every range runs from a **good bound** to a **bad bound** (lower-is-better: low = good, high = bad; higher-is-better: high = good,
+low = bad); the two slider handles are these bounds. **Default range = Laura's standards, per industry** (`laura.LAURA_TIERS`), all
+percentiles of the industry's own pool (same pool as D, including the fallback pool):
+good bound = P10 for lower-is-better, P90 for higher-is-better (`laura.GOOD_PCT`);
+bad bound: risk tier = industry median (downside deviation, max drawdown, net debt/EBITDA, Sloan: high = P50; interest coverage: low = P50);
 consistency tier = 40th percentile (ROIC, gross profitability, Δ ROIC, Δ operating margin: low = P40);
-moderate tier = unchanged P25-P75 (revenue growth, FCF yield, earnings yield, Lynch, shareholder yield).
-The other side stays at the industry default (P25 for lower-is-better, P75 for higher-is-better). Values are never scaled by a
-percentage. If the stricter percentile equals the other bound, the metric falls back to P25-P75 (shown on the page); a range is
-never zero-width (P25 = P75 -> P5-P95). *Industry average* = P25-P75 for every metric.
-`spread = P75 - P25` (zero -> sector spread -> all-stock spread); Laura's bound does **not** change it. Higher-is-better: `distance = max(0, low - value)`; lower: `max(0, value - high)`.
-`metric fit = 100 x max(0, 1 - (distance / spread) / 2)`. Fit = weighted average with the same weights.
+moderate tier = P25 (revenue growth, FCF yield, earnings yield, Lynch, shareholder yield; P75 if lower-is-better).
+Values are never scaled by a percentage. If the good and bad bounds coincide, the metric falls back to P25-P75 (shown on the page); a range is
+never zero-width (P25 = P75 -> P5-P95). *Industry average* = P25-P75 for every metric (good = the better quartile).
+`spread = P75 - P25` (zero -> sector spread -> all-stock spread); moving a bound does **not** change it.
+`metric fit` = 100 at or beyond the good bound; inside the range `100 - 20 x (distance from the good bound / range width)` (100 -> 80);
+beyond the bad bound `max(0, 80 - 50 x distance past the bad bound / spread)`. Fit = weighted average with the same weights.
 Ranges affect only Fit; weights affect both.
 
 ## F. WACC (display + flag)
@@ -79,7 +81,7 @@ Overall desc; tie-breakers Composite desc, fewer red flags, less excluded weight
 
 ## H-I. Display, export, tests
 Ranked table, per-company breakdown, "How scoring works" tab with a live worked example, full CSV export (every raw value,
-score, fit, flag and setting, timestamped), and 20 self-tests (shown in the app's debug area) covering percentiles, ties,
+score, fit, flag and setting, timestamped), and 23 self-tests (shown in the app's debug area) covering percentiles, ties,
 forced scores, exclusion rescaling, fit, range/weight independence, downside deviation, drawdown, ranking, fallbacks and Laura's
 ranges (max-drawdown bound = each industry's median and differs between industries; tiers; unchanged spread; safe fallback).
 
@@ -92,35 +94,44 @@ bond / fixed-income categories, commodity categories, `Trading` (leveraged / inv
 alternative / derivative-income / digital-asset categories, and (our additions) allocation, target-date, convertibles,
 preferred-stock, long-short, market-neutral, managed-futures, bear-market, tactical and "Other" categories; funds whose
 name contains 2x / 3x / Ultra / UltraPro / Inverse / Short / Bear / -1x..-3x; funds priced under $5. "Equity Precious Metals"
-(miner stocks) stays. The page shows "X funds found, Y removed (reasons), Z scored". Peer group = the ETF's stock industry (tagged by `etf_industry.py`: sector-category and uncategorized funds are decided by a clear industry word in the name (unless the top-10 holdings contradict it) or by holdings that are >= 80% one industry; size/style and international funds need holdings >= 60% in one industry AND a matching name; Select Sector SPDR funds and funds named after a whole sector are whole-sector; single-stock funds and physical trusts are dropped; diversified funds go to Whole sector / Broad US market / International groups);
+(miner stocks) stays. The page shows "X funds found, Y removed (reasons), Z scored". Peer group = the fund's **Morningstar category** (yfinance) or a **theme** from the fund name (ESG / sustainable, low / min volatility, dividend / income, quality, equal weight); a fund is in its category and every matching theme. No industry grouping for ETFs (the industry tagger is in `_retired/`). Universe = `results/etf_universe.csv` (`etf_groups.build_universe`): the rules above, single-stock funds (top holding >= 50%) out, uncategorized funds only if listed in `results/etf_uncategorized_keep.csv`;
 a metric with < 10 valid values in the group is ranked against all scored equity ETFs and flagged. 
 
 **Metrics (B), default weight (Laura Gao's standards, total 100).** low cost and small drawdowns first (expense ratio 18, max drawdown 18), then size and concentration (AUM 12, top-10 weight 12), downside deviation 12, long-run return 10, holdings quality 8, dollar volume 5, dividend yield 5. Number of holdings has weight 0 because yfinance does not provide it (always excluded). Total 100.
 Expense ratio % (lower, 18) · max drawdown % (lower, 18) · AUM $M (higher, 12) · top-10 weight % (lower, 12) · downside deviation % (lower, 12) · long-run annualized return % (higher, 10) · holdings quality /100 (higher, 8) · average daily dollar volume $M (higher, 5) · trailing-12-month dividend yield % (higher, 5; computed from the dividend history, a real 0% is valid) · number of holdings (higher, 0; **not available from yfinance**, always excluded unless `results/etf_holdings_override.csv` supplies `ticker,n_holdings`, and even then its weight is 0).
 Holdings quality = sum(weight x stock Composite) / sum(weights of scored holdings) over the top-10 holdings; each holding is
-scored by the stock model (default weights and settings) against its own industry, cached in `holding_scores.db`. Foreign
+scored by the stock model (default weights and settings) against its own stock industry, cached in `holding_scores.db`. Foreign
 (non-US-ticker) holdings and stocks outside the tradeable stock universe are skipped; under 15% coverage the metric is
-excluded and flagged.
+excluded and flagged; from 15% to under 50% coverage its weight is `weight x coverage / 100` for that fund (USMV, 15%: 8 -> 1.2).
 
-**Red flags (C).** AUM < $100M (closure risk) · history < 10 years · top-10 weight > 50% (concentrated) · look-through
+**Red flags (C).** AUM < $100M (closure risk) · too new for the history window · prices end > 7 days before the group (stale) · top-10 weight > 50% (concentrated) · look-through
 coverage < 25% · expense ratio missing · low data (> 30% of weight excluded, listed last) · category fallback.
 
-**History window (D).** 5 or 10 years (default 10) for downside deviation, max drawdown and long-run return. At least 5 years but
-less than the window: all available history, flagged. Under 5 years: those three metrics are excluded.
+**History window (D), common window.** 5 years (default) or 10 for downside deviation, max drawdown and long-run return, measured
+for EVERY fund over the same window ending on the same date (last `window x 12` monthly returns; drawdown and annualized return over
+the last `window` years of daily adjusted closes; 7 days of slack for listing-date rounding). The window is never shortened per fund:
+a fund with less history is *too new for this window* (three metrics excluded, flagged) and is ranked after every fully scored fund;
+a fund whose prices end > 7 days before its group's newest fund is excluded the same way. `history_diagnostic` compares this with the
+old rule (5 to window years: whatever history existed), which flattered funds listed after the March 2020 crash.
 
 **Composite, Fit, Overall, rank (E-G).** Identical to the stock system: percentile `(rank-1)/(n-1) x 100` (ties averaged, n = 1 -> 50,
 lower-is-better flipped), `Composite = sum(w x score) / sum(w of included)`, comfort ranges in real units defaulting to the
-category 25th / 75th percentile values, `fit = 100 x max(0, 1 - (distance/spread)/2)`, `Overall = b x Fit + (1 - b) x Composite`,
-optional hard limits (never an empty page), tie-breakers Composite -> fewer flags -> less excluded weight -> ticker.
-**Default comfort ranges = Laura standards, per group** (same rule as section E, each fund using its own group's pool): risk tier at the
-group median (expense ratio, downside deviation, max drawdown, top-10 weight: high = P50; AUM, dollar volume: low = P50); consistency tier
-(holdings quality: low = P40); moderate (dividend yield, long-run return: P25-P75). Fit-only; no hard limit is ticked by default.
+Laura ranges, graded Fit (section E), `Overall = b x Fit + (1 - b) x Composite`, optional hard limits (never an empty page).
+Order: fully scored, then too new for the window, then low data (> 30% of weight excluded, not counting a too-new fund's history
+metrics); within each Overall desc, tie-breakers Composite -> fewer flags -> less excluded weight -> ticker. **Tiers**: funds within
+1.0 Overall point of their tier's first fund share a tier ("Tier 3: ranks 10-15"). **Why not higher**: each metric beyond its bad bound
+and its Overall cost `b x w x (100 - fit) / sum(w)`. Export: per metric raw value, percentile, Laura good/bad bounds, bounds used,
+fit, effective and nominal weight; history years used; holdings-quality coverage.
+**Default comfort ranges = Laura standards, per group** (same rule as section E, each fund using its own group's pool): good bound P10
+(lower-is-better) / P90 (higher-is-better); bad bound at the group median for the risk tier (expense ratio, downside deviation, max drawdown,
+top-10 weight: high = P50; AUM, dollar volume: low = P50), P40 for holdings quality, P25 for dividend yield and long-run return. Fit-only; no hard limit is ticked by default.
 Two buttons on both pages: *Laura standards* (Laura ranges + Laura weights) and *Industry average* (P25-P75 ranges, weights unchanged).
 **Laura hard limits** (optional checkbox, off by default): Laura's old absolute numbers - expense <= 0.20%, max drawdown <= 30%,
 AUM >= $1B, top-10 weight <= 40% - become *must be inside* limits for those four metrics (checked against the absolute values, not the range).
 
-**Tests (I).** 14 self-tests in the app's debug area (`etf_scoring.run_self_tests`), including Laura's per-group ranges and the
-absolute hard limits.
+**Tests (I).** 17 self-tests in the app's debug area (`etf_scoring.run_self_tests`), including graded Fit, the common history window
+(two funds with different listing dates but identical returns over the window score identically), too-new ordering, tiers,
+why-not-higher points, holdings-quality weight x coverage, Laura's per-group ranges and the absolute hard limits.
 
 ## Compare industries (`compare.py`)
 * **Each vs its own industry** (default): each name is prepared and finalized with its own industry / ETF group exactly as on that page (same peer pool and < 10 fallback, same Laura or 25th-75th ranges, the page's weights and blend); the rows are then ranked together with the usual order (low data last, Overall ↓, Composite ↓, fewer flags, less excluded weight, ticker). Self-test: scores equal the industry page.
@@ -128,4 +139,4 @@ absolute hard limits.
 * Hand-tuned ranges and Must-be-inside limits are not applied in Compare.
 
 ## ETF groupings (`etf_groups.py`)
-Peer groups can be the stock **industry** tag, the **Morningstar category** (yfinance), or a **theme** detected from the fund name (ESG / sustainable, low / min volatility, dividend / income, quality, equal weight). A fund keeps its industry or category and also joins every matching theme. Only VIX / volatility products are excluded as "volatility"; low-volatility equity funds are kept.
+Peer groups are the **Morningstar category** (yfinance) or a **theme** detected from the fund name (ESG / sustainable, low / min volatility, dividend / income, quality, equal weight). A fund keeps its category and also joins every matching theme. There is no ETF industry grouping; stock industries are used only inside holdings quality. Only VIX / volatility products are excluded as "volatility"; low-volatility equity funds are kept.

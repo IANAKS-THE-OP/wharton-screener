@@ -61,6 +61,9 @@ def _status():
     files = [("results/industry_directory.csv", "industry directory"), ("results/etf_category_directory.csv", "ETF category directory"),
              ("results/etf_categories_all.csv", "all ETF categories with keep/remove status"), ("results/backtest_report.txt", "stock backtest report"),
              ("results/industry_shortlist.csv", "your industry shortlist"), ("results/etf_category_shortlist.csv", "your ETF category shortlist"),
+             ("results/etf_universe.csv", "equity-ETF universe (Morningstar category per fund; etf_groups.py)"),
+             ("results/etf_uncategorized_keep.csv", "funds with no Morningstar category the team keeps"),
+             ("results/theme_overrides.csv", "team corrections to the name-based themes"),
              ("results/etf_holdings_override.csv", "optional: number-of-holdings override"), ("config.yaml", "settings (SEC user-agent...)")]
     st.dataframe(pd.DataFrame([{"file": f, "what": w, "present": "yes" if os.path.exists(f) else "no"} for f, w in files]),
                  hide_index=True, width="stretch")

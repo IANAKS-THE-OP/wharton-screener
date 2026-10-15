@@ -1,6 +1,6 @@
 """
 Runs every self-test suite (no network, no Streamlit):  ./venv/bin/python3 run_tests.py
-  scoring2      stock engine (22)          etf_scoring   ETF engine (14)
+  scoring2      stock engine (23)          etf_scoring   ETF engine (17)
   etf_groups    grouping + themes (4)      compare       Compare industries (6)
   snapshots     Save snapshot (1)
 Exit code 1 if anything fails. The same suites are shown under "How scoring works > Self-tests" on each page.
