@@ -8,13 +8,14 @@ Each of a fund's top-10 holdings gets the STOCK model's Composite score
   2. Otherwise look up its yfinance industry, map it to the screener's
      industry list, pull + score that whole industry with the existing stock
      pipeline (stock_data + scoring2), and cache EVERY company's score from it.
-  3. Foreign / unlisted holdings (tickers like ASML.AS, 005930.KQ), industries
-     outside the screener list, and stocks that fail the tradeability filters
-     are skipped (recorded with a reason, never guessed).
+  3. Foreign / unlisted holdings (tickers like ASML.AS, 005930.KQ), foreign filers (20-F / 40-F, e.g. TSM:
+     out of scope for the stock model), industries outside the screener list, and stocks that fail the
+     tradeability filters are skipped (recorded with a reason, never guessed).
 
 Scores are cached in holding_scores.db so re-runs are instant. The cache is VERSIONED by a hash of
 the stock model's default weights + settings (model_hash()): if those change, the cached Composites
-are stale, so invalidate_if_stale() clears them and they are rebuilt from the cached stock data.
+are stale, so invalidate_if_stale() clears them and they are rebuilt from the cached stock data
+(rebuild_from_cache() does that offline for every industry already scored, keeping the cache committed for the website).
 """
 
 import hashlib
@@ -34,6 +35,7 @@ import stock_data as sd
 log = logging.getLogger(__name__)
 
 DB_PATH = "holding_scores.db"
+FOREIGN_FILER_SKIP = "foreign filer (20-F / 40-F, no 10-K): out of scope for the stock model"
 
 
 def _conn(db_path=DB_PATH):
@@ -119,9 +121,38 @@ def _score_industry(industry, db_path=DB_PATH, progress=None):
         if r["composite"] is not None:
             conn.execute("INSERT OR REPLACE INTO holding_scores VALUES (?,?,?,?,?,?)",
                          (r["ticker"], industry, r["composite"], r["overall"], r["fit"], str(date.today())))
+    for f in final["foreign"]:  # out of scope: recorded as a skip, never scored
+        conn.execute("DELETE FROM holding_scores WHERE ticker = ?", (f["ticker"],))
+        conn.execute("INSERT OR REPLACE INTO holding_skips VALUES (?,?,?)", (f["ticker"], FOREIGN_FILER_SKIP, str(date.today())))
     conn.commit()
     conn.close()
     return {r["ticker"] for r in final["results"] if r["composite"] is not None}
+
+
+def rebuild_from_cache(db_path=DB_PATH):
+    """Offline (no network): re-score every industry that already has cached holding scores with the CURRENT stock model,
+    from the cached stock data, and stamp the new model_hash. Tickers that no longer get a Composite become skips.
+    Returns {"industries", "scored", "foreign_skipped", "dropped"}."""
+    conn = _conn(db_path)
+    before = {r[0]: r[1] for r in conn.execute("SELECT ticker, industry FROM holding_scores")}
+    conn.close()
+    industries = sorted(set(before.values()))
+    scored = set()
+    for ind in industries:
+        if sd.load_industry(ind) is None:
+            continue
+        scored |= _score_industry(ind, db_path)
+    conn = _conn(db_path)
+    foreign = {r[0] for r in conn.execute("SELECT ticker FROM holding_skips WHERE reason = ?", (FOREIGN_FILER_SKIP,))}
+    dropped = [t for t in before if t not in scored and t not in foreign]
+    for t in dropped:
+        conn.execute("DELETE FROM holding_scores WHERE ticker = ?", (t,))
+        conn.execute("INSERT OR REPLACE INTO holding_skips VALUES (?,?,?)",
+                     (t, "not in the tradeable stock universe (price/exchange filters) or no score", str(date.today())))
+    conn.execute("INSERT OR REPLACE INTO meta VALUES ('model_hash', ?)", (model_hash(),))
+    conn.commit()
+    conn.close()
+    return {"industries": len(industries), "scored": len(scored), "foreign_skipped": len(foreign & set(before)), "dropped": dropped}
 
 
 def score_holdings(symbols, progress=None, db_path=DB_PATH):

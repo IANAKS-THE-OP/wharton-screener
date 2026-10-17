@@ -6,14 +6,14 @@ Implements the spec in METHODOLOGY.md:
   Part B  compute_metrics()   - 14 metric values + forced-score / exclusion rules
   Part C  red flags           - Altman, Piotroski, ROIC<WACC, payout, data flags
   Part D  prepare_industry()  - peer pools, sector fallback, percentile scores
-  Part E  finalize()          - comfort-range Fit
+  Part E  finalize()          - one-sided Fit against each metric's Laura limit
   Part F  wacc                - display + flag only
-  Part G  finalize()          - blend, hard limits, ranking
+  Part G  finalize()          - Overall = Composite - k x (100 - Fit), hard limits, ranking
   Part I  run_self_tests()
 
 Two stages so the UI stays fast:
   prepare_industry(...)  depends on data + (T-bill, risk-free, ERP) settings
-  finalize(...)          depends on weights / ranges / blend / hard limits
+  finalize(...)          depends on weights / limits / penalty strength / hard limits
 """
 
 import math
@@ -50,8 +50,13 @@ KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 
-DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05}
-PREP_VERSION = 2  # bump when prepare_industry's Composite inputs change. NOTE: part of etf_holdings.model_hash(), so a bump wipes holding_scores.db
+WINDOWS = (3, 5, 10)  # history-window choices (years) for downside deviation and max drawdown
+DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05, "window": 5}
+DEFAULT_PENALTY = 0.4  # k in Overall = max(0, Composite - k x (100 - Fit)); 0 = pure Composite
+PREP_VERSION = 3  # bump when prepare_industry's Composite inputs change. NOTE: part of etf_holdings.model_hash(), so a bump wipes holding_scores.db
+WINDOW_SLACK_YEARS = 7 / 365.25  # listing-date / weekend rounding: up to 7 days short of the window still counts as full
+HIST_KEYS = ("downside_dev", "max_drawdown")
+FOREIGN_FORMS = ("20-F", "40-F")
 MIN_POOL = 10
 FINANCIAL_WORDS = ["bank", "insurance", "credit services", "capital markets", "mortgage finance"]
 
@@ -79,28 +84,50 @@ def percentile_scores(values, higher_is_better=True):
     return p if higher_is_better else [100 - x for x in p]
 
 
-FIT_AT_BAD = 80.0     # Fit at the bad-side bound
-FIT_SLOPE_OUT = 50.0  # Fit points lost per spread beyond the bad-side bound
-
-
-def metric_fit(value, low, high, spread, direction):
-    """Part E6, graded. The range runs from the GOOD bound to the BAD bound:
-    lower-is-better (low = good, high = bad); higher-is-better (high = good, low = bad).
-      at or beyond the good bound   -> 100
-      inside the range              -> linear, 100 at the good bound to 80 at the bad bound
-      beyond the bad bound          -> max(0, 80 - 50 x distance / spread), spread = peer p75 - p25
-    Returns (fit, distance beyond the bad bound)."""
-    if not (_num(value) and _num(low) and _num(high) and _num(spread)) or spread <= 0:
+def metric_fit(value, limit, spread, direction):
+    """Part E6, one-sided. Only the bad side of Laura's limit counts:
+      lower-is-better  (limit = ceiling): distance = max(0, value - limit)
+      higher-is-better (limit = floor):   distance = max(0, limit - value)
+      Fit = 100 x max(0, 1 - (distance / spread) / 2), spread = peer p75 - p25
+    So: on the good side -> 100; one spread past -> 50; two spreads past -> 0.
+    Returns (fit, distance)."""
+    if not (_num(value) and _num(limit) and _num(spread)) or spread <= 0:
         return None, None
-    good, bad = (high, low) if direction == "higher" else (low, high)
-    past_bad = (bad - value) if direction == "higher" else (value - bad)
-    if past_bad > 0:
-        return max(0.0, FIT_AT_BAD - FIT_SLOPE_OUT * past_bad / spread), past_bad
-    short_of_good = (good - value) if direction == "higher" else (value - good)
-    width = abs(bad - good)
-    if short_of_good <= 0 or width <= 0:
-        return 100.0, 0.0
-    return 100.0 - (100.0 - FIT_AT_BAD) * min(1.0, short_of_good / width), 0.0
+    dist = max(0.0, (value - limit) if direction == "lower" else (limit - value))
+    return 100.0 * max(0.0, 1.0 - (dist / spread) / 2.0), dist
+
+
+def overall_score(composite, fit, k=DEFAULT_PENALTY):
+    """Part G1: Overall = max(0, Composite - k x (100 - Fit)). No Fit -> Composite; no Composite -> None."""
+    if composite is None:
+        return None
+    if fit is None:
+        return composite
+    return max(0.0, composite - k * (100.0 - fit))
+
+
+def penalty_breakdown(rows, weights, den, k, lost):
+    """'Why not higher': [(key, points)] for every metric that misses its limit (Fit < 100), most costly first.
+    points = k x w x (100 - Fit) / sum(w); scaled down so they add up to the points actually lost when Overall hits 0."""
+    raw = [(key, k * weights.get(key, 0) * (100 - r["fit"]) / den) for key, r in rows.items()
+           if r["fit"] is not None and r["fit"] < 100 - 1e-9 and r.get("pct") is not None and den]
+    tot = sum(x for _, x in raw)
+    scale = (lost / tot) if (tot > 0 and lost is not None and lost < tot - 1e-12) else 1.0
+    return sorted(((key, x * scale) for key, x in raw if x * scale > 1e-12), key=lambda x: -x[1])
+
+
+def _short(v):
+    return "—" if v is None else f"{v:.3g}" if abs(v) < 100 else f"{v:,.0f}"
+
+
+def why_text(why, rows, labels):
+    """'Max drawdown −2.1 (31.5 vs limit ≤ 24.0); ...' or 'meets every Laura limit'."""
+    def one(key, lost):
+        r = rows[key]
+        side = "≤" if r["direction"] == "lower" else "≥"
+        val = "forced 0" if r["status"] == ZERO else _short(r["value"])
+        return f"{labels[key]} −{lost:.1f} ({val} vs limit {side} {_short(r['limit'])})"
+    return "; ".join(one(k, lost) for k, lost in why) or "meets every Laura limit"
 
 
 def downside_deviation(monthly_returns, tbill):
@@ -216,6 +243,21 @@ class _Co:
         if ic <= 0:
             return None, ic, "negative invested capital"
         return ebit * (1 - self.tax_rate(idx)) / ic, ic, note
+
+
+def _px_window(px, window):
+    """-> (years of prices available, monthly returns, max drawdown over the last `window` yrs, legacy cache?).
+    Legacy cache (before 10-yr histories): 36 monthly returns and a 3-yr 'mdd' only."""
+    rets = px.get("monthly_returns") or []
+    if "years" not in px:  # legacy raw: at most ~3 years were downloaded
+        yrs = min((px.get("mdd_months") or 0) / 12, (px.get("months") or 0) / 12)
+        return yrs, rets, (px.get("mdd") if window == 3 else None), True
+    return px.get("years") or 0.0, rets, px.get(f"mdd_{window}"), False
+
+
+def is_foreign_filer(raw):
+    """Foreign private issuers (annual report on 20-F / 40-F, no 10-K data): out of scope for the stock model."""
+    return not raw.get("annual") and raw.get("annual_form") in FOREIGN_FORMS
 
 
 def _cagr(vals):
@@ -446,22 +488,32 @@ def compute_metrics(raw, settings=None, industry_median_beta=None):
     else:
         setm("sloan", (ni - ocf) / ta_avg * 100, OK, f"(net income − OCF) ÷ {'average' if used else 'end-of-year'} total assets")
 
-    # 12. Downside deviation ---------------------------------------------------
-    rets = px.get("monthly_returns") or []
-    if len(rets) < 24:
-        setm("downside_dev", None, EXCL, "short history (< 24 months)")
-        flag("short_history", "Fewer than 24 months of price history")
+    # 12-13. Downside deviation + max drawdown over the COMMON history window ----------------
+    # Every company is measured over the same `window` years ending on the same date (prepare_industry checks the
+    # end date). Less history than the window -> "too new for this window": both metrics excluded, never a shorter window.
+    window = settings["window"]
+    years, rets, mdd, legacy = _px_window(px, window)
+    too_new = years + WINDOW_SLACK_YEARS < window
+    if too_new:
+        why = (f"only {years:.1f} yrs of prices cached (refresh the industry for {window} yrs)" if legacy
+               else f"too new for this window ({years:.1f} yrs < {window})")
+        for k in HIST_KEYS:
+            setm(k, None, EXCL, why)
+        flag("too_new", f"Too new for the {window}-yr window ({years:.1f} yrs of prices) - downside deviation and max drawdown "
+                        "excluded; listed after fully scored companies" if not legacy else f"Price history: {why}")
     else:
-        setm("downside_dev", downside_deviation(rets, settings["tbill"]), OK,
-             f"{len(rets)} monthly returns, MAR from {settings['tbill']:.2%} T-bill")
-
-    # 13. Max drawdown -----------------------------------------------------------
-    if px.get("mdd") is None or (px.get("mdd_months") or 0) < 24:
-        setm("max_drawdown", None, EXCL, "short history (< 24 months)")
-        if not any(f["code"] == "short_history" for f in flags):
-            flag("short_history", "Fewer than 24 months of price history")
-    else:
-        setm("max_drawdown", px["mdd"] * 100, OK, "worst peak-to-trough, last 3 years of adjusted closes")
+        n_m = min(len(rets), window * 12) if len(rets) >= window * 12 - 1 else 0  # one month of slack (listing date)
+        if n_m:
+            setm("downside_dev", downside_deviation(rets[-n_m:], settings["tbill"]), OK,
+                 f"{n_m} monthly returns ({window}-yr window), MAR from {settings['tbill']:.2%} T-bill")
+        else:
+            setm("downside_dev", None, EXCL, "too few monthly returns")
+        if mdd is None:
+            setm("max_drawdown", None, EXCL, "price history missing")
+        else:
+            setm("max_drawdown", mdd * 100, OK, f"worst peak-to-trough, last {window} years of daily adjusted closes")
+    derived["history"] = {"years_available": years, "window": window, "too_new": too_new,
+                          "start": px.get("first_date"), "end": px.get("last_date")}
 
     # 14. Shareholder yield --------------------------------------------------------
     parts = []
@@ -646,8 +698,14 @@ def prepare_industry(raws, settings=None, all_raws=None):
     """raws: list of raw dicts for the selected industry.
     all_raws: callable returning every cached company's raw dict (for sector /
     all-stock fallback pools); may be None.
-    Returns {"companies": {ticker: {...}}, "bench": {key: {...}}}."""
+    Foreign filers (20-F / 40-F, no 10-K) are out of scope: they are left out of the peer pools and returned
+    separately in "foreign" (never ranked).
+    Returns {"companies": {ticker: {...}}, "bench": {key: {...}}, "foreign": [...]}."""
     settings = {**DEFAULT_SETTINGS, **(settings or {})}
+    foreign = [{"ticker": r["ticker"], "name": r.get("name"), "annual_form": r.get("annual_form"),
+                "reason": f"Not scored: foreign filer (files {r.get('annual_form')}, not 10-K) - out of scope for the stock model"}
+               for r in raws if is_foreign_filer(r)]
+    raws = [r for r in raws if not is_foreign_filer(r)]
     betas = [r["market"]["beta"] for r in raws if _num(r.get("market", {}).get("beta"))]
     med_beta = float(np.median(betas)) if betas else None
     comps = {}
@@ -664,7 +722,7 @@ def prepare_industry(raws, settings=None, all_raws=None):
             return {}
         if "others" not in memo:
             memo["others"] = [(r, compute_metrics(r, settings, None)) for r in all_raws()
-                              if r["ticker"] not in comps]
+                              if r["ticker"] not in comps and not is_foreign_filer(r)]
         res = {}
         for r, m in memo["others"]:
             if level == "sector" and (sector is None or r.get("sector") != sector):
@@ -673,6 +731,16 @@ def prepare_industry(raws, settings=None, all_raws=None):
             if mv["status"] == OK and _num(mv["value"]):
                 res[r["ticker"]] = mv["value"]
         return res
+
+    # common END date: prices stopping more than 7 days before the newest company's are not on the same window
+    ends = [c["derived"]["history"]["end"] for c in comps.values() if c["derived"]["history"]["end"]]
+    newest = max(ends) if ends else None
+    for c in comps.values():
+        e = c["derived"]["history"]["end"]
+        if e and newest and (pd.Timestamp(newest) - pd.Timestamp(e)).days > 7 and not c["derived"]["history"]["too_new"]:
+            for k in HIST_KEYS:
+                c["metrics"][k] = {"value": None, "status": EXCL, "note": f"stale prices (end {e}, industry ends {newest})"}
+            c["flags"].append({"code": "stale_prices", "text": f"Prices end {e}, industry ends {newest} - history metrics excluded"})
 
     bench, pct = {}, {k: {} for k in KEYS}
     for key in KEYS:
@@ -713,50 +781,55 @@ def prepare_industry(raws, settings=None, all_raws=None):
                                    "text": f"{bench[key]['level']} fallback pool for {METRIC_BY_KEY[key]['label']} (< {MIN_POOL} in industry)"})
         for key in KEYS:
             c["metrics"][key]["pct"] = pct[key].get(t) if c["metrics"][key]["status"] == OK else None
-    return {"companies": comps, "bench": bench, "settings": settings, "sector": sector}
+    return {"companies": comps, "bench": bench, "settings": settings, "sector": sector, "foreign": foreign}
 
 
 # ========================================================================
-# Parts E + G: weights, ranges, blend, hard limits -> final ranked list
+# Parts E + G: weights, Laura limits, penalty strength, hard limits -> final ranked list
 # ========================================================================
 
-def default_ranges(bench):
-    """Industry 25th-75th percentile (never zero-width) - the 'Industry average' button."""
-    return laura.default_ranges(bench)
+def default_limits(bench):
+    """'Industry average' button: every limit = industry p75 (lower-is-better) / p25 (higher-is-better)."""
+    return laura.default_limits(bench, METRICS)
 
 
-def laura_ranges(bench):
-    """Laura Gao's standards (laura.LAURA_TIERS): stricter bad-side bound per industry - the DEFAULT."""
-    return laura.laura_ranges(bench, "stock", METRICS)
+def laura_limits(bench):
+    """Laura Gao's standards (laura.LAURA_TIERS): one per-industry percentile limit per metric - the DEFAULT."""
+    return laura.laura_limits(bench, "stock", METRICS)
 
 
-def finalize(prep, weights=None, ranges=None, blend=0.5, hard_limits=None, low_data_threshold=0.30):
+def finalize(prep, weights=None, limits=None, penalty=DEFAULT_PENALTY, hard_limits=None, low_data_threshold=0.30):
+    """limits: {metric: Laura limit} overriding the defaults (ceiling for lower-is-better, floor for higher-is-better).
+    penalty: k in Overall = max(0, Composite - k x (100 - Fit)). Limits never change Composite."""
     weights = {**DEFAULT_WEIGHTS, **(weights or {})}
-    ranges = {**default_ranges(prep["bench"]), **laura_ranges(prep["bench"]), **(ranges or {})}  # Laura is the default
+    laura_lim = laura_limits(prep["bench"])
+    limits = {**laura_lim, **(limits or {})}  # Laura is the default
     hard_limits = hard_limits or {}
     total_w = sum(weights.values())
     results = []
     for t, c in prep["companies"].items():
         pct_scores, fit_scores, rows = {}, {}, {}
-        excluded_w = 0.0
+        excluded_w = hist_excl_w = 0.0
         for key in KEYS:
             m = c["metrics"][key]
             meta, w = METRIC_BY_KEY[key], weights.get(key, 0)
             b = prep["bench"][key]
-            lo, hi = ranges.get(key, (None, None))
+            lim = limits.get(key)
             dist = None
             if m["status"] == EXCL:
                 p = f = None
                 excluded_w += w
+                if key in HIST_KEYS:
+                    hist_excl_w += w
             elif m["status"] == ZERO:
                 p = f = 0.0
             elif m["status"] == HUNDRED:
                 p = f = 100.0
             else:
                 p = m.get("pct")
-                f, dist = metric_fit(m["value"], lo, hi, b["spread"], meta["direction"])
+                f, dist = metric_fit(m["value"], lim, b["spread"], meta["direction"])
             pct_scores[key], fit_scores[key] = p, f
-            rows[key] = {**m, "pct": p, "fit": f, "distance": dist, "weight": w, "range": (lo, hi),
+            rows[key] = {**m, "pct": p, "fit": f, "distance": dist, "weight": w, "limit": lim, "laura_limit": laura_lim.get(key),
                          "direction": meta["direction"], "units": meta["units"], "label": meta["label"]}
         # a metric that couldn't be percentile-ranked or fitted (None score, not forced) is excluded too
         comp_scores = {k: pct_scores[k] for k in KEYS}
@@ -765,17 +838,23 @@ def finalize(prep, weights=None, ranges=None, blend=0.5, hard_limits=None, low_d
             if rows[k]["status"] == OK and (pct_scores[k] is None or fit_scores[k] is None):
                 comp_scores[k] = fit_for_avg[k] = None
                 rows[k]["status_effective"] = EXCL
+                rows[k]["pct"] = rows[k]["fit"] = None
                 excluded_w += weights.get(k, 0)
+                if k in HIST_KEYS:
+                    hist_excl_w += weights.get(k, 0)
         composite = composite_score(comp_scores, weights)
         fit = composite_score(fit_for_avg, weights)
         den = sum(weights.get(k, 0) for k in KEYS if comp_scores[k] is not None)
         for k in KEYS:
             rows[k]["contribution"] = (weights.get(k, 0) * comp_scores[k] / den) if (comp_scores[k] is not None and den) else None
-        if composite is None or fit is None:
-            overall = composite if fit is None else fit
-        else:
-            overall = blend * fit + (1 - blend) * composite
+        overall = overall_score(composite, fit, penalty)
+        lost = (composite - overall) if (composite is not None and overall is not None) else None
+        why = penalty_breakdown(rows, weights, den, penalty, lost)
+        hist = c["derived"].get("history") or {}
+        too_new = bool(hist.get("too_new"))
         excl_share = excluded_w / total_w if total_w else 0
+        other_share = (excluded_w - hist_excl_w) / total_w if total_w else 0
+        low_data = (other_share if too_new else excl_share) > low_data_threshold
         missing = [(METRIC_BY_KEY[k]["label"], rows[k]["note"] or "excluded") for k in KEYS
                    if weights.get(k, 0) > 0 and (rows[k]["status"] == EXCL or rows[k].get("status_effective") == EXCL)]
         not_scored = not_scored_reason(c["raw"])
@@ -784,32 +863,38 @@ def finalize(prep, weights=None, ranges=None, blend=0.5, hard_limits=None, low_d
             if not on:
                 continue
             r = rows[k]
-            if r["status"] in (ZERO, EXCL):  # forced-worst or unknown can't be shown to be inside the range
+            if r["status"] in (ZERO, EXCL) or r.get("status_effective") == EXCL:  # forced-worst or unknown can't be shown to meet the limit
                 fails.append(k)
-            elif r["status"] == OK and r["range"][0] is not None and not (r["range"][0] <= r["value"] <= r["range"][1]):
+            elif r["status"] == OK and (r["distance"] or 0) > 0:
                 fails.append(k)
         results.append({
             "ticker": t, "name": c["raw"].get("name"), "fye": c["derived"].get("fiscal_year_end"),
             "sector": c["raw"].get("sector"), "metrics": rows, "composite": composite, "fit": fit, "overall": overall,
+            "penalty": lost, "why_not": why, "why_not_higher": why_text(why, rows, {k: METRIC_BY_KEY[k]["label"] for k in KEYS}),
             "n_inside": sum(1 for k in KEYS if rows[k]["status"] == HUNDRED or (rows[k]["distance"] == 0 and fit_for_avg[k] is not None)),
             "n_total": len(KEYS),
             "excluded_weight_share": excl_share, "coverage": 1 - excl_share,
-            "low_data": excl_share > low_data_threshold, "flags": c["flags"], "wacc": c["wacc"],
+            "low_data": low_data, "too_new": too_new,
+            "too_new_reason": (f"Too new for this window: {hist['years_available']:.1f} yrs of prices < {hist['window']}-yr window "
+                               "(downside deviation, max drawdown not scored)") if too_new else None,
+            "history": hist, "flags": c["flags"], "wacc": c["wacc"],
             "missing": missing, "not_scored": not_scored, "annual_form": c["raw"].get("annual_form"),
-            "low_data_reason": low_data_reason(excl_share, missing, not_scored) if (excl_share > low_data_threshold or not_scored) else None,
+            "low_data_reason": low_data_reason(excl_share, missing, not_scored) if (low_data or not_scored) else None,
             "altman": c["altman"], "piotroski": c["piotroski"], "derived": c["derived"],
             "hard_limit_failed": bool(fails), "hard_limit_failures": fails,
         })
-    return {"results": rank(results), "weights": weights, "ranges": ranges, "blend": blend, "total_weight": total_w}
+    return {"results": rank(results), "weights": weights, "limits": limits, "penalty": penalty, "total_weight": total_w,
+            "foreign": prep.get("foreign", [])}
 
 
 def not_scored_reason(raw):
     """Companies with NO SEC annual (10-K) data get no rank at all, with the reason, instead of a silent 'last place'.
-    raw['annual_form'] comes from the SEC submissions (stock_data.annual_form)."""
+    raw['annual_form'] comes from the SEC submissions (stock_data.annual_form). Foreign filers (20-F / 40-F) never
+    get here: prepare_industry takes them out of scope."""
     if raw.get("annual"):
         return None
     form = raw.get("annual_form")
-    if form in ("20-F", "40-F"):
+    if form in FOREIGN_FORMS:
         return f"Not scored: files {form}, not 10-K"
     if form is None and raw.get("cik"):
         return "Not scored: no annual report (10-K) in SEC data yet (new listing / shell company?)"
@@ -825,10 +910,10 @@ def low_data_reason(share, missing, not_scored=None):
 
 
 def rank(results):
-    """Part G3: not-scored (no 10-K data) after everything and UNRANKED (rank None); low-data next-to-last;
-    Overall desc; then Composite desc, fewer flags, less excluded weight, ticker A-Z."""
+    """Part G3: fully scored first, then 'too new for this window', then low data, then not scored (no 10-K data,
+    UNRANKED: rank None). Within each: Overall desc; then Composite desc, fewer flags, less excluded weight, ticker A-Z."""
     def key(r):
-        return (bool(r.get("not_scored")), r["low_data"], -(r["overall"] if r["overall"] is not None else -1),
+        return (bool(r.get("not_scored")), r["low_data"], bool(r.get("too_new")), -(r["overall"] if r["overall"] is not None else -1),
                 -(r["composite"] if r["composite"] is not None else -1),
                 len(r["flags"]), r["excluded_weight_share"], r["ticker"])
     out = sorted(results, key=key)
@@ -843,26 +928,32 @@ def rank(results):
 
 
 def export_rows(final, settings, industry):
-    """Part H4: one row per company with every raw value, score, fit, flag and setting."""
+    """Part H4: one row per company with every raw value, score, Fit, Laura limit, flag and setting."""
     stamp = datetime.now().isoformat(timespec="seconds")
     rows = []
     for r in final["results"]:
+        h = r.get("history") or {}
         row = {"timestamp": stamp, "industry": industry, "rank": r["rank"], "ticker": r["ticker"], "name": r["name"],
                "fiscal_year_end": r["fye"], "overall": r["overall"], "fit": r["fit"], "composite": r["composite"],
-               "metrics_inside_range": f"{r['n_inside']}/{r['n_total']}", "data_coverage": r["coverage"],
-               "low_data": r["low_data"], "not_scored": r["not_scored"], "low_data_reason": r["low_data_reason"],
+               "laura_penalty": r["penalty"], "why_not_higher": r["why_not_higher"],
+               "metrics_meeting_limit": f"{r['n_inside']}/{r['n_total']}", "data_coverage": r["coverage"],
+               "too_new_for_window": r.get("too_new"), "low_data": r["low_data"], "not_scored": r["not_scored"],
+               "low_data_reason": r["low_data_reason"] or r.get("too_new_reason"),
                "annual_form": r["annual_form"], "red_flags": " | ".join(f["text"] for f in r["flags"]),
+               "history_years_available": h.get("years_available"), "history_window": h.get("window"),
+               "history_start": h.get("start"), "history_end": h.get("end"),
                "wacc": r["wacc"].get("wacc"), "roic_minus_wacc_pp": r["wacc"].get("spread"),
                "altman_z": r["altman"].get("z"), "piotroski_f": r["piotroski"].get("f")}
         for k, v in r["derived"].items():
-            row[f"input_{k}"] = v
+            if k != "history":
+                row[f"input_{k}"] = v
         for k in KEYS:
             m = r["metrics"][k]
             row.update({f"{k}__value": m["value"], f"{k}__status": m["status"], f"{k}__percentile_score": m["pct"],
-                        f"{k}__fit": m["fit"], f"{k}__weight": m["weight"], f"{k}__range_low": m["range"][0],
-                        f"{k}__range_high": m["range"][1], f"{k}__note": m["note"]})
-        row.update({"setting_blend": final["blend"], "setting_tbill": settings["tbill"], "setting_rf": settings["rf"],
-                    "setting_erp": settings["erp"]})
+                        f"{k}__laura_limit": m["laura_limit"], f"{k}__limit_used": m["limit"], f"{k}__distance_past_limit": m["distance"],
+                        f"{k}__fit": m["fit"], f"{k}__weight": m["weight"], f"{k}__note": m["note"]})
+        row.update({"setting_laura_penalty_k": final["penalty"], "setting_history_window": settings.get("window"),
+                    "setting_tbill": settings["tbill"], "setting_rf": settings["rf"], "setting_erp": settings["erp"]})
         rows.append(row)
     return pd.DataFrame(rows)
 
@@ -871,7 +962,7 @@ def export_rows(final, settings, industry):
 # Part I: self-tests
 # ========================================================================
 
-def _synthetic_raw(i, n_fy=5, ebitda_neg=False, no_interest_no_debt=False, loss=False, short_hist=False):
+def _synthetic_raw(i, n_fy=5, ebitda_neg=False, no_interest_no_debt=False, loss=False, short_hist=False, years=10.0):
     """Deterministic fake company i with plausible, fully-populated data."""
     rng = np.random.default_rng(i)
     ends = [f"{2021 + j}-12-31" for j in range(n_fy)]
@@ -895,9 +986,11 @@ def _synthetic_raw(i, n_fy=5, ebitda_neg=False, no_interest_no_debt=False, loss=
         else:
             a["interest_expense"] = 0.0
         annual[e] = a
-    months = 18 if short_hist else 36
-    px = {"monthly_returns": list(rng.normal(0.008, 0.05, months)), "mdd": float(0.1 + 0.3 * rng.random()),
-          "mdd_months": 36.0, "months": 37.0}
+    years = 1.5 if short_hist else years
+    months = min(120, int(round(years * 12)))
+    m3 = float(0.1 + 0.3 * rng.random())
+    px = {"monthly_returns": list(rng.normal(0.008, 0.05, months)), "years": years, "months": years * 12,
+          "mdd_3": m3, "mdd_5": m3 + 0.05, "mdd_10": m3 + 0.15, "first_date": None, "last_date": "2026-10-14"}
     return {"ticker": f"T{i:02d}", "name": f"Test Co {i}", "sector": "Technology", "industry": "Test Industry",
             "yf_industry": "Test", "sic": 3674, "fy_ends": ends, "annual": annual,
             "market": {"price": 50 + i, "market_cap": scale * 4, "beta": 1.0 + i / 20, "dividend_yield": 0.01},
@@ -944,23 +1037,24 @@ def run_self_tests():
     check("6. Missing metric → Σ(other w × score) ÷ Σ(other w)", abs(composite_score(scores, w) - expected) < 1e-9,
           f"{composite_score(scores, w):.4f} vs {expected:.4f}")
 
-    # 7 fit
-    # graded: range (bad 10, good 20), spread 10. Good bound and beyond = 100, linear to 80 at the bad bound, then 80 - 50 x d / spread
-    fh = [metric_fit(v, 10, 20, 10, "higher")[0] for v in (25, 20, 15, 10, 5, 0, -10)]
-    check("7a. Graded Fit higher-is-better [25,20,15,10,5,0,-10] → [100,100,90,80,55,30,0]", close(fh, [100, 100, 90, 80, 55, 30, 0]), str(fh))
-    fl = [metric_fit(v, 1, 2, 1, "lower")[0] for v in (0.5, 1, 1.5, 2, 2.5, 3, 4)]
-    check("7b. Graded Fit lower-is-better (good 1, bad 2) [0.5,1,1.5,2,2.5,3,4] → [100,100,90,80,55,30,0]", close(fl, [100, 100, 90, 80, 55, 30, 0]), str(fl))
+    # 7 simple (one-sided) Fit: limit 10, spread 4
+    fl = [metric_fit(v, 10, 4, "lower")[0] for v in (2, 10, 14, 18, 30)]
+    fh = [metric_fit(v, 10, 4, "higher")[0] for v in (30, 10, 6, 2, -10)]
+    check("7a. Simple Fit lower-is-better (ceiling 10, spread 4): good side 2 / at limit 10 → 100; one spread past (14) → 50; two (18) → 0; beyond → 0",
+          close(fl, [100, 100, 50, 0, 0]), str(fl))
+    check("7b. Simple Fit higher-is-better (floor 10, spread 4): good side 30 / 10 → 100; one spread past (6) → 50; two (2) → 0",
+          close(fh, [100, 100, 50, 0, 0]), str(fh))
 
     # 8 / 9 / 13 / 14 full pipeline on a synthetic industry of 12 companies
     raws = [_synthetic_raw(i) for i in range(12)]
     prep = prepare_industry(raws)
     base = finalize(prep)
     bt = {x["ticker"]: x for x in base["results"]}
-    moved = finalize(prep, ranges={"roic": (-1000.0, -999.0), "sloan": (500.0, 600.0)})
+    moved = finalize(prep, limits={"roic": 1000.0, "sloan": -500.0})
     mt = {x["ticker"]: x for x in moved["results"]}
     same_comp = all(abs(bt[t]["composite"] - mt[t]["composite"]) < 1e-12 for t in bt)
     diff_fit = any(abs(bt[t]["fit"] - mt[t]["fit"]) > 1e-6 for t in bt)
-    check("8. Moving comfort ranges changes Fit but not Composite", same_comp and diff_fit, f"composite same={same_comp}, fit changed={diff_fit}")
+    check("8. Moving a Laura limit changes Fit but not Composite", same_comp and diff_fit, f"composite same={same_comp}, fit changed={diff_fit}")
     w2 = dict(DEFAULT_WEIGHTS, roic=0, shareholder_yield=20)
     wt = {x["ticker"]: x for x in finalize(prep, weights=w2)["results"]}
     wchg = any(abs(bt[t]["composite"] - wt[t]["composite"]) > 1e-6 for t in bt) and any(abs(bt[t]["fit"] - wt[t]["fit"]) > 1e-6 for t in bt)
@@ -998,37 +1092,33 @@ def run_self_tests():
     has_flag = any(f["code"] == "sector_fallback:roic" for f in prep2["companies"]["T00"]["flags"])
     check("14. Pool < 10 → sector fallback with flag", lv == "sector" and has_flag, f"level={lv}, flag shown={has_flag}")
 
-    # 15-17 Laura standards (laura.py): per-industry percentile bounds, spread untouched, safe fallback
+    # 15-17 Laura standards (laura.py): one per-industry percentile limit, spread untouched
     prep_b = prepare_industry([_synthetic_raw(i) for i in range(40, 52)])
-    la, lb = laura_ranges(prep["bench"]), laura_ranges(prep_b["bench"])
+    la, lb = laura_limits(prep["bench"]), laura_limits(prep_b["bench"])
     med_a = float(np.median(prep["bench"]["max_drawdown"]["vals"]))
     med_b = float(np.median(prep_b["bench"]["max_drawdown"]["vals"]))
-    check("15. Laura max-drawdown upper bound = that industry's median, and differs between two industries",
-          abs(la["max_drawdown"][1] - med_a) < 1e-9 and abs(lb["max_drawdown"][1] - med_b) < 1e-9 and abs(med_a - med_b) > 1e-6
-          and abs(la["max_drawdown"][0] - float(np.percentile(prep["bench"]["max_drawdown"]["vals"], 10))) < 1e-9,  # good bound = p10
-          f"industry A {la['max_drawdown'][1]:.3f} (median {med_a:.3f}) vs industry B {lb['max_drawdown'][1]:.3f} (median {med_b:.3f})")
+    check("15. Laura max-drawdown ceiling = that industry's median, and differs between two industries",
+          abs(la["max_drawdown"] - med_a) < 1e-9 and abs(lb["max_drawdown"] - med_b) < 1e-9 and abs(med_a - med_b) > 1e-6,
+          f"industry A {la['max_drawdown']:.3f} (median {med_a:.3f}) vs industry B {lb['max_drawdown']:.3f} (median {med_b:.3f})")
     bq = lambda k: prep["bench"][k]
-    p40 = float(np.percentile(bq("roic")["vals"], 40))
-    p90 = lambda k: float(np.percentile(bq(k)["vals"], 90))
-    ok16 = (abs(la["interest_coverage"][0] - bq("interest_coverage")["q"]["median"]) < 1e-9          # higher-better risk: bad = p50
-            and abs(la["roic"][0] - p40) < 1e-9 and abs(la["roic"][1] - p90("roic")) < 1e-9          # consistency: bad = p40, good = p90
-            and abs(la["revenue_growth"][0] - bq("revenue_growth")["q"]["p25"]) < 1e-9 and abs(la["revenue_growth"][1] - p90("revenue_growth")) < 1e-9  # moderate: bad p25
+    pq = lambda k, p: float(np.percentile(bq(k)["vals"], p))
+    avg_l = default_limits(prep["bench"])
+    ok16 = (abs(la["interest_coverage"] - bq("interest_coverage")["q"]["median"]) < 1e-9           # higher-better risk: floor = p50
+            and abs(la["roic"] - pq("roic", 40)) < 1e-9                                              # consistency: floor = p40
+            and abs(la["revenue_growth"] - pq("revenue_growth", 25)) < 1e-9                         # moderate higher-better: p25
+            and abs(avg_l["max_drawdown"] - pq("max_drawdown", 75)) < 1e-9 and abs(avg_l["roic"] - pq("roic", 25)) < 1e-9  # Industry average
             and all(abs(bq(k)["spread"] - (bq(k)["q"]["p75"] - bq(k)["q"]["p25"])) < 1e-12 for k in KEYS if bq(k)["q"] and bq(k)["q"]["p75"] > bq(k)["q"]["p25"])
-            and all(base["results"][0]["metrics"][k]["range"] == la[k] for k in la))                 # engine default = Laura
-    # a company between the median and p75 of max drawdown: inside the industry default (Fit >= 80), beyond Laura's bad bound (< 80)
+            and all(base["results"][0]["metrics"][k]["limit"] == la[k] for k in la))                 # engine default = Laura
     t_mid = next((t for t, c in prep["companies"].items() if c["metrics"]["max_drawdown"]["status"] == OK
                   and med_a < c["metrics"]["max_drawdown"]["value"] <= bq("max_drawdown")["q"]["p75"]), None)
-    avg = {x["ticker"]: x for x in finalize(prep, ranges=default_ranges(prep["bench"]))["results"]}
-    stricter = t_mid is not None and avg[t_mid]["metrics"]["max_drawdown"]["fit"] >= 80 and bt[t_mid]["metrics"]["max_drawdown"]["fit"] < 80
-    check("16. Laura tiers: bad bound risk = p50, consistency = p40, moderate = p25/p75; good bound p10/p90; spread unchanged; "
-          "Laura is the engine default and is stricter",
+    avg = {x["ticker"]: x for x in finalize(prep, limits=avg_l)["results"]}
+    stricter = t_mid is not None and avg[t_mid]["metrics"]["max_drawdown"]["fit"] == 100 and bt[t_mid]["metrics"]["max_drawdown"]["fit"] < 100
+    check("16. Laura limits: risk = p50, consistency = p40, moderate = p25 floor / p75 ceiling; Industry average = p75 / p25; "
+          "spread unchanged; Laura is the engine default and is stricter",
           ok16 and stricter, f"tiers/spread/default ok={ok16}, stricter on {t_mid}={stricter}")
-    flat = {"q": {"p5": 1.0, "p25": 1.0, "median": 1.0, "p75": 3.0, "p95": 4.0, "n": 8}, "vals": [1, 1, 1, 1, 1, 2, 3, 4]}
-    fb = laura.laura_metric(flat, "lower", ("risk", 50))
-    one = laura.industry_default({"q": {"p5": 2.0, "p25": 2.0, "median": 2.0, "p75": 2.0, "p95": 2.0, "n": 3}, "vals": [2, 2, 2]})
-    check("17. Laura bound equal to the other bound → industry default + note; never a zero-width range",
-          fb["fallback"] and fb["range"] == (1.0, 3.0) and one[1] - one[0] > 0, f"{fb['range']} · {fb['note'][:60]}… · single-value pool → {one}")
-    # 18-19 not scored (foreign filer) + low-data reason
+    one = laura.laura_metric({"q": {"p5": 2.0, "p25": 2.0, "median": 2.0, "p75": 2.0, "p95": 2.0, "n": 3}, "vals": [2, 2, 2]}, "lower", ("risk", 50))
+    check("17. Single-value pool → limit = that value (one number, never a range)", one["limit"] == 2.0 and one["side"] == "ceiling", str(one))
+    # 18-19 foreign filer out of scope + low-data reason
     fr = _synthetic_raw(5)
     fr.update({"ticker": "FOR", "annual": {}, "fy_ends": [], "annual_form": "40-F", "cik": "0000000001"})
     nr = _synthetic_raw(6)
@@ -1036,24 +1126,47 @@ def run_self_tests():
     for e in nr["annual"]:
         nr["annual"][e].pop("ebit")  # a 10-K filer with no operating-income line (like NEM)
     pf = prepare_industry([_synthetic_raw(i) for i in range(10)] + [fr, nr])
-    out = finalize(pf)["results"]
-    fo, no = next(x for x in out if x["ticker"] == "FOR"), next(x for x in out if x["ticker"] == "NOE")
-    check("18. Foreign filer (40-F, no 10-K) → 'Not scored: files 40-F, not 10-K', unranked and after every ranked name",
-          fo["not_scored"] == "Not scored: files 40-F, not 10-K" and fo["rank"] is None and out[-1]["ticker"] == "FOR"
-          and all(x["rank"] is not None for x in out if x["ticker"] != "FOR"), f"{fo['not_scored']} · rank {fo['rank']}")
+    ff = finalize(pf)
+    out = ff["results"]
+    no = next(x for x in out if x["ticker"] == "NOE")
+    check("18. Foreign filer (40-F, no 10-K) → out of scope: not ranked, not in any peer pool, listed in 'foreign' with the reason",
+          all(x["ticker"] != "FOR" for x in out) and [f["ticker"] for f in ff["foreign"]] == ["FOR"] and "foreign filer" in ff["foreign"][0]["reason"]
+          and "FOR" not in pf["companies"] and pf["bench"]["max_drawdown"]["pool_n"] == 11 and all(x["rank"] is not None for x in out),
+          ff["foreign"][0]["reason"] if ff["foreign"] else "no foreign list")
     labels = [m for m, _ in no["missing"]]
     check("19. Low data names the missing metrics and why (EBIT missing → ROIC, earnings yield, interest coverage...)",
           no["low_data"] and "ROIC" in labels and "Interest coverage" in labels and "EBIT missing" in no["low_data_reason"]
           and no["rank"] is not None, (no["low_data_reason"] or "")[:140])
-    # 20 graded Fit on stocks: good bound beats bad bound (both inside); the good-bound handle now matters
-    vals = sorted(c["metrics"]["roic"]["value"] for c in prep["companies"].values() if c["metrics"]["roic"]["status"] == OK)
-    lo_v, hi_v = vals[1], vals[-2]
-    g_lo = next(t for t, c in prep["companies"].items() if c["metrics"]["roic"]["value"] == lo_v)
-    g_hi = next(t for t, c in prep["companies"].items() if c["metrics"]["roic"]["value"] == hi_v)
-    f1 = {x["ticker"]: x for x in finalize(prep, ranges={"roic": (lo_v, hi_v)})["results"]}
-    f2 = {x["ticker"]: x for x in finalize(prep, ranges={"roic": (lo_v, hi_v + 5)})["results"]}
-    check("20. Stocks graded Fit: company at the good bound (100) outscores one at the bad bound (80), both inside; moving the good bound changes Fit",
-          f1[g_hi]["metrics"]["roic"]["fit"] == 100 and abs(f1[g_lo]["metrics"]["roic"]["fit"] - 80) < 1e-9
-          and f2[g_hi]["metrics"]["roic"]["fit"] < 100 and f1[g_hi]["n_inside"] >= 1,
-          f"good {f1[g_hi]['metrics']['roic']['fit']:.1f}, bad {f1[g_lo]['metrics']['roic']['fit']:.1f}, good bound +5 → {f2[g_hi]['metrics']['roic']['fit']:.1f}")
+    # 20-21 Overall = Composite - k x (100 - Fit)
+    lim_all = {k: (1e9 if METRIC_BY_KEY[k]["direction"] == "lower" else -1e9) for k in KEYS}  # every company on the good side
+    f100 = finalize(prep, limits=lim_all, penalty=0.4)["results"]
+    ok20 = all(abs(x["fit"] - 100) < 1e-9 and abs(x["overall"] - x["composite"]) < 1e-9 and abs(x["penalty"]) < 1e-9 for x in f100)
+    pen = [x for x in base["results"] if x["fit"] < 100]
+    ok20b = all(abs(x["overall"] - max(0.0, x["composite"] - 0.4 * (100 - x["fit"]))) < 1e-9 for x in base["results"]) and pen
+    check("20. k = 0.4: a company with Fit 100 has Overall = Composite; otherwise Overall = max(0, Composite − 0.4 × (100 − Fit))",
+          ok20 and ok20b, f"{len(f100)} at Fit 100; {len(pen)} with Fit < 100")
+    k0 = finalize(prep, penalty=0.0)["results"]
+    by_comp = sorted(k0, key=lambda x: (-x["composite"], len(x["flags"]), x["excluded_weight_share"], x["ticker"]))
+    w0 = next(x for x in base["results"] if x["why_not"])
+    check("21. k = 0 → ranking equals the Composite ranking; why-not-higher points add up to the Laura penalty",
+          [x["ticker"] for x in k0] == [x["ticker"] for x in by_comp] and all(x["overall"] == x["composite"] for x in k0)
+          and abs(sum(v for _, v in w0["why_not"]) - w0["penalty"]) < 1e-9,
+          f"{[x['ticker'] for x in k0][:5]}…; {w0['ticker']}: {w0['why_not_higher'][:80]}")
+    # 22 common history window 3 / 5 / 10
+    four = _synthetic_raw(70, years=4.0)
+    s3, s5 = compute_metrics(four, {"window": 3}), compute_metrics(four, {"window": 5})
+    runs = {w: finalize(prepare_industry([_synthetic_raw(i) for i in range(12)], {"window": w}))["results"] for w in WINDOWS}
+    ok22 = (all(s3["metrics"][k]["status"] == OK for k in HIST_KEYS) and abs(s3["metrics"]["max_drawdown"]["value"] - four["px"]["mdd_3"] * 100) < 1e-9
+            and not s3["derived"]["history"]["too_new"] and s5["derived"]["history"]["too_new"]
+            and all(s5["metrics"][k]["status"] == EXCL and "too new" in s5["metrics"][k]["note"] for k in HIST_KEYS)
+            and all(len(v) == 12 and all(x["overall"] is not None for x in v) for v in runs.values())
+            and abs(runs[10][0]["metrics"]["max_drawdown"]["value"] - next(r for r in [_synthetic_raw(i) for i in range(12)]
+                    if r["ticker"] == runs[10][0]["ticker"])["px"]["mdd_10"] * 100) < 1e-9 and DEFAULT_SETTINGS["window"] == 5)
+    check("22. Window 3 / 5 / 10 all run; a stock with 4 yrs of prices is scored at 3 yrs and 'too new' at 5", ok22,
+          f"3-yr statuses {[s3['metrics'][k]['status'] for k in HIST_KEYS]}, 5-yr {[s5['metrics'][k]['status'] for k in HIST_KEYS]}")
+    # 23 too-new stock listed after every fully scored one
+    pt = finalize(prepare_industry([_synthetic_raw(i) for i in range(12)] + [_synthetic_raw(71, years=2.0)]))["results"]
+    pos = [x["ticker"] for x in pt].index("T71")
+    check("23. Too-new stock is listed after every fully scored stock (not low data)", pt[pos]["too_new"] and not pt[pos]["low_data"] and pos == len(pt) - 1,
+          f"position {pos + 1} of {len(pt)}")
     return results

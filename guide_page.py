@@ -54,7 +54,7 @@ def _status():
         ("ETF funds pulled & scored", "etf_raw.db", _count("etf_raw.db", "SELECT COUNT(*) FROM etf_raw")),
         ("ETF categories pulled", "etf_raw.db", _count("etf_raw.db", "SELECT COUNT(*) FROM etf_meta")),
         ("Holdings with a stock Composite", "holding_scores.db", _count("holding_scores.db", "SELECT COUNT(*) FROM holding_scores")),
-        ("Holdings skipped (foreign / not tradeable)", "holding_scores.db", _count("holding_scores.db", "SELECT COUNT(*) FROM holding_skips")),
+        ("Holdings skipped (foreign listing or filer / not tradeable)", "holding_scores.db", _count("holding_scores.db", "SELECT COUNT(*) FROM holding_skips")),
     ]
     df = pd.DataFrame([{"item": a, "file": f, "value": v if v is not None else "not built yet", "size": _size(f)} for a, f, v in rows])
     st.dataframe(df.astype(str), hide_index=True, width="stretch")

@@ -21,7 +21,8 @@ log = logging.getLogger(__name__)
 PREFIX = "stk"  # this page's own session-key prefix (the ETF page uses "etf")
 
 FLAG_ICONS = {"altman": "🔻", "piotroski": "📉", "roic_below_wacc": "💸", "unsafe_payout": "🚨",
-              "neg_ic": "➖", "ev_le0": "➖", "interest_missing": "❔", "short_history": "🕒", "debt_assumed_zero": "ℹ️",
+              "neg_ic": "➖", "ev_le0": "➖", "interest_missing": "❔", "short_history": "🕒", "too_new": "🆕", "stale_prices": "🕒",
+              "debt_assumed_zero": "ℹ️",
               "data_note": "📝", "sector_fallback": "📏"}
 
 
@@ -67,14 +68,14 @@ def _settings_sidebar():
         if y10_err:
             st.warning(f"Live 10-year yield unavailable ({y10_err[:80]}); using 4.25%.")
         erp = st.number_input("Equity risk premium (WACC, %)", 0.0, 15.0, 5.0, 0.25, key="s2_erp")
-    return {"tbill": tbill / 100, "rf": rf / 100, "erp": erp / 100}
+    return {"tbill": tbill / 100, "rf": rf / 100, "erp": erp / 100, "window": int(st.session_state.get("hist_window", 5))}
 
 
 def render(group, directory_fn):
     settings = _settings_sidebar()
     st.caption(
-        "14-metric scoring: **Composite** (percentile vs peers) + **Fit** (closeness to your comfort ranges, in real units), "
-        "blended into **Overall**. See the *How scoring works* tab."
+        "14-metric scoring: **Composite** (percentile vs peers) minus a **Laura penalty** for every Laura limit a company misses "
+        "(**Overall = Composite − k × (100 − Fit)**). See the *How scoring works* tab."
     )
 
     hit = sd.load_industry(group)
@@ -126,8 +127,8 @@ def render(group, directory_fn):
         return
 
     raws, fetched = hit
-    # prep depends on data + settings only; weights and ranges are applied later in finalize (never re-pulls)
-    memo_key = (sc.PREP_VERSION, group, fetched, settings["tbill"], settings["rf"], settings["erp"])
+    # prep depends on data + settings (incl. the history window) only; weights and limits are applied later in finalize (never re-pulls)
+    memo_key = (sc.PREP_VERSION, group, fetched, settings["tbill"], settings["rf"], settings["erp"], settings["window"])
     if st.session_state.get("s2_prep_key") != memo_key:
         st.session_state["s2_prep"] = sc.prepare_industry(raws, settings, all_raws=sd.load_all_cached)
         st.session_state["s2_prep_key"] = memo_key
@@ -137,24 +138,24 @@ def render(group, directory_fn):
     linfo = laura.laura_info(bench, "stock", sc.METRICS)
 
     # ------------------------------------------------------------------ Tune
-    weights, ranges, hard = {}, {}, {}
+    weights, limits, hard = {}, {}, {}
     with tab_tune:
         wdef = {f"s2w|{m['key']}": float(m["weight"]) for m in sc.METRICS}
-        ru.seed({"s2_blend": 50, **wdef})  # Laura weights are the default
+        ru.seed({"s2_penalty": sc.DEFAULT_PENALTY, **wdef})  # Laura weights + penalty strength are the default
         t1, t2, t3 = st.columns([2, 1, 1])
-        blend = t1.slider("Blend: Overall = b × Fit + (1 − b) × Composite", 0, 100, step=5, key="s2_blend",
-                          help="0% = pure peer percentiles. 100% = pure closeness to your comfort ranges.") / 100
-        ru.buttons((t2, t3), PREFIX, ns, bench, wdef)
-        ru.seed_laura(PREFIX, ns, bench, linfo)  # Laura ranges are the default (only where nothing is set yet)
+        ru.buttons((t2, t3), PREFIX, ns, bench, sc.METRICS, wdef, "s2_penalty", sc.DEFAULT_PENALTY)  # before the slider: it resets it
+        penalty = t1.slider("Laura penalty strength k: Overall = Composite − k × (100 − Fit)", 0.0, 1.0, step=0.05, key="s2_penalty",
+                            help="0 = pure Composite (peer percentiles). Each Fit point below 100 costs k Overall points.")
+        ru.seed_laura(PREFIX, ns, bench, linfo)  # Laura limits are the default (only where nothing is set yet)
         total = sum(st.session_state[k] for k in wdef)
         (st.success if abs(total - 100) < 0.01 else st.warning)(
             f"Weights total **{total:.1f}**" + ("" if abs(total - 100) < 0.01 else " (not 100 - scores still calculate; the formula normalizes)")
             + " · defaults = Laura Gao's standards (risk and balance sheet first)")
-        st.caption("Weights affect both Composite and Fit. Comfort ranges affect only Fit. Ranges are in the metric's own units. "
-                   "The two slider handles are the **good bound** (Fit 100 at or beyond it) and the **bad bound** (Fit 80); Fit falls "
-                   "linearly between them and keeps falling past the bad bound (80 − 50 × distance ÷ spread). **Laura standards** (default): "
-                   "good bound = this industry's best decile (10th / 90th percentile); bad bound = the industry median for risk metrics, "
-                   "the 40th percentile for consistency metrics, the 25th for the rest.")
+        st.caption("Weights affect Composite and Fit. Laura limits affect only Fit. Each metric has ONE **Laura limit** in its own units: "
+                   "a **ceiling** for lower-is-better metrics, a **floor** for higher-is-better. On the good side of the limit Fit = **100**; "
+                   "past it **Fit = 100 × max(0, 1 − (distance ÷ spread) ÷ 2)** (one spread past = 50, two = 0; spread = industry 75th − 25th). "
+                   "**Laura standards** (default): limit = the industry median for risk metrics, the 40th percentile for consistency metrics, "
+                   "the 25th (floor) for the rest. **Industry average**: the 75th (ceiling) / 25th (floor).")
 
         for gname in sc.GROUPS:
             with st.expander(gname, expanded=False):
@@ -171,15 +172,15 @@ def render(group, directory_fn):
                                f"{fmt(q['p75'], m['units'])} · {b['pool_n']} peers"
                                + ("" if b["level"] == "industry" else f" · ⚠ {b['level']} fallback pool ({b['industry_n']} in industry)"))
                     ru.laura_caption(linfo.get(key), m["direction"], lambda v, u=m["units"]: fmt(v, u))
-                    ranges[key] = ru.range_widget(PREFIX, ns, key, b, fallback=(linfo.get(key) or {}).get("range"))
+                    limits[key] = ru.limit_widget(PREFIX, ns, key, b, m["direction"], fallback=(linfo.get(key) or {}).get("limit"))
                     cw, ch = st.columns(2)
                     weights[key] = cw.slider("Weight", 0.0, 20.0, step=0.5, key=f"s2w|{key}")
-                    hard[key] = ch.checkbox("Must be inside range", key=f"s2h|{ns}|{key}")
+                    hard[key] = ch.checkbox("Must be inside (meet the Laura limit)", key=f"s2h|{ns}|{key}")
                     st.divider()
         for m in sc.METRICS:
             weights.setdefault(m["key"], st.session_state[f"s2w|{m['key']}"])
 
-    final = sc.finalize(prep, weights=weights, ranges=ranges, blend=blend, hard_limits=hard)
+    final = sc.finalize(prep, weights=weights, limits=limits, penalty=penalty, hard_limits=hard)
     results = final["results"]
 
     # ------------------------------------------------------------- Results
@@ -194,13 +195,16 @@ def render(group, directory_fn):
                 if len(results) - len(passing):
                     st.info(f"{len(results) - len(passing)} removed by hard limits · {len(passing)} remain.")
                 display = sc.rank([dict(r) for r in passing])
-        st.caption(f"**Data as of {fetched}** (SEC 10-K + yfinance, cached) · weights and ranges from Tune scoring · "
-                   f"blend {blend:.0%}" + (" · Must-be-inside limits on" if any(hard.values()) else ""))
+        st.caption(f"**Data as of {fetched}** (SEC 10-K + yfinance, cached) · weights and Laura limits from Tune scoring · "
+                   f"penalty strength k = {penalty:.2f} · {settings['window']}-yr history window"
+                   + (" · Must-be-inside limits on" if any(hard.values()) else ""))
         rows = [{
-            "rank": r["rank"], "ticker": r["ticker"], "company": r["name"], "overall": r["overall"], "fit": r["fit"],
-            "composite": r["composite"], "inside range": f"{r['n_inside']}/{r['n_total']}",
-            "flags": _icons(r["flags"]) + (" ⛔ not scored" if r["not_scored"] else " ❓low data" if r["low_data"] else ""),
-            "why low data / not scored": r["low_data_reason"] or "",
+            "rank": r["rank"], "ticker": r["ticker"], "company": r["name"], "overall": r["overall"], "composite": r["composite"],
+            "fit": r["fit"], "Laura penalty": r["penalty"], "meets limits": f"{r['n_inside']}/{r['n_total']}",
+            "why not higher": r.get("why_not_higher") or "",
+            "flags": _icons(r["flags"]) + (" ⛔ not scored" if r["not_scored"] else " ❓low data" if r["low_data"] else "")
+                     + (" 🆕too new" if r.get("too_new") else ""),
+            "why low data / not scored / too new": r["low_data_reason"] or r.get("too_new_reason") or "",
             "coverage": r["coverage"] * 100, "FYE": r["fye"],
             "flag details": " | ".join(f["text"] for f in r["flags"]),
         } for r in display]
@@ -210,7 +214,13 @@ def render(group, directory_fn):
             "overall": bar(), "fit": bar(), "composite": bar(), "coverage": st.column_config.NumberColumn("data coverage %", format="%.0f"),
             "flags": st.column_config.TextColumn(help="Key below the table. Full text in 'flag details'."),
             "rank": st.column_config.NumberColumn(help="Blank = not scored (no 10-K data)."),
+            "Laura penalty": st.column_config.NumberColumn(format="%.1f", help="Overall points lost for missing Laura limits: Composite − Overall = k × (100 − Fit)."),
+            "why not higher": st.column_config.TextColumn(help="Each missed Laura limit and the Overall points it costs: k × weight × (100 − Fit) ÷ total weight."),
         })
+        n_new = sum(bool(r.get("too_new")) for r in display)
+        if n_new:
+            st.caption(f"{n_new} too new for the {settings['window']}-yr window (listed after the fully scored companies).")
+        _foreign_list(final["foreign"])
         _flag_key(FLAG_KEY)
         export = sc.export_rows(final, settings, group)
         d1, d2 = st.columns([1, 1])
@@ -218,9 +228,9 @@ def render(group, directory_fn):
                            file_name=f"stock_score_{group}_{datetime.now():%Y%m%d_%H%M}.csv".replace(" ", "_"), mime="text/csv")
         shown = {r["ticker"] for r in display}
         snapshots.button(f"stk|{ns}", "stock", group, lambda: export[export["ticker"].isin(shown)],
-                         lambda: {"data_date": fetched, "industry": group, "settings": settings, "blend": blend, "weights": weights,
-                                  "ranges": {k: list(v) for k, v in final["ranges"].items()},
-                                  "range_source": "Tune scoring (Laura standards unless hand-tuned)",
+                         lambda: {"data_date": fetched, "industry": group, "settings": settings, "laura_penalty_k": penalty, "weights": weights,
+                                  "limits": dict(final["limits"]),
+                                  "limit_source": "Tune scoring (Laura standards unless hand-tuned)",
                                   "hard_limits": [k for k, v in hard.items() if v], "rows_shown": len(display)}, col=d2)
 
         st.subheader("Breakdown")
@@ -239,7 +249,7 @@ def _compare_tab(settings):
     counts = sd.cached_counts()
     options = [i for i in sorted(counts)]
     weights = {m["key"]: float(st.session_state.get(f"s2w|{m['key']}", m["weight"])) for m in sc.METRICS}
-    blend = st.session_state.get("s2_blend", 50) / 100
+    penalty = float(st.session_state.get("s2_penalty", sc.DEFAULT_PENALTY))
     cache = st.session_state.setdefault("_cmpcache_stk", {})
     if len(cache) > 80:
         cache.clear()
@@ -250,13 +260,14 @@ def _compare_tab(settings):
             hit = sd.load_industry(g)
             if hit:
                 by[g] = hit
-        return compare.stock_compare(by, settings, weights, blend, mode, rmode, all_raws=sd.load_all_cached, cache=cache)
+        return compare.stock_compare(by, settings, weights, penalty, mode, rmode, all_raws=sd.load_all_cached, cache=cache)
 
     compare_ui.render(key="stkcmp_", asset="stock", metrics=sc.METRICS, options=options,
                       counts={g: f"{n} companies" for g, (n, _) in counts.items()}, run=run,
                       weight_defaults={f"s2w|{m['key']}": float(m["weight"]) for m in sc.METRICS},
                       fmt=fmt, icons=_icons, word="industry", name_word="company", page_prefix=PREFIX, ns_fn=lambda g: g,
-                      hard_prefix="s2h|", meta_extra={"settings": settings, "blend": blend})
+                      hard_prefix="s2h|", meta_extra={"settings": settings, "laura_penalty_k": penalty},
+                      penalty_key="s2_penalty", penalty_default=sc.DEFAULT_PENALTY)
 
 
 FLAG_KEY = [("🔻", "Altman distress", "Altman Z below the distress line (bankruptcy-risk model)"),
@@ -265,13 +276,25 @@ FLAG_KEY = [("🔻", "Altman distress", "Altman Z below the distress line (bankr
             ("🚨", "Payouts > free cash flow", "3-yr dividends + buybacks exceed 3-yr free cash flow"),
             ("➖", "Negative capital / EV", "negative invested capital or enterprise value ≤ 0"),
             ("❔", "Interest missing", "interest expense not reported although the company has debt"),
-            ("🕒", "Short history", "fewer than 24 months of prices or few fiscal years"),
+            ("🆕", "Too new for this window", "less price history than the history window: downside deviation and max drawdown excluded; listed after fully scored companies"),
+            ("🕒", "Stale prices", "prices end more than 7 days before the rest of the industry: history metrics excluded"),
             ("ℹ️", "Debt assumed zero", "no debt reported in the 10-K, treated as zero"),
             ("📝", "Data note", "a data source problem for this company (e.g. no 10-K in SEC XBRL); see flag details"),
             ("📏", "Fallback pool", "fewer than 10 industry peers for a metric, ranked against the sector / all stocks"),
             ("❓", "Low data", "more than 30% of the weight excluded; listed after the fully scored names (the 'why' column lists the missing metrics)"),
-            ("⛔", "Not scored", "no 10-K data: foreign filer (20-F / 40-F), new listing or not in SEC EDGAR; not ranked"),
+            ("⛔", "Not scored", "no 10-K data (new listing or not in SEC EDGAR); not ranked. Foreign filers (20-F / 40-F) are out of scope: see 'Not scored: foreign filer'"),
             ("⚑", "Other", "any other note; read the 'flag details' column")]
+
+
+def _foreign_list(foreign):
+    """Foreign filers (20-F / 40-F, no 10-K) are out of scope: listed here, never ranked."""
+    if not foreign:
+        return
+    with st.expander(f"Not scored: foreign filer ({len(foreign)})", expanded=False):
+        st.caption("These companies file a 20-F (foreign private issuer) or 40-F (Canadian issuer) instead of a 10-K. The stock model "
+                   "uses SEC 10-K data only, so they are out of scope: not ranked and not part of the peer pools.")
+        st.dataframe(pd.DataFrame([{"ticker": f["ticker"], "company": f["name"], "annual report": f["annual_form"], "reason": f["reason"]}
+                                   for f in foreign]), hide_index=True, width="stretch")
 
 
 def _flag_key(rows):
@@ -286,21 +309,25 @@ def _breakdown(r, bench, comp):
                    "debt or valuation metrics here and is not ranked. Price-based metrics are shown below for reference.")
     elif r["low_data"]:
         st.warning("**Low data** (listed after every fully scored company): " + r["low_data_reason"])
-    st.markdown(f"**Overall {r['overall']:.1f}** · Fit {r['fit']:.1f} · Composite {r['composite']:.1f} · "
-                f"{r['n_inside']}/{r['n_total']} metrics inside range · coverage {r['coverage']:.0%} · fiscal year end **{r['fye']}**"
+    if r.get("too_new"):
+        st.warning("🆕 **" + r["too_new_reason"] + "**. Listed after every fully scored company; pick a shorter *History window* in the sidebar.")
+    st.markdown(f"**Overall {r['overall']:.1f}** = Composite {r['composite']:.1f} − Laura penalty {r['penalty']:.1f} (Fit {r['fit']:.1f}) · "
+                f"{r['n_inside']}/{r['n_total']} metrics meet their Laura limit · coverage {r['coverage']:.0%} · fiscal year end **{r['fye']}**"
                 if None not in (r["overall"], r["fit"], r["composite"]) else "Not enough data to score this company.")
+    if r.get("why_not_higher") and None not in (r["overall"], r["composite"]):
+        st.markdown(f"**Why not higher:** {r['why_not_higher']}")
     rows = []
     for m in sc.METRICS:
         x = r["metrics"][m["key"]]
         b = bench[m["key"]]
         q = b["q"] or {}
-        lo, hi = x["range"]
+        lim = x["limit"]
         rows.append({
             "metric": f"{m['label']} ({m['units']})", "value": fmt(x["value"], m["units"]) if x["value"] is not None else ("scored 100" if x["status"] == sc.HUNDRED else "excluded"),
             "better": "higher" if m["direction"] == "higher" else "lower",
             "industry 25th": q.get("p25"), "median": q.get("median"), "75th": q.get("p75"),
-            "comfort range": f"{lo:.4g} to {hi:.4g}" if lo is not None else None,
-            "distance outside": x["distance"], "fit": x["fit"], "percentile score": x["pct"],
+            "Laura limit": (f"{'≤' if m['direction'] == 'lower' else '≥'} {lim:.4g}") if lim is not None else None,
+            "distance past limit": x["distance"], "fit": x["fit"], "percentile score": x["pct"],
             "weight": x["weight"], "contribution to composite": x["contribution"], "note": x["note"],
         })
     st.dataframe(pd.DataFrame(rows), hide_index=True, width="stretch")
@@ -341,24 +368,27 @@ def _breakdown(r, bench, comp):
 
 def _how_tab(chosen, final):
     st.markdown("""
-### Two scores, then a blend
+### Composite, minus a penalty for Laura's limits
 For each of the 14 metrics a company gets two numbers, both 0–100 where **100 is best**:
 
 * **Composite (percentile).** Rank the company among its industry peers that have a valid value for that metric. Sort ascending, rank 1 = lowest, ties share the average rank. **p = (rank − 1) ÷ (n − 1) × 100** (n = 1 → 50). *Higher-is-better* metrics use p; *lower-is-better* use 100 − p.
-* **Fit (comfort range, graded).** A range from a **good bound** to a **bad bound** in the metric's own units (the two slider handles; lower-is-better: low = good, high = bad; higher-is-better: high = good, low = bad). At or beyond the good bound → **100**; inside the range Fit falls linearly from 100 at the good bound to **80** at the bad bound; beyond the bad bound **Fit = max(0, 80 − 50 × distance ÷ spread)**, spread = industry 75th − 25th value (moving a bound does **not** change the spread). **Default = Laura standards, per industry**: good bound = the industry's **10th percentile** for lower-is-better metrics, **90th** for higher-is-better; bad bound = a stricter percentile of *this industry's* peer pool - risk metrics (downside deviation, max drawdown, net debt/EBITDA, Sloan: industry median; interest coverage: median), consistency metrics (ROIC, gross profitability, Δ ROIC, Δ operating margin: 40th percentile), the rest at the 25th percentile. *Industry average* sets every range to the 25th–75th.
+* **Fit (one Laura limit per metric).** Each metric has ONE limit in its own units: a **ceiling** for lower-is-better metrics, a **floor** for higher-is-better. Only the bad side counts: distance = max(0, value − ceiling) or max(0, floor − value), and **Fit = 100 × max(0, 1 − (distance ÷ spread) ÷ 2)**, spread = industry 75th − 25th value (moving the limit does **not** change the spread). So anything on the good side of the limit scores **100**, one spread past it **50**, two spreads past **0**. **Default = Laura standards, per industry**: risk metrics (downside deviation, max drawdown, net debt/EBITDA, Sloan, interest coverage) at the **industry median**, consistency metrics (ROIC, gross profitability, Δ ROIC, Δ operating margin) at the **40th percentile**, the rest (revenue growth, FCF yield, earnings yield, Lynch, shareholder yield) at the **25th percentile** (floor). *Industry average* sets every limit to the worse quartile (75th for a ceiling, 25th for a floor). *Must be inside* (optional, per metric) removes companies that miss that limit.
 
 Each is a **weighted average** over the metrics (default weights add to 100 and are Laura Gao's standards: moderate risk, no big drops, steady growth - so downside deviation and max drawdown carry 10 each, net debt/EBITDA 9, interest coverage / Sloan / ROIC 8 each, down to 4 for earnings yield and Lynch). Excluded metrics drop out and the denominator shrinks - a company missing a weight-10 metric is divided by 90, not 100.
 
-**Overall = b × Fit + (1 − b) × Composite** (b = the Blend slider, default 50%). Weights change both scores; comfort ranges change only Fit.
+**Overall = max(0, Composite − k × (100 − Fit))**, k = the *Laura penalty strength* slider (default **0.4**; *Laura standards* resets it; k = 0 → pure Composite). A company that meets every limit keeps its Composite. The **Laura penalty** column = Composite − Overall; **why not higher** lists each missed limit and the points it costs: k × weight × (100 − Fit) ÷ total weight. Weights change both scores; limits change only Fit.
+
+### History window
+**Downside deviation** and **max drawdown** use the sidebar's *History window* (3, 5 or 10 years; default 5) for every company, ending on the same date. A company with less price history than the window is **too new for this window**: both metrics are excluded (never measured over a shorter period) and it is listed after the fully scored companies. Prices that end more than 7 days before the rest of the industry are excluded the same way. 3 years starts in late 2023 and leaves out the 2022 decline, so risk numbers look better than over a full market cycle.
 
 ### Forced scores
 Some situations are scored 0 or 100 outright instead of ranked: EBITDA ≤ 0 → net debt/EBITDA = 0; EBIT ≤ 0 → earnings yield, interest coverage = 0; EPS ≤ 0 → Lynch = 0; no interest expense and no debt → interest coverage = 100. These companies are *not* part of that metric's ranking pool.
 
 ### Pools and fallbacks
-Percentiles use only companies with a **valid numeric value**. If an industry has fewer than 10, the company's **sector** is used (then all cached stocks) and a flag is shown.
+Percentiles use only companies with a **valid numeric value**. If an industry has fewer than 10, the company's **sector** is used (then all cached stocks) and a flag is shown. **Foreign filers** (20-F / 40-F, no 10-K) are out of scope: they are left out of every pool and ranking and listed under *Not scored: foreign filer*.
 
 ### Final order
-Companies with > 30% of their weight excluded are marked **low data** and always listed last. Otherwise: Overall ↓, then Composite ↓, fewer red flags, less excluded weight, ticker A–Z. Red flags are displayed, never scored.
+Fully scored companies first, then **too new for this window**, then **low data** (> 30% of the weight excluded, not counting the window metrics of a too-new company), then not scored (no 10-K data; no rank). Within each: Overall ↓, then Composite ↓, fewer red flags, less excluded weight, ticker A–Z. Red flags are displayed, never scored.
 """)
     if chosen and chosen["overall"] is not None:
         st.markdown(f"### Worked example: {chosen['ticker']} ({chosen['name']})")
@@ -367,14 +397,15 @@ Companies with > 30% of their weight excluded are marked **low data** and always
             or next(((m, x) for m, x in rows if x["status"] == sc.OK and x["pct"] is not None), None)
         if pick:
             m, x = pick
-            lo, hi = x["range"]
+            side = "ceiling ≤" if m["direction"] == "lower" else "floor ≥"
             st.markdown(
-                f"**{m['label']}**: value **{fmt(x['value'], m['units'])}**, comfort range **{lo:.4g} to {hi:.4g}**, distance outside **{x['distance']:.4g}** "
+                f"**{m['label']}**: value **{fmt(x['value'], m['units'])}**, Laura limit **{side} {x['limit']:.4g}**, distance past the limit **{x['distance']:.4g}** "
                 f"→ Fit **{x['fit']:.1f}**. Percentile score among peers: **{x['pct']:.1f}**. Weight **{x['weight']}**.")
         den = sum(x["weight"] for _, x in rows if x["pct"] is not None)
         num = sum(x["weight"] * x["pct"] for _, x in rows if x["pct"] is not None)
         st.markdown(f"**Composite** = Σ(weight × percentile score) ÷ Σ(weights not excluded) = {num:,.1f} ÷ {den} = **{chosen['composite']:.2f}**.")
-        st.markdown(f"**Overall** = {final['blend']:.0%} × Fit {chosen['fit']:.2f} + {1 - final['blend']:.0%} × Composite {chosen['composite']:.2f} = **{chosen['overall']:.2f}**.")
+        st.markdown(f"**Overall** = max(0, Composite {chosen['composite']:.2f} − {final['penalty']:.2f} × (100 − Fit {chosen['fit']:.2f})) = **{chosen['overall']:.2f}** "
+                    f"(Laura penalty {chosen['penalty']:.2f}).")
     with st.expander("Self-tests (debug)"):
         tests = sc.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")

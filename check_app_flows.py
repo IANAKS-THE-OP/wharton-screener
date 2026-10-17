@@ -3,8 +3,10 @@ Headless checks of the REAL app on the cached data (streamlit.testing AppTest; n
   ./venv/bin/python3 check_app_flows.py          (about 1-2 minutes)
 Stocks: Compare with two industries (Semiconductors + Gold) in both modes - own-mode scores equal each industry page.
 ETFs: grouping is Morningstar category + themes only (no industry picker); "Large Blend" loads with USMV, ESMV and ESGV,
-tier and why-not-higher columns; USMV / ESMV / ESGV are in their themes; Find-a-fund works without industries; ranges never
-leak between groups or pages; ETF Compare own mode equals the Large Blend page; pooled = each fund once.
+tier, Laura penalty and why-not-higher columns; USMV / ESMV / ESGV are in their themes; Find-a-fund works without industries;
+Laura limits never leak between groups or pages; ETF Compare own mode equals the Large Blend page; pooled = each fund once.
+History window dropdown (3 / 5 / 10, default 5, 3-yr caption); penalty strength k = 0 -> Overall = Composite; foreign filers listed
+separately, never ranked.
 """
 import html
 import os
@@ -35,6 +37,27 @@ def chk(name, cond, detail=""):
     global ok; ok &= bool(cond); print(("PASS " if cond else "FAIL ") + name, detail)
 
 at = AppTest.from_file(APP, default_timeout=600); at.run()
+hw = at.sidebar.selectbox(key="hist_window")
+chk("History window dropdown: 3 / 5 / 10 years, default 5, no 3-yr caption at 5", list(hw.options) == ["3 years", "5 years", "10 years"] and hw.value == 5
+    and not any("excludes the 2022 decline" in c.value for c in at.sidebar.caption), str(hw.options))
+at.sidebar.selectbox(key="industry_choice").set_value("Semiconductors").run()
+semi5 = at.dataframe[0].value
+chk("Stocks table has Laura penalty + why not higher next to Fit / Composite", {"Laura penalty", "why not higher", "fit", "composite"} <= set(semi5.columns)
+    and list(semi5.columns).index("Laura penalty") == list(semi5.columns).index("fit") + 1, str(list(semi5.columns)[:9]))
+pen_ok = all(abs(o - max(0, c - 0.4 * (100 - f))) < 1e-6 for o, c, f in zip(semi5.overall, semi5.composite, semi5.fit) if o == o and f == f)
+chk("Stocks: Overall = max(0, Composite − 0.4 × (100 − Fit)) on every row", pen_ok)
+at.sidebar.selectbox(key="hist_window").set_value(3).run()
+chk("3-yr window: caption about the 2022 decline, page runs", not at.exception and any("excludes the 2022 decline" in c.value for c in at.sidebar.caption))
+at.sidebar.selectbox(key="hist_window").set_value(10).run()
+semi10 = at.dataframe[0].value
+chk("10-yr window runs and marks more names too new than 5-yr", not at.exception and semi10["flags"].str.contains("too new").sum() > semi5["flags"].str.contains("too new").sum(),
+    f"too new: 5-yr {semi5['flags'].str.contains('too new').sum()}, 10-yr {semi10['flags'].str.contains('too new').sum()}")
+at.sidebar.selectbox(key="hist_window").set_value(5).run()
+at.slider(key="s2_penalty").set_value(0.0).run()
+k0 = at.dataframe[0].value
+chk("k = 0 → Overall = Composite for every scored company", all(abs(o - c) < 1e-9 for o, c in zip(k0.overall, k0.composite) if o == o))
+at.button(key="stk_btn_laura|Semiconductors").click().run()
+chk("Laura standards resets penalty strength to 0.4", abs(at.session_state["s2_penalty"] - 0.4) < 1e-12)
 inds = ["Semiconductors", "Gold"]
 pages = {}
 for g in inds:
@@ -46,7 +69,7 @@ own = cmp_table(at)
 # columns: rank, #in, ticker, name, industry, overall, fit, composite, ...
 mism = []
 for c in own:
-    t, g, o, f, comp = c[2], c[4], c[5], c[6], c[7]
+    t, g, o, comp, f = c[2], c[4], c[5], c[6], c[7]
     po, pf, pc = pages[g][t]
     if o and po is not None and (abs(float(o) - round(po)) > 0.51 or abs(float(f) - round(pf)) > 0.51 or abs(float(comp) - round(pc)) > 0.51):
         mism.append((t, g, o, po))
@@ -73,7 +96,8 @@ chk("Morningstar Large Blend loads", not at.exception and "Large Blend" in at.ti
 lb = at.dataframe[0].value
 chk("USMV, ESMV, ESGV listed in Large Blend", {"USMV", "ESMV", "ESGV"} <= set(lb.ticker),
     "; ".join(f"{t} rank {int(lb[lb.ticker == t]['rank'].iloc[0])} {lb[lb.ticker == t]['tier'].iloc[0]}" for t in ("USMV", "ESMV", "ESGV") if t in set(lb.ticker)) + f" of {len(lb)}")
-chk("tier + why-not-higher columns", {"tier", "why not higher"} <= set(lb.columns) and lb["tier"].notna().all())
+chk("tier + Laura penalty + why-not-higher columns", {"tier", "why not higher", "Laura penalty"} <= set(lb.columns) and lb["tier"].notna().all())
+chk("ETF: no history-window radio on the page (the sidebar dropdown is shared)", not any(w.key == "etf2_window" for w in at.sidebar.radio))
 chk("ESMV (4.9 yrs) is too new for the 5-yr window and listed after fully scored funds",
     "too new" in lb[lb.ticker == "ESMV"]["flags"].iloc[0] and int(lb[lb.ticker == "ESMV"]["rank"].iloc[0]) > max(int(x) for x, f in zip(lb["rank"], lb["flags"]) if "too new" not in f and "low data" not in f))
 lb_scores = page_scores(at)
@@ -90,20 +114,20 @@ chk("Find a fund by name ('min vol') lists USMV", "**USMV**" in found and not at
 at.sidebar.text_input(key="etf2_lookup").set_value("").run()
 # set a custom range on the Morningstar Large Blend page, then check it doesn't leak into industry mode or the theme
 at.sidebar.selectbox(key="etf2_mscat").set_value("Large Blend").run()
-k = "etflo|ms:Large Blend|max_drawdown"
-chk("Morningstar ranges namespaced", k in at.session_state, k)
-at.session_state["etfhi|ms:Large Blend|max_drawdown"] = 5.0  # absurdly strict
+k = "etflim|ms:Large Blend|max_drawdown"
+chk("Morningstar Laura limits namespaced", k in at.session_state, k)
+at.session_state["etflim|ms:Large Blend|max_drawdown"] = 5.0  # absurdly strict ceiling
 at.run()
 strict = page_scores(at)
-chk("custom range changes Large Blend Fit", any(strict[t][1] != lb_scores[t][1] for t in strict if lb_scores.get(t)))
+chk("custom limit changes Large Blend Fit", any(strict[t][1] != lb_scores[t][1] for t in strict if lb_scores.get(t)))
 at.sidebar.selectbox(key="etf2_mscat").set_value("Theme: ESG / sustainable").run()
-chk("theme's range untouched by Large Blend range", at.session_state["etfhi|ms:Theme: ESG / sustainable|max_drawdown"] != 5.0)
+chk("theme's limit untouched by Large Blend limit", at.session_state["etflim|ms:Theme: ESG / sustainable|max_drawdown"] != 5.0)
 at.sidebar.selectbox(key="etf2_mscat").set_value("Large Value").run()
-chk("Large Value has its own range", at.session_state["etfhi|ms:Large Value|max_drawdown"] != 5.0)
+chk("Large Value has its own limit", at.session_state["etflim|ms:Large Value|max_drawdown"] != 5.0)
 at.sidebar.selectbox(key="etf2_mscat").set_value("Theme: ESG / sustainable").run()
 at.sidebar.radio(key="asset_type").set_value("Stocks").run()
 at.sidebar.radio(key="asset_type").set_value("ETFs").run()
-chk("Large Blend custom range survives page switches", at.session_state["etfhi|ms:Large Blend|max_drawdown"] == 5.0 and at.sidebar.selectbox(key="etf2_mscat").value == "Theme: ESG / sustainable")
+chk("Large Blend custom limit survives page switches", at.session_state["etflim|ms:Large Blend|max_drawdown"] == 5.0 and at.sidebar.selectbox(key="etf2_mscat").value == "Theme: ESG / sustainable")
 at.sidebar.selectbox(key="etf2_mscat").set_value("Large Blend").run()
 # ETF compare in Morningstar mode: own vs page (with page at Laura -> reset Large Blend first)
 at.button(key="etf_btn_laura|ms:Large Blend").click().run()
@@ -127,27 +151,30 @@ before = set(glob.glob("results/snapshots/*"))
 at.sidebar.radio(key="asset_type").set_value("Stocks").run()
 at.sidebar.selectbox(key="industry_choice").set_value("Gold").run()
 t = at.dataframe[0].value
-fnv = t[t.ticker == "FNV"].iloc[0]
 nem = t[t.ticker == "NEM"].iloc[0]
-chk("Gold: foreign filer FNV unranked with 'Not scored: files 40-F, not 10-K'",
-    fnv["why low data / not scored"] == "Not scored: files 40-F, not 10-K" and str(fnv["rank"]) in ("nan", "None", "<NA>"), str(fnv["why low data / not scored"]))
-chk("Gold: NEM (10-K filer) low-data reason lists the missing metrics", "ROIC (EBIT missing)" in nem["why low data / not scored"],
-    nem["why low data / not scored"][:160])
+fl = [e for e in at.expander if e.label.startswith("Not scored: foreign filer")]
+ftab = fl[0].dataframe[0].value if fl and fl[0].dataframe else None
+chk("Gold: foreign filer FNV not ranked, listed under 'Not scored: foreign filer' with its 40-F reason",
+    "FNV" not in set(t.ticker) and ftab is not None and "FNV" in set(ftab.ticker)
+    and "files 40-F" in ftab[ftab.ticker == "FNV"]["reason"].iloc[0], fl[0].label if fl else "no expander")
+chk("Gold: NEM (10-K filer) low-data reason lists the missing metrics", "ROIC (EBIT missing)" in nem["why low data / not scored / too new"],
+    nem["why low data / not scored / too new"][:160])
 at.session_state["s2h|Gold|max_drawdown"] = True  # tick a hard limit on the Gold page
 at.run()
 at.multiselect(key="stkcmp__sel").set_value(["Semiconductors", "Gold"]).run()
 infos = " ".join(x.value for x in at.info) + " " + " ".join(x.value for x in at.warning)
-chk("Compare banner lists ranges / weights / hard limits / data date", all(w in infos for w in ("**Ranges:**", "**Weights:** shared with Tune scoring", "**Hard limits:** not applied", "**Data as of:**")))
+chk("Compare banner lists limits / weights + penalty / hard limits / data date", all(w in infos for w in ("**Laura limits:**", "**Weights:** shared with Tune scoring", "**Laura penalty strength** k = 0.40", "**Hard limits:** not applied", "**Data as of:**")))
+chk("Compare lists foreign filers separately", any(e.label.startswith("Not scored: foreign filer") for e in at.expander))
 chk("Compare warns that the ticked hard limit on Gold is ignored", "Ignored here" in infos and "Gold: Max drawdown" in infos)
 labels = [b.label for b in at.button]
-chk("Compare buttons relabelled", "Reset ranges and weights everywhere" in labels and "Industry average" in labels)
+chk("Compare buttons relabelled", "Reset limits and weights everywhere" in labels and "Industry average" in labels)
 at.button(key="snapbtn|cmp|stkcmp_").click().run()
 at.button(key="snapbtn|stk|Gold").click().run()
 new = sorted(set(glob.glob("results/snapshots/*")) - before)
 import json as _j
 js = [_j.load(open(x)) for x in new if x.endswith(".json")]
-chk("Save snapshot (Compare + Ranked results) writes CSV + JSON with data date, weights, ranges",
-    len(new) == 4 and all(j.get("data_date") and j.get("weights") and j.get("ranges") for j in js), str([os.path.basename(x) for x in new]))
+chk("Save snapshot (Compare + Ranked results) writes CSV + JSON with data date, weights, Laura limits",
+    len(new) == 4 and all(j.get("data_date") and j.get("weights") and j.get("limits") for j in js), str([os.path.basename(x) for x in new]))
 for x in new:
     os.remove(x)
 at.session_state["s2h|Gold|max_drawdown"] = False

@@ -198,25 +198,34 @@ def fetch_market(ticker):
         "yf_industry": info.get("industry"),
     }
 
-    # Adjusted (dividends + splits) closes. ~37 months back so we can form 36
-    # monthly returns; the drawdown only uses the last 3 years of dailies.
-    start = date.today() - timedelta(days=1130)
+    # Adjusted (dividends + splits) closes, 10 years back: the history window (3 / 5 / 10 yrs) is chosen on the page
+    start = date.today() - timedelta(days=3665)
     hist = t.history(start=start.isoformat(), auto_adjust=True)
-    px = {"monthly_returns": [], "monthly_dates": [], "mdd": None, "months": 0, "first_date": None, "last_date": None}
-    if not hist.empty:
-        closes = hist["Close"].dropna()
-        closes.index = closes.index.tz_localize(None) if closes.index.tz is not None else closes.index
-        px["first_date"], px["last_date"] = str(closes.index[0].date()), str(closes.index[-1].date())
-        px["months"] = (closes.index[-1] - closes.index[0]).days / 30.4375
-        month_end = closes.resample("ME").last().dropna()
-        rets = month_end.pct_change().dropna().iloc[-36:]
-        px["monthly_returns"] = [float(x) for x in rets.values]
-        px["monthly_dates"] = [str(d.date()) for d in rets.index]
-        cutoff = closes.index[-1] - pd.Timedelta(days=1096)
-        daily = closes[closes.index >= cutoff]
-        px["mdd"] = float((1 - daily / daily.cummax()).max())
-        px["mdd_months"] = (daily.index[-1] - daily.index[0]).days / 30.4375
+    px = price_block(hist["Close"] if not hist.empty else pd.Series(dtype=float))
     return market, px
+
+
+PX_WINDOWS = (3, 5, 10)  # history-window choices (years); the same list as etf_data.WINDOWS
+
+
+def price_block(closes):
+    """Daily adjusted closes -> the stock price fields the scorer uses: up to 120 monthly returns, years of history,
+    and the max drawdown over the last 3 / 5 / 10 years (all ending on the last close)."""
+    px = {"monthly_returns": [], "years": 0.0, "months": 0, "first_date": None, "last_date": None,
+          **{f"mdd_{w}": None for w in PX_WINDOWS}}
+    closes = closes.dropna()
+    if len(closes) < 30:
+        return px
+    closes.index = closes.index.tz_localize(None) if closes.index.tz is not None else closes.index
+    px["first_date"], px["last_date"] = str(closes.index[0].date()), str(closes.index[-1].date())
+    days = (closes.index[-1] - closes.index[0]).days
+    px["months"], px["years"] = days / 30.4375, days / 365.25
+    month_end = closes.resample("ME").last().dropna()
+    px["monthly_returns"] = [float(x) for x in month_end.pct_change().dropna().iloc[-120:].values]
+    for w in PX_WINDOWS:
+        daily = closes[closes.index >= closes.index[-1] - pd.Timedelta(days=int(365.25 * w))]
+        px[f"mdd_{w}"] = float((1 - daily / daily.cummax()).max())
+    return px
 
 
 ANNUAL_FORMS = ("10-K", "10-KT", "20-F", "40-F")

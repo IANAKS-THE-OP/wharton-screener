@@ -121,6 +121,9 @@ def category_group(category):
 
 
 # ------------------------------------------------------------------ price history
+WINDOWS = (3, 5, 10)  # history-window choices (years) offered on both pages
+
+
 def _window_stats(closes, years):
     """closes: Series (DatetimeIndex, adjusted). Stats over the last `years` years
     (or all of it if shorter). Returns (mdd_fraction, cagr_fraction)."""
@@ -135,7 +138,7 @@ def _window_stats(closes, years):
 
 
 def history_block(close, dividends, price):
-    px = {"years": 0.0, "monthly_returns": [], "mdd_5": None, "mdd_10": None, "cagr_5": None, "cagr_10": None,
+    px = {"years": 0.0, "monthly_returns": [], "mdd_3": None, "mdd_5": None, "mdd_10": None, "cagr_3": None, "cagr_5": None, "cagr_10": None,
           "first_date": None, "last_date": None, "ttm_dividend_yield": None}
     close = close.dropna()
     if len(close) < 30:
@@ -145,8 +148,8 @@ def history_block(close, dividends, price):
     px["years"] = (close.index[-1] - close.index[0]).days / 365.25
     month_end = close.resample("ME").last().dropna()
     px["monthly_returns"] = [float(x) for x in month_end.pct_change().dropna().iloc[-120:].values]
-    px["mdd_5"], px["cagr_5"] = _window_stats(close, 5)
-    px["mdd_10"], px["cagr_10"] = _window_stats(close, 10)
+    for w in WINDOWS:  # the history-window choices (3 / 5 / 10 yrs), all ending on the last close
+        px[f"mdd_{w}"], px[f"cagr_{w}"] = _window_stats(close, w)
     if dividends is not None:
         d = dividends.copy()
         d.index = d.index.tz_localize(None) if d.index.tz is not None else d.index
@@ -156,8 +159,9 @@ def history_block(close, dividends, price):
     return px
 
 
-def fetch_histories(tickers, chunk=60, failed=None):
-    """{ticker: history_block-ready (close, dividends)} via batched downloads.
+def fetch_histories(tickers, chunk=60, failed=None, end=None):
+    """{ticker: history_block-ready (close, dividends)} via batched downloads (10 years; ending the day before `end`
+    ('YYYY-MM-DD', exclusive) when given, else today).
     failed: optional dict that receives {ticker: error text} for every ticker whose download errored
     (network / SSL), so callers never mistake a failed download for a fund with no history."""
     out = {}
@@ -165,7 +169,8 @@ def fetch_histories(tickers, chunk=60, failed=None):
     for i in range(0, len(tickers), chunk):
         part = tickers[i:i + chunk]
         try:
-            data = yf.download(part, period="10y", auto_adjust=True, actions=True, progress=False,
+            when = dict(period="10y") if end is None else dict(start=str((pd.Timestamp(end) - pd.Timedelta(days=3665)).date()), end=end)
+            data = yf.download(part, **when, auto_adjust=True, actions=True, progress=False,
                                threads=True, group_by="column")
         except Exception as e:  # network / SSL error for the whole chunk
             log.warning("price history download failed for %d funds: %s", len(part), e)

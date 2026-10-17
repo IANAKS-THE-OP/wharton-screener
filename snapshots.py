@@ -1,8 +1,8 @@
 """
 "Save snapshot": freeze a ranking so a pick can be defended later.
 ==================================================================
-Writes results/snapshots/<asset>_<view>_<YYYYmmdd_HHMMSS>.csv (the full table: every value, score, range, weight)
-and a matching .json (data date, weights, ranges, blend, settings, hard limits, peer-group mode, app version).
+Writes results/snapshots/<asset>_<view>_<YYYYmmdd_HHMMSS>.csv (the full table: every value, score, Laura limit, weight)
+and a matching .json (data date, weights, Laura limits, penalty strength, settings, hard limits, peer-group mode, app version).
 On the hosted site the disk is temporary, so the two files are also offered as downloads right after saving.
 """
 
@@ -46,7 +46,7 @@ def button(key, asset, view, table_fn, meta_fn, col=None):
     called on click, so the page doesn't build the snapshot every run."""
     where = col or st
     if where.button("Save snapshot", key=f"snapbtn|{key}",
-                    help="Writes the current table (with data date, weights, ranges and settings) to results/snapshots/ "
+                    help="Writes the current table (with data date, weights, Laura limits and settings) to results/snapshots/ "
                          "so the ranking behind a pick can be shown later."):
         try:
             paths = save(asset, view, table_fn(), meta_fn())
@@ -72,9 +72,9 @@ def run_self_tests():
     results = []
     with tempfile.TemporaryDirectory() as d:
         c, j = save("stock", "Gold / test", pd.DataFrame({"ticker": ["A", "B"], "overall": [70.0, 60.0]}),
-                    {"data_date": "2026-10-14", "weights": {"roic": 8}, "ranges": {"roic": [1.0, 2.0]}}, out_dir=d)
+                    {"data_date": "2026-10-14", "weights": {"roic": 8}, "limits": {"roic": 1.0}}, out_dir=d)
         ok = (pd.read_csv(c)["ticker"].tolist() == ["A", "B"] and json.load(open(j))["data_date"] == "2026-10-14"
-              and json.load(open(j))["ranges"]["roic"] == [1.0, 2.0] and os.path.basename(c).startswith("stock_Gold_test_"))
-    results.append({"test": "S1. Save snapshot writes the table CSV + settings JSON (data date, weights, ranges)", "passed": ok,
+              and json.load(open(j))["limits"]["roic"] == 1.0 and os.path.basename(c).startswith("stock_Gold_test_"))
+    results.append({"test": "S1. Save snapshot writes the table CSV + settings JSON (data date, weights, Laura limits)", "passed": ok,
                     "detail": os.path.basename(c)})
     return results

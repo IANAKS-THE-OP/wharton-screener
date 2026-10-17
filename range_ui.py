@@ -1,15 +1,16 @@
 """
-Comfort-range widgets and the two range buttons, shared by the Stocks and ETF pages.
-====================================================================================
-Session-state pattern (ONE rule for every range box, weight slider and blend slider):
+Laura-limit widgets and the two buttons, shared by the Stocks and ETF pages.
+============================================================================
+Every metric has ONE "Laura limit": a ceiling for lower-is-better metrics, a floor for higher-is-better ones.
+Session-state pattern (ONE rule for every limit box, weight slider and penalty slider):
   * No widget gets a value= argument. Its value lives in st.session_state (seeded with the default
     the first time) and is only ever written BEFORE the widget is created in a run (seeding, or a
-    button followed by st.rerun()). The two-handle range slider is rebuilt from the boxes each run.
+    button followed by st.rerun()). The limit slider is rebuilt from the typed box each run.
   * app.py re-saves these keys at the top of every run (PERSIST_PREFIXES): Streamlit otherwise
     deletes a widget's value whenever the widget isn't drawn (e.g. while the other page is open).
-  * Range keys use the page's OWN prefix ("stk" or "etf") + peer group + metric.
-The per-page prefix matters: ETF groups use the same industry names as the stocks, so without it
-"Semiconductors / max drawdown" on one page would overwrite the other page's range.
+  * Limit keys use the page's OWN prefix ("stk" or "etf") + peer group + metric.
+The per-page prefix matters: ETF groups can share names with stock industries, so without it
+"Semiconductors / max drawdown" on one page would overwrite the other page's limit.
 """
 
 import streamlit as st
@@ -18,15 +19,15 @@ import laura
 
 
 def keys(prefix, ns, key):
-    return f"{prefix}lo|{ns}|{key}", f"{prefix}hi|{ns}|{key}", f"{prefix}ext|{ns}|{key}"
+    return f"{prefix}lim|{ns}|{key}", f"{prefix}ext|{ns}|{key}"
 
 
-def _set(prefix, ns, key, b, lo, hi):
-    k_lo, k_hi, k_ext = keys(prefix, ns, key)
+def _set(prefix, ns, key, b, lim):
+    k_lim, k_ext = keys(prefix, ns, key)
     q = b["q"]
-    st.session_state[k_lo], st.session_state[k_hi] = float(lo), float(hi)
-    # slider track = the group's 5th-95th percentile, widened so it always contains the range
-    st.session_state[k_ext] = (min(float(q["p5"]), float(lo), float(hi)), max(float(q["p95"]), float(lo), float(hi)))
+    st.session_state[k_lim] = float(lim)
+    # slider track = the group's 5th-95th percentile, widened so it always contains the limit
+    st.session_state[k_ext] = (min(float(q["p5"]), float(lim)), max(float(q["p95"]), float(lim)))
 
 
 def seed(defaults):
@@ -37,71 +38,66 @@ def seed(defaults):
 
 
 def seed_laura(prefix, ns, bench, info):
-    """Laura ranges are the default: set them for every metric the user hasn't set yet (call before the widgets)."""
+    """Laura limits are the default: set them for every metric the user hasn't set yet (call before the widgets)."""
     for key, x in info.items():
-        if x["range"] and keys(prefix, ns, key)[0] not in st.session_state:
-            _set(prefix, ns, key, bench[key], *x["range"])
+        if x["limit"] is not None and keys(prefix, ns, key)[0] not in st.session_state:
+            _set(prefix, ns, key, bench[key], x["limit"])
 
 
 def clear(prefix, ns):
-    starts = (f"{prefix}lo|", f"{prefix}hi|", f"{prefix}ext|")
+    starts = (f"{prefix}lim|", f"{prefix}ext|")
     for k in [k for k in st.session_state if str(k).startswith(starts) and str(k).split("|")[1] == ns]:
         del st.session_state[k]
 
 
-def buttons(cols, prefix, ns, bench, weight_defaults):
-    """Exactly two buttons, same on both pages. Must be drawn BEFORE the range widgets.
-    'Laura standards' -> Laura ranges (re-seeded after the rerun) + Laura weights.
-    'Industry average' -> every range = the group's 25th-75th percentile; weights unchanged."""
+def buttons(cols, prefix, ns, bench, metrics, weight_defaults, penalty_key, penalty_default):
+    """Exactly two buttons, same on both pages. Must be drawn BEFORE the limit widgets.
+    'Laura standards' -> Laura limits (re-seeded after the rerun) + Laura weights + penalty strength back to default.
+    'Industry average' -> every limit = the group's p75 (lower-is-better) / p25 (higher-is-better); weights unchanged."""
     c1, c2 = cols
     if c1.button("Laura standards", key=f"{prefix}_btn_laura|{ns}", use_container_width=True,
-                 help="Default. Ranges: Laura's stricter per-industry percentiles (risk metrics at the industry median, "
-                      "consistency metrics at the 40th percentile). Weights: Laura's weights."):
-        clear(prefix, ns)  # ranges are re-seeded with Laura's on the rerun
+                 help="Default. Limits: Laura's per-industry percentiles (risk metrics at the industry median, consistency "
+                      f"metrics at the 40th percentile, the rest at the 25th / 75th). Weights: Laura's. Penalty strength: {penalty_default}."):
+        clear(prefix, ns)  # limits are re-seeded with Laura's on the rerun
         for k, v in weight_defaults.items():
             st.session_state[k] = v  # Laura weights
+        st.session_state[penalty_key] = penalty_default
         st.rerun()
     if c2.button("Industry average", key=f"{prefix}_btn_avg|{ns}", use_container_width=True,
-                 help="Every range becomes the peer group's 25th-75th percentile (its middle half): good bound = the better quartile "
-                      "(Fit 100), bad bound = the worse quartile (Fit 80). Weights unchanged."):
-        for key, r in laura.default_ranges(bench).items():
-            _set(prefix, ns, key, bench[key], *r)
+                 help="Every limit becomes the peer group's worse quartile: the 75th percentile for lower-is-better metrics, "
+                      "the 25th for higher-is-better. Weights and penalty strength unchanged."):
+        for key, lim in laura.default_limits(bench, metrics).items():
+            _set(prefix, ns, key, bench[key], lim)
         st.rerun()
 
 
-def range_widget(prefix, ns, key, b, fallback=None):
-    """Two-handle slider + typed low/high, in the metric's units. The typed numbers are the source
-    of truth; the slider is rebuilt from them each run. fallback = range to seed if nothing is set."""
-    k_lo, k_hi, k_ext = keys(prefix, ns, key)
-    if k_lo not in st.session_state:
-        _set(prefix, ns, key, b, *(fallback or laura.industry_default(b)))
-    lo, hi = st.session_state[k_lo], st.session_state[k_hi]
+def limit_widget(prefix, ns, key, b, direction, fallback=None):
+    """One-handle slider + typed limit, in the metric's units. The typed number is the source of truth; the slider is
+    rebuilt from it each run. fallback = limit to seed if nothing is set (Laura's)."""
+    k_lim, k_ext = keys(prefix, ns, key)
+    if k_lim not in st.session_state:
+        _set(prefix, ns, key, b, fallback if fallback is not None else laura.default_limits({key: b}, [{"key": key, "direction": direction}])[key])
+    lim = float(st.session_state[k_lim])
     ext = st.session_state.get(k_ext, (b["q"]["p5"], b["q"]["p95"]))
-    tmin, tmax = min(ext[0], lo, hi), max(ext[1], lo, hi)
+    tmin, tmax = min(ext[0], lim), max(ext[1], lim)
     if tmax - tmin < 1e-9:
         tmax = tmin + 1.0
     st.session_state[k_ext] = (tmin, tmax)
     step = (tmax - tmin) / 200
-    new = st.slider("range", float(tmin), float(tmax), (float(min(lo, hi)), float(max(lo, hi))), step=step,
-                    label_visibility="collapsed", key=f"{prefix}sl|{ns}|{key}|{round(tmin, 6)}|{round(tmax, 6)}|{round(lo, 6)}|{round(hi, 6)}",
-                    format="%.4g")
-    if (round(new[0], 9), round(new[1], 9)) != (round(float(min(lo, hi)), 9), round(float(max(lo, hi)), 9)):
-        st.session_state[k_lo], st.session_state[k_hi] = float(new[0]), float(new[1])
+    label = "Laura limit (ceiling: at or below scores 100)" if direction == "lower" else "Laura limit (floor: at or above scores 100)"
+    new = st.slider(label, float(tmin), float(tmax), lim, step=step,
+                    key=f"{prefix}sl|{ns}|{key}|{round(tmin, 6)}|{round(tmax, 6)}|{round(lim, 6)}", format="%.4g")
+    if round(new, 9) != round(lim, 9):
+        st.session_state[k_lim] = float(new)
         st.rerun()
-    c1, c2 = st.columns(2)
-    c1.number_input("low", key=k_lo, step=float(step), format="%.4f")
-    c2.number_input("high", key=k_hi, step=float(step), format="%.4f")
-    return min(st.session_state[k_lo], st.session_state[k_hi]), max(st.session_state[k_lo], st.session_state[k_hi])
+    st.number_input("limit", key=k_lim, step=float(step), format="%.4f", label_visibility="collapsed")
+    return float(st.session_state[k_lim])
 
 
 def laura_caption(info, direction, fmt_fn):
-    """One line under each metric: what Laura's bound is and where it comes from."""
-    if not info:
+    """One line under each metric: what Laura's limit is and where it comes from."""
+    if not info or info["limit"] is None:
         return
-    if info["fallback"]:
-        st.caption(f"⚠ {info['note']}")
-    else:
-        side = "≤" if direction == "lower" else "≥"
-        st.caption(f"**Laura ({info['tier']})**: good {side} {fmt_fn(info['good'])} ({laura.pct_name(info['good_pct'])}) → Fit 100 · "
-                   f"bad bound {fmt_fn(info['bound'])} ({laura.pct_name(info['pct'])}) → Fit 80. "
-                   "Slider handles = good and bad bound.")
+    side = "≤" if direction == "lower" else "≥"
+    st.caption(f"**Laura ({info['tier']})**: {info['side']} {side} {fmt_fn(info['limit'])} ({laura.pct_name(info['pct'])}). "
+               "Good side of the limit → Fit 100; past it Fit falls 50 points per spread (0 at two spreads).")

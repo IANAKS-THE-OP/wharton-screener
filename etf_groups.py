@@ -116,7 +116,7 @@ def override_report(imap, overrides):
 
 
 def ns(group):
-    """Session namespace for one peer group (range keys, picks, snapshots)."""
+    """Session namespace for one peer group (limit keys, picks, snapshots)."""
     return f"ms:{group}"
 
 

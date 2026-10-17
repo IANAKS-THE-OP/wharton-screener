@@ -3,8 +3,9 @@ Equity-ETF scoring engine (pure functions - no Streamlit, no network).
 ======================================================================
 Same framework as the stock engine (scoring2.py, which it imports helpers
 from and does not modify): percentile Composite within a peer group (the
-Morningstar category), comfort-range Fit in real units, a blend, red flags,
-tie-breakers and low-data handling. Ten metrics, weights total 100.
+Morningstar category or theme), one-sided Fit against each metric's Laura limit,
+Overall = Composite - k x (100 - Fit), red flags, tie-breakers, tiers and low-data
+handling. Ten metrics, weights total 100.
 """
 
 import math
@@ -16,7 +17,8 @@ import numpy as np
 import pandas as pd
 
 import laura
-from scoring2 import composite_score, downside_deviation, max_drawdown, metric_fit, percentile_scores  # noqa: F401
+from scoring2 import (DEFAULT_PENALTY, WINDOWS, composite_score, downside_deviation, max_drawdown, metric_fit,  # noqa: F401
+                      overall_score, penalty_breakdown, percentile_scores, why_text)
 
 log = logging.getLogger(__name__)
 
@@ -37,13 +39,13 @@ KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 DEFAULT_SETTINGS = {"tbill": 0.03, "window": 5}  # 5 yrs by default so most funds share the same full window
-PREP_VERSION = 3  # bump when prepare_funds' output changes, so cached preps in a session are rebuilt
+PREP_VERSION = 4  # bump when prepare_funds' output changes, so cached preps in a session are rebuilt
 MIN_POOL = 10
 MIN_HQ_COVERAGE = 0.15
 HISTORY_TOLERANCE = 0.25  # LEGACY rule only (history_logic="legacy", kept for the before/after diagnostic)
 WINDOW_SLACK_YEARS = 7 / 365.25  # listing-date / weekend rounding: a fund up to 7 days short of the window still counts as full
 HIST_KEYS = ("downside_dev", "max_drawdown", "long_run_return")
-HQ_FULL_WEIGHT_COVERAGE = 0.50  # below this look-through coverage, holdings quality's weight = weight x coverage
+HQ_FULL_TRUST_COVERAGE = 0.50  # trust = min(1, coverage / 50%): below it, holdings quality's score is pulled toward average
 TIER_GAP = 1.0  # funds within this many Overall points of the tier's first fund share a tier
 HOLDINGS_OVERRIDE = "results/etf_holdings_override.csv"  # optional: ticker,n_holdings
 
@@ -62,6 +64,12 @@ def holdings_quality(holdings):
     if not scored or wsum <= 0:
         return None, 0.0
     return sum(w * c for w, c in scored) / wsum, wsum
+
+
+def hq_trust(coverage):
+    """Holdings-quality trust = min(1, coverage / 50%). Adjusted percentile = trust x p + (1 - trust) x 50;
+    adjusted Fit = trust x Fit + (1 - trust) x 100. The metric's weight never changes."""
+    return min(1.0, coverage / HQ_FULL_TRUST_COVERAGE)
 
 
 def history_plan(years_avail, window, legacy=False):
@@ -152,16 +160,16 @@ def compute_fund(raw, settings=None, hq_scores=None, hq_skips=None, overrides=No
                  f"{n_m} monthly returns, MAR from {settings['tbill']:.2%} T-bill")
         else:
             excl("downside_dev", "too few monthly returns")
-        mdd = px.get("mdd_5") if window == 5 else px.get("mdd_10")
+        mdd = px.get(f"mdd_{window}")
         if mdd is not None:
             setm("max_drawdown", mdd * 100, f"worst peak-to-trough over {min(use_years, years):.1f} yrs of daily adjusted closes")
         else:
-            excl("max_drawdown", "price history missing")
-        cagr = px.get("cagr_5") if window == 5 else px.get("cagr_10")
+            excl("max_drawdown", "price history missing" + ("" if f"mdd_{window}" in px else " for this window (refresh the group)"))
+        cagr = px.get(f"cagr_{window}")
         if cagr is not None:
             setm("long_run_return", cagr * 100, f"annualized total return over {min(use_years, years):.1f} yrs")
         else:
-            excl("long_run_return", "price history missing")
+            excl("long_run_return", "price history missing" + ("" if f"cagr_{window}" in px else " for this window (refresh the group)"))
 
     # 4 number of holdings (not provided by yfinance: optional override file)
     nh = raw.get("n_holdings")
@@ -216,9 +224,11 @@ def compute_fund(raw, settings=None, hq_scores=None, hq_skips=None, overrides=No
         flag("hq_unavailable", f"Holdings quality unavailable (scored holdings cover only {coverage:.0%} of the fund)")
     else:
         setm("holdings_quality", hq, f"weighted stock Composite of scored top-10 holdings; covers {coverage:.0%} of the fund")
-        if coverage < HQ_FULL_WEIGHT_COVERAGE:  # unreliable look-through: weight scaled by coverage (weight x coverage / 100)
-            out["holdings_quality"]["weight_factor"] = coverage
-            out["holdings_quality"]["note"] += f"; weight x {coverage:.0%} (coverage under {HQ_FULL_WEIGHT_COVERAGE:.0%})"
+        trust = hq_trust(coverage)  # weight is never changed; low coverage pulls the SCORE toward average instead
+        out["holdings_quality"]["trust"] = trust
+        if trust < 1:
+            out["holdings_quality"]["note"] += (f"; trust {trust:.2f} (coverage under {HQ_FULL_TRUST_COVERAGE:.0%}): percentile and Fit "
+                                                "pulled toward average")
         if coverage < 0.25:
             flag("low_lookthrough", f"Low look-through coverage ({coverage:.0%})")
 
@@ -313,7 +323,12 @@ def prepare_funds(raws, settings=None, hq_scores=None, hq_skips=None, all_raws=N
                              "vals": sorted(pool.values())}  # the pool itself, so Laura can take any percentile of it
             for t in tickers:
                 f = funds[t]
-                f["metrics"][k]["pct"] = pct.get(t) if f["metrics"][k]["status"] == OK else None
+                p = pct.get(t) if f["metrics"][k]["status"] == OK else None
+                tr = f["metrics"][k].get("trust")
+                if p is not None and tr is not None:  # holdings quality: low look-through coverage -> toward average (50)
+                    f["metrics"][k]["pct_raw"] = p
+                    p = tr * p + (1 - tr) * 50.0
+                f["metrics"][k]["pct"] = p
                 if level == "all" and f["metrics"][k]["status"] == OK:
                     f["flags"].append({"code": f"category_fallback:{k}",
                                        "text": f"Category fallback: {meta['label']} ({len(own)} valid in category < {MIN_POOL})"})
@@ -324,70 +339,64 @@ def prepare_funds(raws, settings=None, hq_scores=None, hq_skips=None, all_raws=N
 # Parts F + G
 # ========================================================================
 
-def default_ranges(bench_cat):
-    """Group 25th-75th percentile (never zero-width) - the 'Industry average' button."""
-    return laura.default_ranges(bench_cat)
+def default_limits(bench_cat):
+    """'Industry average' button: every limit = group p75 (lower-is-better) / p25 (higher-is-better)."""
+    return laura.default_limits(bench_cat, METRICS)
 
 
-def laura_ranges(bench_cat):
-    """Laura Gao's standards (laura.LAURA_TIERS), per group - the DEFAULT ranges."""
-    return laura.laura_ranges(bench_cat, "etf", METRICS)
+def laura_limits(bench_cat):
+    """Laura Gao's standards (laura.LAURA_TIERS), per group - the DEFAULT limits."""
+    return laura.laura_limits(bench_cat, "etf", METRICS)
 
 
-def finalize(prep, weights=None, ranges_by_cat=None, blend=0.5, hard_limits=None, low_data_threshold=0.30, hard_ranges=None):
-    """hard_ranges: {metric: (low or None, high or None)} used for that metric's hard-limit check INSTEAD of its
-    comfort range (the optional 'Laura hard limits': expense <= 0.20% etc.). Ranges never change Composite.
-    Weights are per fund: holdings quality's weight is scaled by look-through coverage when coverage < 50%."""
+def finalize(prep, weights=None, limits_by_cat=None, penalty=DEFAULT_PENALTY, hard_limits=None, low_data_threshold=0.30, hard_ranges=None):
+    """limits_by_cat: {group: {metric: Laura limit}} overriding the defaults (ceiling for lower-is-better, floor for higher).
+    penalty: k in Overall = max(0, Composite - k x (100 - Fit)).
+    hard_ranges: {metric: (low or None, high or None)} used for that metric's hard-limit check INSTEAD of its
+    Laura limit (the optional 'Laura hard limits': expense <= 0.20% etc.). Limits never change Composite.
+    Every fund uses the same weights (holdings quality is shrunk toward average by its trust, never re-weighted)."""
     weights = {**DEFAULT_WEIGHTS, **(weights or {})}
     hard_ranges = hard_ranges or {}
-    ranges_by_cat = ranges_by_cat or {}
+    limits_by_cat = limits_by_cat or {}
     hard_limits = hard_limits or {}
+    total_w = sum(weights.values())
+    labels = {k: METRIC_BY_KEY[k]["label"] for k in KEYS}
     results = []
     laura_by_cat = {}
     for t, f in prep["funds"].items():
         cat = f["raw"]["category"]
         bench = prep["bench"][cat]
         if cat not in laura_by_cat:
-            laura_by_cat[cat] = {**default_ranges(bench), **laura_ranges(bench)}
-        lr = laura_by_cat[cat]
-        rng = {**lr, **ranges_by_cat.get(cat, {})}  # each fund: its OWN group's Laura ranges
-        wf = {k: weights.get(k, 0) * f["metrics"][k].get("weight_factor", 1.0) for k in KEYS}  # this fund's weights
-        total_w = sum(wf.values())
+            laura_by_cat[cat] = laura_limits(bench)
+        ll = laura_by_cat[cat]
+        lim_all = {**ll, **limits_by_cat.get(cat, {})}  # each fund: its OWN group's Laura limits
         rows, pct_scores, fit_scores, excluded_w, hist_excl_w = {}, {}, {}, 0.0, 0.0
         for k in KEYS:
-            m, meta, w, b = f["metrics"][k], METRIC_BY_KEY[k], wf[k], bench[k]
-            lo, hi = rng.get(k, (None, None))
-            dist = fit = p = None
+            m, meta, w, b = f["metrics"][k], METRIC_BY_KEY[k], weights.get(k, 0), bench[k]
+            lim = lim_all.get(k)
+            dist = fit = fit_raw = p = None
             if m["status"] == OK:
                 p = m.get("pct")
-                fit, dist = metric_fit(m["value"], lo, hi, b["spread"], meta["direction"])
+                fit_raw, dist = metric_fit(m["value"], lim, b["spread"], meta["direction"])
+                fit = fit_raw
+                if fit is not None and m.get("trust") is not None:  # holdings quality: Fit pulled toward 100 by (1 - trust)
+                    fit = m["trust"] * fit + (1 - m["trust"]) * 100.0
             if p is None or fit is None:
                 p = fit = None
                 excluded_w += w
                 if k in HIST_KEYS:
                     hist_excl_w += w
             pct_scores[k], fit_scores[k] = p, fit
-            good, bad = (hi, lo) if meta["direction"] == "higher" else (lo, hi)
-            l_lo, l_hi = lr.get(k, (None, None))
-            l_good, l_bad = (l_hi, l_lo) if meta["direction"] == "higher" else (l_lo, l_hi)
-            rows[k] = {**m, "pct": p, "fit": fit, "distance": dist, "weight": w, "weight_nominal": weights.get(k, 0),
-                       "range": (lo, hi), "good": good, "bad": bad, "laura_good": l_good, "laura_bad": l_bad,
-                       "direction": meta["direction"], "units": meta["units"], "label": meta["label"]}
-        composite = composite_score(pct_scores, wf)
-        fit_total = composite_score(fit_scores, wf)
-        den = sum(wf[k] for k in KEYS if pct_scores[k] is not None)
+            rows[k] = {**m, "pct": p, "fit": fit, "fit_raw": fit_raw, "distance": dist, "weight": w,
+                       "limit": lim, "laura_limit": ll.get(k), "direction": meta["direction"], "units": meta["units"], "label": meta["label"]}
+        composite = composite_score(pct_scores, weights)
+        fit_total = composite_score(fit_scores, weights)
+        den = sum(weights.get(k, 0) for k in KEYS if pct_scores[k] is not None)
         for k in KEYS:
-            rows[k]["contribution"] = wf[k] * pct_scores[k] / den if (pct_scores[k] is not None and den) else None
-        if composite is None or fit_total is None:
-            overall = composite if fit_total is None else fit_total
-        else:
-            overall = blend * fit_total + (1 - blend) * composite
-        # why not higher: metrics beyond their bad bound and the Overall points that metric's Fit costs (vs Fit 100)
-        fit_share = (blend if composite is not None else 1.0) if fit_total is not None else 0.0
-        why = sorted(((k, fit_share * wf[k] * (100 - rows[k]["fit"]) / den)
-                      for k in KEYS if rows[k]["fit"] is not None and (rows[k]["distance"] or 0) > 0 and den), key=lambda x: -x[1])
-        why_text = "; ".join(f"{METRIC_BY_KEY[k]['label']} −{lost:.1f} ({_short(rows[k]['value'])} vs bad bound {_short(rows[k]['bad'])})"
-                             for k, lost in why) or "inside every range"
+            rows[k]["contribution"] = weights.get(k, 0) * pct_scores[k] / den if (pct_scores[k] is not None and den) else None
+        overall = overall_score(composite, fit_total, penalty)
+        lost = (composite - overall) if (composite is not None and overall is not None) else None
+        why = penalty_breakdown(rows, weights, den, penalty, lost)
         too_new = bool(f["history"].get("too_new"))
         share = excluded_w / total_w if total_w else 0
         other_share = (excluded_w - hist_excl_w) / total_w if total_w else 0
@@ -397,15 +406,19 @@ def finalize(prep, weights=None, ranges_by_cat=None, blend=0.5, hard_limits=None
         for k, on in hard_limits.items():
             if on:
                 r = rows[k]
-                lo, hi = hard_ranges.get(k, r["range"])
                 v = r["value"]
-                if v is None or r["status"] != OK or (lo is None and hi is None and k not in hard_ranges) \
-                        or (lo is not None and v < lo) or (hi is not None and v > hi):
+                if k in hard_ranges:
+                    lo, hi = hard_ranges[k]
+                    bad = v is None or r["status"] != OK or (lo is not None and v < lo) or (hi is not None and v > hi)
+                else:  # 'Must be inside': on the good side of the Laura limit
+                    bad = v is None or r["status"] != OK or r["limit"] is None or (r["distance"] or 0) > 0
+                if bad:
                     fails.append(k)
         h = f["history"]
+        hq = rows["holdings_quality"]
         results.append({
             "ticker": t, "name": f["raw"].get("name"), "category": cat, "metrics": rows, "composite": composite,
-            "fit": fit_total, "overall": overall,
+            "fit": fit_total, "overall": overall, "penalty": lost,
             "n_inside": sum(1 for k in KEYS if fit_scores[k] is not None and rows[k]["distance"] == 0),
             "n_total": len(KEYS), "excluded_weight_share": share, "coverage": 1 - share, "low_data": low_data,
             "too_new": too_new, "too_new_reason": (f"Too new for this window: {h['years_available']:.1f} yrs of prices < {h['window']}-yr window "
@@ -413,12 +426,12 @@ def finalize(prep, weights=None, ranges_by_cat=None, blend=0.5, hard_limits=None
             "missing": missing, "not_scored": None,
             "low_data_reason": (f"{share:.0%} of the weight is excluded (> 30%). Missing: " + "; ".join(f"{l} ({w})" for l, w in missing))
             if low_data else None,
-            "why_not": why, "why_not_higher": why_text,
-            "flags": f["flags"], "holdings": f["holdings"], "hq_coverage": f["coverage"], "history": h,
+            "why_not": why, "why_not_higher": why_text(why, rows, labels),
+            "flags": f["flags"], "holdings": f["holdings"], "hq_coverage": f["coverage"], "hq_trust": hq.get("trust"), "history": h,
             "hard_limit_failed": bool(fails), "hard_limit_failures": fails,
         })
-    return {"results": rank(results), "weights": weights, "ranges_by_cat": ranges_by_cat, "blend": blend,
-            "total_weight": sum(weights.values())}
+    return {"results": rank(results), "weights": weights, "limits_by_cat": limits_by_cat, "penalty": penalty,
+            "total_weight": total_w}
 
 
 def _short(v):
@@ -466,32 +479,32 @@ def export_rows(final, settings, label):
         h = r["history"]
         row = {"timestamp": stamp, "view": label, "rank": r["rank"], "tier": r.get("tier_label"), "ticker": r["ticker"], "name": r["name"],
                "category": r["category"], "overall": r["overall"], "fit": r["fit"], "composite": r["composite"],
-               "why_not_higher": r.get("why_not_higher"),
-               "metrics_inside_range": f"{r['n_inside']}/{r['n_total']}", "data_coverage": r["coverage"],
+               "laura_penalty": r["penalty"], "why_not_higher": r.get("why_not_higher"),
+               "metrics_meeting_limit": f"{r['n_inside']}/{r['n_total']}", "data_coverage": r["coverage"],
                "too_new_for_window": r.get("too_new"), "low_data": r["low_data"], "low_data_reason": r["low_data_reason"] or r.get("too_new_reason"),
                "red_flags": " | ".join(f["text"] for f in r["flags"]),
                "history_years_available": h["years_available"], "history_years_used": h["used"], "history_window": h["window"],
                "history_start": h.get("start"), "history_end": h.get("end"),
-               "holdings_quality_coverage": r["hq_coverage"]}
+               "holdings_quality_coverage": r["hq_coverage"], "holdings_quality_trust": r.get("hq_trust")}
         for k in KEYS:
             m = r["metrics"][k]
             row.update({f"{k}__value": m["value"], f"{k}__status": m["status"], f"{k}__percentile_score": m["pct"],
-                        f"{k}__laura_good": m["laura_good"], f"{k}__laura_bad": m["laura_bad"],
-                        f"{k}__good_bound_used": m["good"], f"{k}__bad_bound_used": m["bad"],
-                        f"{k}__fit": m["fit"], f"{k}__weight": m["weight"], f"{k}__weight_nominal": m["weight_nominal"],
-                        f"{k}__note": m["note"]})
-        row.update({"setting_blend": final["blend"], "setting_tbill": settings["tbill"], "setting_history_window": settings["window"]})
+                        f"{k}__laura_limit": m["laura_limit"], f"{k}__limit_used": m["limit"], f"{k}__distance_past_limit": m["distance"],
+                        f"{k}__fit": m["fit"], f"{k}__weight": m["weight"], f"{k}__note": m["note"]})
+        hq = r["metrics"]["holdings_quality"]
+        row.update({"holdings_quality__percentile_before_trust": hq.get("pct_raw"), "holdings_quality__fit_before_trust": hq.get("fit_raw"),
+                    "setting_laura_penalty_k": final["penalty"], "setting_tbill": settings["tbill"], "setting_history_window": settings["window"]})
         rows.append(row)
     return pd.DataFrame(rows)
 
 
-def history_diagnostic(raws, settings, hq_scores=None, hq_skips=None, weights=None, blend=0.5, all_raws=None, move=10):
+def history_diagnostic(raws, settings, hq_scores=None, hq_skips=None, weights=None, penalty=DEFAULT_PENALTY, all_raws=None, move=10):
     """Old vs new history rule on ONE group. old = the legacy rule at the old default 10-yr window (funds with 5-10 yrs
-    used whatever they had); new = the common window in `settings`. Same weights, blend, graded Fit and Laura ranges,
+    used whatever they had); new = the common window in `settings`. Same weights, penalty strength and Laura limits,
     so only the history rule differs. Short history = under 10 years of prices."""
-    new = finalize(prepare_funds(raws, settings, hq_scores, hq_skips, all_raws=all_raws), weights, blend=blend)["results"]
+    new = finalize(prepare_funds(raws, settings, hq_scores, hq_skips, all_raws=all_raws), weights, penalty=penalty)["results"]
     old_s = {**settings, "window": 10, "history_logic": "legacy"}
-    old = finalize(prepare_funds(raws, old_s, hq_scores, hq_skips, all_raws=all_raws), weights, blend=blend)["results"]
+    old = finalize(prepare_funds(raws, old_s, hq_scores, hq_skips, all_raws=all_raws), weights, penalty=penalty)["results"]
     short = lambda r: r["history"]["years_available"] + WINDOW_SLACK_YEARS < 10
     shrunk = lambda r: r["history"]["used"] is not None and r["history"]["used"] + WINDOW_SLACK_YEARS < r["history"]["window"]
     out = {"window_new": settings["window"], "window_old": 10, "n": len(new)}
@@ -517,8 +530,9 @@ def _fake_fund(i, years=10.0, category="Test Cat", holdings=True, aum=5e9):
             "avg_volume": 1e6, "dollar_volume": 5e7 * (1 + i / 10), "expense_ratio": 0.03 + 0.01 * i, "expense_source": "netExpenseRatio",
             "n_holdings": None,
             "holdings": [{"symbol": f"H{j}", "name": f"Holding {j}", "weight": 0.05 - 0.002 * j} for j in range(10)] if holdings else [],
-            "px": {"years": years, "monthly_returns": list(rng.normal(0.008, 0.04, n)), "mdd_5": 0.15 + 0.01 * i, "mdd_10": 0.2 + 0.01 * i,
-                   "cagr_5": 0.08 + 0.005 * i, "cagr_10": 0.1 + 0.004 * i, "ttm_dividend_yield": 0.01 + 0.002 * i}, "errors": []}
+            "px": {"years": years, "monthly_returns": list(rng.normal(0.008, 0.04, n)), "mdd_3": 0.12 + 0.01 * i, "mdd_5": 0.15 + 0.01 * i,
+                   "mdd_10": 0.2 + 0.01 * i, "cagr_3": 0.07 + 0.006 * i, "cagr_5": 0.08 + 0.005 * i, "cagr_10": 0.1 + 0.004 * i,
+                   "ttm_dividend_yield": 0.01 + 0.002 * i}, "errors": []}
 
 
 def run_self_tests():
@@ -533,11 +547,11 @@ def run_self_tests():
     ok1 = (close(percentile_scores([1, 2, 3, 4, 5], True), [0, 25, 50, 75, 100]) and close(percentile_scores([1, 2, 3, 4, 5], False), [100, 75, 50, 25, 0])
            and close(percentile_scores([1, 2, 2, 3], True), [0, 50, 50, 100]) and percentile_scores([9], True) == [50.0])
     check("1. Percentiles: higher/lower-better, ties, n = 1", ok1)
-    # 2 graded fit: range (bad 10, good 20) higher-better; (good 0.05, bad 0.15) lower-better; spread 10 / 0.10
-    fh = [metric_fit(v, 10, 20, 10, "higher")[0] for v in (25, 20, 15, 10, 5, 0, -10)]
-    fl = [metric_fit(v, 0.05, 0.15, 0.10, "lower")[0] for v in (0.01, 0.05, 0.10, 0.15, 0.20, 0.25, 0.35)]
-    check("2. Graded Fit: good bound → 100, mid → 90, bad bound → 80, beyond → max(0, 80 − 50 × d ÷ spread)",
-          close(fh, [100, 100, 90, 80, 55, 30, 0]) and close(fl, [100, 100, 90, 80, 55, 30, 0]), f"{fh} {fl}")
+    # 2 simple one-sided Fit: expense ceiling 0.15 (spread 0.10); long-run-return floor 10 (spread 4)
+    fl = [metric_fit(v, 0.15, 0.10, "lower")[0] for v in (0.01, 0.15, 0.25, 0.35, 0.60)]
+    fh = [metric_fit(v, 10, 4, "higher")[0] for v in (25, 10, 6, 2, -5)]
+    check("2. Simple Fit: good side of the Laura limit → 100; one spread past → 50; two spreads past → 0 (both directions)",
+          close(fl, [100, 100, 50, 0, 0]) and close(fh, [100, 100, 50, 0, 0]), f"{fl} {fh}")
     # 3 holdings quality
     q, cov = holdings_quality([(0.60, 80.0), (0.40, 50.0)])
     q3, cov3 = holdings_quality([(0.5, 80.0), (0.3, 50.0), (0.2, None)])
@@ -585,10 +599,10 @@ def run_self_tests():
     funds = [_fake_fund(i) for i in range(12)]
     prep = prepare_funds(funds)
     base = finalize(prep)
-    moved = finalize(prep, ranges_by_cat={"Test Cat": {"expense_ratio": (50.0, 60.0), "dividend_yield": (9.0, 9.5)}})
+    moved = finalize(prep, limits_by_cat={"Test Cat": {"expense_ratio": 0.0, "dividend_yield": 9.0}})
     b = {x["ticker"]: x for x in base["results"]}
     m = {x["ticker"]: x for x in moved["results"]}
-    check("10. Changing a comfort range changes Fit only; Composite unchanged",
+    check("10. Changing a Laura limit changes Fit only; Composite unchanged",
           all(abs(b[t]["composite"] - m[t]["composite"]) < 1e-12 for t in b) and any(abs(b[t]["fit"] - m[t]["fit"]) > 1e-6 for t in b))
     a = {"ticker": "B", "overall": 70, "composite": 60, "flags": [1], "excluded_weight_share": 0.1, "low_data": False}
     bb = {"ticker": "A", "overall": 70, "composite": 65, "flags": [1, 2], "excluded_weight_share": 0.1, "low_data": False}
@@ -618,50 +632,57 @@ def run_self_tests():
     for x in two[12:]:
         x["px"]["mdd_5"] += 0.15  # the second group draws down more
     p2 = prepare_funds(two)
-    la, lb = laura_ranges(p2["bench"]["Test Cat"]), laura_ranges(p2["bench"]["Other Cat"])
+    la, lb = laura_limits(p2["bench"]["Test Cat"]), laura_limits(p2["bench"]["Other Cat"])
     ma, mb = (float(np.median(p2["bench"][c]["max_drawdown"]["vals"])) for c in ("Test Cat", "Other Cat"))
     f2 = finalize(p2)["results"]
-    own = all(r["metrics"]["max_drawdown"]["range"] == laura_ranges(p2["bench"][r["category"]])["max_drawdown"] for r in f2)
-    check("13. Laura max-drawdown upper bound = each group's median, differs by group; each fund uses its own group's Laura range",
-          abs(la["max_drawdown"][1] - ma) < 1e-9 and abs(lb["max_drawdown"][1] - mb) < 1e-9 and abs(ma - mb) > 1e-6 and own
-          and abs(la["aum"][0] - p2["bench"]["Test Cat"]["aum"]["q"]["median"]) < 1e-9,  # higher-better risk metric: low = median
-          f"Test Cat {la['max_drawdown'][1]:.2f} vs Other Cat {lb['max_drawdown'][1]:.2f}; own-group ranges={own}")
+    own = all(r["metrics"]["max_drawdown"]["limit"] == laura_limits(p2["bench"][r["category"]])["max_drawdown"] for r in f2)
+    check("13. Laura max-drawdown ceiling = each group's median, differs by group; each fund uses its own group's Laura limit",
+          abs(la["max_drawdown"] - ma) < 1e-9 and abs(lb["max_drawdown"] - mb) < 1e-9 and abs(ma - mb) > 1e-6 and own
+          and abs(la["aum"] - p2["bench"]["Test Cat"]["aum"]["q"]["median"]) < 1e-9,  # higher-better risk metric: floor = median
+          f"Test Cat {la['max_drawdown']:.2f} vs Other Cat {lb['max_drawdown']:.2f}; own-group limits={own}")
     hr = finalize(prep, hard_limits={"expense_ratio": True}, hard_ranges={"expense_ratio": (None, 0.08)})["results"]
     fails = sorted(r["ticker"] for r in hr if r["hard_limit_failed"])
     exp_f = sorted(f["ticker"] for f in funds if f["expense_ratio"] > 0.08 + 1e-12)
     same_c = all(abs({x["ticker"]: x for x in hr}[t]["composite"] - b[t]["composite"]) < 1e-12 for t in b)
-    check("14. Laura hard limit (expense <= 0.08% here) uses the absolute cap, not the comfort range; Composite unchanged",
-          fails == exp_f and len(fails) > 0 and same_c, f"failed {fails}")
-    # 15 graded Fit through the engine: good bound outscores bad bound (both inside); moving the good bound changes scores
-    gf = [_fake_fund(i) for i in range(12)]
-    pg = prepare_funds(gf)
-    er = {f["ticker"]: f["expense_ratio"] for f in gf}
-    lo_t, hi_t = min(er, key=er.get), max(er, key=er.get)
-    rg = {"Test Cat": {"expense_ratio": (er[lo_t], er[hi_t])}}       # cheapest fund ON the good bound, dearest ON the bad bound
-    g1 = {r["ticker"]: r for r in finalize(pg, ranges_by_cat=rg)["results"]}
-    rg2 = {"Test Cat": {"expense_ratio": (er[lo_t] - 0.02, er[hi_t])}}  # good bound moved 0.02 lower
-    g2 = {r["ticker"]: r for r in finalize(pg, ranges_by_cat=rg2)["results"]}
-    fa, fb_ = g1[lo_t]["metrics"]["expense_ratio"]["fit"], g1[hi_t]["metrics"]["expense_ratio"]["fit"]
-    moved_ = g2[lo_t]["metrics"]["expense_ratio"]["fit"]
-    lr15 = laura_ranges(pg["bench"]["Test Cat"])
-    check("15. Graded Fit: fund at the good bound (100) outscores fund at the bad bound (80), both inside; moving the good bound "
-          "changes Fit; Laura good bound = group p10 (lower-better) / p90 (higher-better)",
-          fa == 100 and abs(fb_ - 80) < 1e-9 and moved_ < 100 and g1[lo_t]["overall"] > g2[lo_t]["overall"]
-          and abs(lr15["expense_ratio"][0] - float(np.percentile(pg["bench"]["Test Cat"]["expense_ratio"]["vals"], 10))) < 1e-9
-          and abs(lr15["aum"][1] - float(np.percentile(pg["bench"]["Test Cat"]["aum"]["vals"], 90))) < 1e-9,
-          f"good {fa:.1f} vs bad {fb_:.1f}; good bound moved → {moved_:.1f}")
-    # 16 holdings-quality weight scaled by coverage under 50%
-    hf = _fake_fund(4)
-    hf["holdings"] = [{"symbol": "A", "name": "A", "weight": 0.20}, {"symbol": "B", "name": "B", "weight": 0.30}]
-    lowc = compute_fund(hf, hq_scores={"A": {"composite": 70.0, "industry": "X"}})
-    hf2 = _fake_fund(4)
-    hf2["holdings"] = [{"symbol": "A", "name": "A", "weight": 0.60}]
-    fullc = compute_fund(hf2, hq_scores={"A": {"composite": 70.0, "industry": "X"}})
-    pw = prepare_funds([_fake_fund(i) for i in range(11)] + [hf], hq_scores={"A": {"composite": 70.0, "industry": "X"}})
-    ew = next(r for r in finalize(pw)["results"] if r["ticker"] == hf["ticker"])["metrics"]["holdings_quality"]["weight"]
-    check("16. Holdings quality at 20% coverage → weight × 0.20 (8 → 1.6); at 60% → full weight; 15% exclusion kept",
-          abs(lowc["metrics"]["holdings_quality"]["weight_factor"] - 0.20) < 1e-9 and "weight_factor" not in fullc["metrics"]["holdings_quality"]
-          and abs(ew - DEFAULT_WEIGHTS["holdings_quality"] * 0.20) < 1e-9 and MIN_HQ_COVERAGE == 0.15, f"effective weight {ew:.2f}")
+    must = finalize(prep, hard_limits={"expense_ratio": True})["results"]
+    lim14 = laura_limits(prep["bench"]["Test Cat"])["expense_ratio"]
+    mf = sorted(r["ticker"] for r in must if r["hard_limit_failed"])
+    exp_m = sorted(f["ticker"] for f in funds if f["expense_ratio"] > lim14 + 1e-12)
+    check("14. 'Must be inside' uses the single Laura limit; the Laura hard limit (expense <= 0.08% here) uses the absolute cap; Composite unchanged",
+          fails == exp_f and len(fails) > 0 and mf == exp_m and len(mf) > 0 and same_c, f"absolute cap failed {fails}; Laura limit {lim14:.3f} failed {mf}")
+    # 15 Overall = Composite - k x (100 - Fit)
+    pg = prepare_funds([_fake_fund(i) for i in range(12)])
+    lim_all = {"Test Cat": {k: (1e12 if METRIC_BY_KEY[k]["direction"] == "lower" else -1e12) for k in KEYS}}
+    g100 = finalize(pg, limits_by_cat=lim_all)["results"]
+    g04 = finalize(pg)["results"]
+    k0 = finalize(pg, penalty=0.0)["results"]
+    by_comp = sorted(k0, key=lambda r: (-r["composite"], len(r["flags"]), r["excluded_weight_share"], r["ticker"]))
+    check("15. k = 0.4: Fit 100 → Overall = Composite; otherwise max(0, Composite − 0.4 × (100 − Fit)); k = 0 → ranking = Composite ranking",
+          all(abs(r["fit"] - 100) < 1e-9 and abs(r["overall"] - r["composite"]) < 1e-9 for r in g100)
+          and all(abs(r["overall"] - max(0.0, r["composite"] - 0.4 * (100 - r["fit"]))) < 1e-9 for r in g04) and any(r["fit"] < 100 for r in g04)
+          and [r["ticker"] for r in k0] == [r["ticker"] for r in by_comp] and DEFAULT_PENALTY == 0.4,
+          f"{sum(r['fit'] < 100 for r in g04)} of {len(g04)} funds lose points at k = 0.4")
+    # 16 holdings quality: fixed weight; low coverage shrinks the score toward average instead
+    hs = {s_: {"composite": 30.0 + 5 * j, "industry": "X"} for j, s_ in enumerate("ABCDEFGHIJKLMNOP")}
+    hfs = []
+    for i in range(12):
+        f_ = _fake_fund(i)
+        f_["holdings"] = [{"symbol": "ABCDEFGHIJKLMNOP"[i], "name": "x", "weight": 0.60}]  # 60% coverage: trust 1
+        hfs.append(f_)
+    lo_f = _fake_fund(4)
+    lo_f.update(ticker="LOW", holdings=[{"symbol": "P", "name": "x", "weight": 0.15}, {"symbol": "ZZ", "name": "x", "weight": 0.50}])  # 15% coverage
+    mid = _fake_fund(5)
+    mid.update(ticker="MID", holdings=[{"symbol": "P", "name": "x", "weight": 0.50}])  # 50% coverage: trust 1
+    ph = prepare_funds(hfs + [lo_f, mid], hq_scores=hs)
+    fh_ = {r["ticker"]: r for r in finalize(ph)["results"]}
+    lo, md = fh_["LOW"]["metrics"]["holdings_quality"], fh_["MID"]["metrics"]["holdings_quality"]
+    weights_same = all(r["metrics"][k]["weight"] == DEFAULT_WEIGHTS[k] for r in fh_.values() for k in KEYS)
+    check("16. Holdings quality: coverage never changes any weight; coverage ≥ 50% → score unchanged; 15% → 0.3 × score + 0.7 × 50 "
+          "(Fit: 0.3 × Fit + 0.7 × 100); 15% exclusion kept",
+          weights_same and abs(lo["trust"] - 0.3) < 1e-9 and abs(lo["pct"] - (0.3 * lo["pct_raw"] + 0.7 * 50)) < 1e-9
+          and abs(lo["fit"] - (0.3 * lo["fit_raw"] + 0.7 * 100)) < 1e-9 and md["trust"] == 1.0 and md["pct"] == md["pct_raw"]
+          and md["fit"] == md["fit_raw"] and MIN_HQ_COVERAGE == 0.15 and fh_["LOW"]["hq_coverage"] == 0.15,
+          f"LOW pct {lo['pct_raw']:.1f} → {lo['pct']:.1f}, fit {lo['fit_raw']:.1f} → {lo['fit']:.1f}; MID pct {md['pct']:.1f} (trust {md['trust']}); weights fixed={weights_same}")
     # 17 too new ranks below every fully scored fund; tiers; why-not-higher points
     tn = _fake_fund(60, years=3.0)
     pt = prepare_funds([_fake_fund(i) for i in range(12)] + [tn])
@@ -673,9 +694,20 @@ def run_self_tests():
     w0 = next(r for r in ft if r["why_not"])
     k0, lost0 = w0["why_not"][0]
     den0 = sum(w0["metrics"][k]["weight"] for k in KEYS if w0["metrics"][k]["pct"] is not None)
-    exp_lost = 0.5 * w0["metrics"][k0]["weight"] * (100 - w0["metrics"][k0]["fit"]) / den0
-    check("17. Too-new fund listed after every fully scored fund; tiers = within 1.0 of the tier's first fund; why-not points = b × w × (100 − Fit) ÷ Σw",
+    exp_lost = 0.4 * w0["metrics"][k0]["weight"] * (100 - w0["metrics"][k0]["fit"]) / den0
+    check("17. Too-new fund listed after every fully scored fund; tiers = within 1.0 of the tier's first fund; why-not points = k × w × (100 − Fit) ÷ Σw",
           ft[pos]["too_new"] and not ft[pos]["low_data"] and pos >= len(full)
           and tl == ["Tier 1: ranks 1-3", "Tier 1: ranks 1-3", "Tier 1: ranks 1-3", "Tier 2: ranks 4-5", "Tier 2: ranks 4-5", "Tier 3: rank 6"]
-          and abs(lost0 - exp_lost) < 1e-9, f"too-new at position {pos + 1} of {len(ft)}; tiers {tl}; {w0['ticker']} {w0['why_not_higher'][:60]}")
+          and abs(lost0 - exp_lost) < 1e-9 and abs(sum(v for _, v in w0["why_not"]) - w0["penalty"]) < 1e-9,
+          f"too-new at position {pos + 1} of {len(ft)}; tiers {tl}; {w0['ticker']} {w0['why_not_higher'][:60]}")
+    # 18 window 3 / 5 / 10
+    r4_3, r4_5 = compute_fund(_fake_fund(3, years=4.0), {"window": 3}), compute_fund(_fake_fund(3, years=4.0), {"window": 5})
+    runs = {w: finalize(prepare_funds([_fake_fund(i) for i in range(12)], {"window": w}))["results"] for w in WINDOWS}
+    e0 = {w: next(r for r in v if r["ticker"] == "E00")["metrics"] for w, v in runs.items()}
+    check("18. Window 3 / 5 / 10 all run (each uses its own drawdown and return); a fund with 4 yrs is scored at 3 yrs and 'too new' at 5",
+          all(r4_3["metrics"][k]["status"] == OK for k in HIST_KEYS) and not r4_3["history"]["too_new"] and r4_5["history"]["too_new"]
+          and all(len(v) == 12 and all(r["overall"] is not None for r in v) for v in runs.values())
+          and all(abs(e0[w]["max_drawdown"]["value"] - _fake_fund(0)["px"][f"mdd_{w}"] * 100) < 1e-9 for w in WINDOWS)
+          and all(abs(e0[w]["long_run_return"]["value"] - _fake_fund(0)["px"][f"cagr_{w}"] * 100) < 1e-9 for w in WINDOWS),
+          f"4-yr fund: 3-yr statuses {[r4_3['metrics'][k]['status'] for k in HIST_KEYS]}, 5-yr too new {r4_5['history']['too_new']}")
     return results

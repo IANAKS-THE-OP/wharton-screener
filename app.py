@@ -10,8 +10,8 @@ Two asset types plus a guide:
   ETFs   -> etf_page.py   (etf_scoring.py, 10 metrics; equity ETFs only)
   How everything works -> guide_page.py (renders HOW_IT_WORKS.md)
 
-Default ranges and weights on both pages are Laura Gao's standards (laura.py).
-  Sidebar : pick the asset type, then the stock industry or the ETF Morningstar category / theme.
+Default Laura limits and weights on both pages are Laura Gao's standards (laura.py).
+  Sidebar : pick the asset type, the history window (3 / 5 / 10 yrs), then the stock industry or the ETF Morningstar category / theme.
   Tabs    : Ranked results | Tune scoring | Directory | How scoring works
 """
 
@@ -30,12 +30,12 @@ st.set_page_config(page_title="Wharton Investment Screener", layout="wide")
 
 # Streamlit deletes a widget's value whenever that widget isn't drawn in a run (e.g. the stock industry
 # while the ETF page is open). Re-saving these keys at the top of every run keeps the industry picks,
-# comfort ranges, weights, blend and hard limits when you switch pages or industries. (None of these
-# widgets has a value= argument, so re-saving them never conflicts with a default.)
-PERSIST_PREFIXES = ("industry_choice", "etf2_mscat", "etf2_laura_hard",
+# Laura limits, weights, penalty strength, history window and hard limits when you switch pages or industries.
+# (None of these widgets has a value= argument, so re-saving them never conflicts with a default.)
+PERSIST_PREFIXES = ("industry_choice", "etf2_mscat", "etf2_laura_hard", "hist_window",
                     "stkcmp_", "etfcmp_",
-                    "stklo|", "stkhi|", "stkext|", "etflo|", "etfhi|", "etfext|",
-                    "s2w|", "etf2w|", "s2_blend", "etf2_blend", "s2h|", "etf2h|")
+                    "stklim|", "stkext|", "etflim|", "etfext|",
+                    "s2w|", "etf2w|", "s2_penalty", "etf2_penalty", "s2h|", "etf2h|")
 for _k in [k for k in st.session_state.keys() if str(k).startswith(PERSIST_PREFIXES)]:
     st.session_state[_k] = st.session_state[_k]
 
@@ -54,6 +54,16 @@ if asset_type == "How everything works":
     import guide_page
     guide_page.render()
     st.stop()
+
+# ONE history window for both pages: downside deviation, max drawdown (and the ETF long-run return) are measured for
+# every stock / fund over these same years, ending on the same date.
+st.session_state.setdefault("hist_window", 5)
+st.sidebar.selectbox("History window", [3, 5, 10], key="hist_window", format_func=lambda y: f"{y} years",
+                     help="Downside deviation, max drawdown and (ETFs) long-run return use this window for every stock / fund, "
+                          "ending on the same date. Less history than the window = 'too new for this window': those metrics are "
+                          "excluded and the name is listed after the fully scored ones. Default 5 years.")
+if st.session_state["hist_window"] == 3:
+    st.sidebar.caption("3 years starts in late 2023 and excludes the 2022 decline, so risk numbers look better than over a full market cycle.")
 
 if asset_type == "Stocks":
     # ONE widget on purpose: click it and type to filter (e.g. "semi"). An
