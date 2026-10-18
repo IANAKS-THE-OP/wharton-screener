@@ -22,11 +22,13 @@ import streamlit as st
 
 import industry_universe as iu
 import stock_data as sd
+import version_info
 
 DIRECTORY_PATH = "results/industry_directory.csv"
 SHORTLIST_PATH = "results/industry_shortlist.csv"
 
 st.set_page_config(page_title="Wharton Investment Screener", layout="wide")
+version_info.data_banner()  # red banner if the committed caches are older than this code
 
 # Streamlit deletes a widget's value whenever that widget isn't drawn in a run (e.g. the stock industry
 # while the ETF page is open). Re-saving these keys at the top of every run keeps the industry picks,
@@ -53,6 +55,7 @@ asset_type = st.sidebar.radio("Asset type", ["Stocks", "ETFs", "How everything w
 if asset_type == "How everything works":
     import guide_page
     guide_page.render()
+    version_info.sidebar_footer()
     st.stop()
 
 # ONE history window for both pages: downside deviation, max drawdown (and the ETF long-run return) are measured for
@@ -142,3 +145,5 @@ if kind == "stock":
 else:
     import etf_page
     etf_page.render()
+
+version_info.sidebar_footer()  # commit + data date: compare with `git log -1` after a deploy (DEPLOY.md)

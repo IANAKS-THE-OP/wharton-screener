@@ -46,6 +46,8 @@ def render():
     universe = eg.load_universe()
     if universe is None:
         st.error("ETF universe not built yet. Run `./venv/bin/python3 etf_groups.py` (seconds, no download), then reload.")
+        import version_info
+        version_info.sidebar_footer()
         st.stop()
     overrides = eg.load_overrides()
     mem = eg.membership(universe, overrides)
