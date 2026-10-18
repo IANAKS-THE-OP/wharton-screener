@@ -101,3 +101,26 @@ def laura_caption(info, direction, fmt_fn):
     side = "≤" if direction == "lower" else "≥"
     st.caption(f"**Laura ({info['tier']})**: {info['side']} {side} {fmt_fn(info['limit'])} ({laura.pct_name(info['pct'])}). "
                "Good side of the limit → Fit 100; past it Fit falls 50 points per spread (0 at two spreads).")
+
+
+def category_table(metrics, current, page):
+    """Laura's six category totals for stocks and ETFs side by side, plus this page's current weights per category.
+    metrics: this page's METRICS; current: {metric key: weight now}; page: "Stocks" or "ETFs"."""
+    import pandas as pd
+
+    import etf_scoring as es
+    import scoring2 as sc
+
+    stk, etf, now = sc.category_totals(sc.METRICS), sc.category_totals(es.METRICS), sc.category_totals(metrics, current)
+    df = pd.DataFrame({"Category": sc.CATEGORIES,
+                       "Metrics (this page)": [", ".join(m["label"] for m in metrics if m["category"] == c and m["weight"]) for c in sc.CATEGORIES],
+                       "Stocks (Laura)": [stk[c] for c in sc.CATEGORIES], "ETFs (Laura)": [etf[c] for c in sc.CATEGORIES],
+                       f"{page} now": [now[c] for c in sc.CATEGORIES]})
+    df.loc[len(df)] = ["Total", "", sum(stk.values()), sum(etf.values()), sum(now.values())]
+    st.dataframe(df, hide_index=True, width="stretch",
+                 column_config={c: st.column_config.NumberColumn(format="%g") for c in ("Stocks (Laura)", "ETFs (Laura)", f"{page} now")})
+    if stk == etf:
+        st.caption("✓ Laura's default category totals are identical for stocks and ETFs (Risk 25 · Cost/valuation 20 · Quality 20 · "
+                   "Growth 13 · Safety 17 · Income 5). The *now* column changes as you move the weight sliders.")
+    else:
+        st.warning("Stock and ETF default category totals differ - check scoring2.py / etf_scoring.py.")

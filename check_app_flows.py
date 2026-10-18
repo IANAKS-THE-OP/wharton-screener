@@ -36,6 +36,18 @@ ok = True
 def chk(name, cond, detail=""):
     global ok; ok &= bool(cond); print(("PASS " if cond else "FAIL ") + name, detail)
 
+
+def cat_table():
+    """The six-category weight table on Tune scoring (range_ui.category_table) -> DataFrame or None."""
+    return next((d.value for d in at.dataframe if "Stocks (Laura)" in d.value.columns), None)
+
+
+def cat_ok(df, page):
+    want = [25, 20, 20, 13, 17, 5, 100]
+    return (df is not None and list(df["Category"]) == ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income", "Total"]
+            and list(df["Stocks (Laura)"]) == want and list(df["ETFs (Laura)"]) == want and list(df[f"{page} now"]) == want)
+
+
 at = AppTest.from_file(APP, default_timeout=600); at.run()
 hw = at.sidebar.selectbox(key="hist_window")
 chk("History window dropdown: 3 / 5 / 10 years, default 5, no 3-yr caption at 5", list(hw.options) == ["3 years", "5 years", "10 years"] and hw.value == 5
@@ -44,6 +56,8 @@ at.sidebar.selectbox(key="industry_choice").set_value("Semiconductors").run()
 semi5 = at.dataframe[0].value
 chk("Stocks table has Laura penalty + why not higher next to Fit / Composite", {"Laura penalty", "why not higher", "fit", "composite"} <= set(semi5.columns)
     and list(semi5.columns).index("Laura penalty") == list(semi5.columns).index("fit") + 1, str(list(semi5.columns)[:9]))
+chk("Stocks Tune scoring: six-category table, Laura totals equal for stocks and ETFs (25/20/20/13/17/5)", cat_ok(cat_table(), "Stocks"),
+    "" if cat_table() is None else cat_table().to_dict("list"))
 pen_ok = all(abs(o - max(0, c - 0.4 * (100 - f))) < 1e-6 for o, c, f in zip(semi5.overall, semi5.composite, semi5.fit) if o == o and f == f)
 chk("Stocks: Overall = max(0, Composite − 0.4 × (100 − Fit)) on every row", pen_ok)
 at.sidebar.selectbox(key="hist_window").set_value(3).run()
@@ -88,6 +102,8 @@ chk("Gold page unchanged after pooled compare", page_scores(at) == pages["Gold"]
 # ======================= ETFs
 at.sidebar.radio(key="asset_type").set_value("ETFs").run()
 chk("ETF page no exception", not at.exception, [e.value for e in at.exception][:1])
+chk("ETF Tune scoring: six-category table, Laura totals equal for stocks and ETFs (25/20/20/13/17/5)", cat_ok(cat_table(), "ETFs"),
+    "" if cat_table() is None else cat_table().to_dict("list"))
 chk("no industry grouping widgets on the ETF page", not any(w.key in ("etf2_groupby", "etf2_industry", "etf2_only_with") for w in list(at.sidebar.radio) + list(at.sidebar.selectbox) + list(at.sidebar.checkbox)),
     [w.key for w in at.sidebar.selectbox])
 chk("ETF picker lists Morningstar categories + themes only", all(not o.startswith(("Whole sector", "Broad US market", "International / global")) for o in at.sidebar.selectbox(key="etf2_mscat").options))

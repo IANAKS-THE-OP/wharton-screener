@@ -29,26 +29,38 @@ import laura
 # ========================================================================
 
 # Default weights = Laura Gao's standards (moderate risk, no big drops, steady growth, nothing heavy); total 100.
+# "category" = one of the six CATEGORIES; the ETF model (etf_scoring.py) uses the same six category totals.
 METRICS = [
-    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "group": "Quality"},
-    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 7, "group": "Quality"},
-    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 7, "group": "Momentum of quality"},
-    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 5, "group": "Momentum of quality"},
-    {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 4, "group": "Valuation & growth"},
-    {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth"},
-    {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 4, "group": "Valuation & growth"},
-    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 7, "group": "Valuation & growth"},
-    {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 9, "group": "Balance sheet"},
-    {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 8, "group": "Balance sheet"},
-    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 8, "group": "Earnings quality"},
-    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 10, "group": "Risk"},
-    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 10, "group": "Risk"},
-    {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 7, "group": "Shareholder returns"},
+    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "group": "Quality", "category": "Quality"},
+    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 5, "group": "Quality", "category": "Quality"},
+    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 5, "group": "Momentum of quality", "category": "Growth"},
+    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 3, "group": "Momentum of quality", "category": "Growth"},
+    {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 7, "group": "Valuation & growth", "category": "Cost/valuation"},
+    {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 7, "group": "Valuation & growth", "category": "Cost/valuation"},
+    {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
+    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 5, "group": "Valuation & growth", "category": "Growth"},
+    {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 9, "group": "Balance sheet", "category": "Safety"},
+    {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 8, "group": "Balance sheet", "category": "Safety"},
+    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 7, "group": "Earnings quality", "category": "Quality"},
+    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
+    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 13, "group": "Risk", "category": "Risk"},
+    {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 5, "group": "Shareholder returns", "category": "Income"},
 ]
 METRIC_BY_KEY = {m["key"]: m for m in METRICS}
 KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
+# Laura's six category totals, shared by the stock and ETF models (each sums to 100)
+CATEGORIES = ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income"]
+LAURA_CATEGORY_TOTALS = {"Risk": 25, "Cost/valuation": 20, "Quality": 20, "Growth": 13, "Safety": 17, "Income": 5}
+
+
+def category_totals(metrics, weights=None):
+    """{category: summed weight} in CATEGORIES order. weights defaults to each metric's default weight."""
+    out = {c: 0.0 for c in CATEGORIES}
+    for m in metrics:
+        out[m["category"]] += m["weight"] if weights is None else weights.get(m["key"], m["weight"])
+    return out
 
 WINDOWS = (3, 5, 10)  # history-window choices (years) for downside deviation and max drawdown
 DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05, "window": 5}
@@ -1169,4 +1181,10 @@ def run_self_tests():
     pos = [x["ticker"] for x in pt].index("T71")
     check("23. Too-new stock is listed after every fully scored stock (not low data)", pt[pos]["too_new"] and not pt[pos]["low_data"] and pos == len(pt) - 1,
           f"position {pos + 1} of {len(pt)}")
+    # 24 Laura default weights: total 100, six category totals (the ETF suite checks they match the ETF model)
+    ct = category_totals(METRICS)
+    check("24. Default weights total 100; every metric has a category; category totals = Risk 25 / Cost/valuation 20 / Quality 20 / "
+          "Growth 13 / Safety 17 / Income 5",
+          sum(DEFAULT_WEIGHTS.values()) == 100 and all(m.get("category") in CATEGORIES for m in METRICS) and ct == LAURA_CATEGORY_TOTALS,
+          f"total {sum(DEFAULT_WEIGHTS.values())}; {ct}")
     return results
