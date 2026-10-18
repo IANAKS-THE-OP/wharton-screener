@@ -31,19 +31,19 @@ import laura
 # Default weights = Laura Gao's standards (moderate risk, no big drops, steady growth, nothing heavy); total 100.
 # "category" = one of the six CATEGORIES; the ETF model (etf_scoring.py) uses the same six category totals.
 METRICS = [
-    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "group": "Quality", "category": "Quality"},
-    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 5, "group": "Quality", "category": "Quality"},
+    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 7, "group": "Quality", "category": "Quality"},
+    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 4, "group": "Quality", "category": "Quality"},
     {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 5, "group": "Momentum of quality", "category": "Growth"},
     {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 3, "group": "Momentum of quality", "category": "Growth"},
-    {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 7, "group": "Valuation & growth", "category": "Cost/valuation"},
-    {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 7, "group": "Valuation & growth", "category": "Cost/valuation"},
+    {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
+    {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
     {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
     {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 5, "group": "Valuation & growth", "category": "Growth"},
     {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 9, "group": "Balance sheet", "category": "Safety"},
     {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 8, "group": "Balance sheet", "category": "Safety"},
-    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 7, "group": "Earnings quality", "category": "Quality"},
-    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
-    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 13, "group": "Risk", "category": "Risk"},
+    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 6, "group": "Earnings quality", "category": "Quality"},
+    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 14, "group": "Risk", "category": "Risk"},
+    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 16, "group": "Risk", "category": "Risk"},
     {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 5, "group": "Shareholder returns", "category": "Income"},
 ]
 METRIC_BY_KEY = {m["key"]: m for m in METRICS}
@@ -52,7 +52,7 @@ DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 # Laura's six category totals, shared by the stock and ETF models (each sums to 100)
 CATEGORIES = ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income"]
-LAURA_CATEGORY_TOTALS = {"Risk": 25, "Cost/valuation": 20, "Quality": 20, "Growth": 13, "Safety": 17, "Income": 5}
+LAURA_CATEGORY_TOTALS = {"Risk": 30, "Cost/valuation": 18, "Quality": 17, "Growth": 13, "Safety": 17, "Income": 5}
 
 
 def category_totals(metrics, weights=None):
@@ -62,9 +62,15 @@ def category_totals(metrics, weights=None):
         out[m["category"]] += m["weight"] if weights is None else weights.get(m["key"], m["weight"])
     return out
 
+
+def category_text(sep=" · "):
+    """'Risk 30 · Cost/valuation 18 · ...' from LAURA_CATEGORY_TOTALS (for captions and test names)."""
+    return sep.join(f"{c} {LAURA_CATEGORY_TOTALS[c]:g}" for c in CATEGORIES)
+
 WINDOWS = (3, 5, 10)  # history-window choices (years) for downside deviation and max drawdown
 DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05, "window": 5}
 DEFAULT_PENALTY = 0.4  # k in Overall = max(0, Composite - k x (100 - Fit)); 0 = pure Composite
+SENSITIVITY_KS = (0.2, 0.4, 0.6)  # penalty strengths compared under the ranked results (both pages)
 PREP_VERSION = 3  # bump when prepare_industry's Composite inputs change. NOTE: part of etf_holdings.model_hash(), so a bump wipes holding_scores.db
 WINDOW_SLACK_YEARS = 7 / 365.25  # listing-date / weekend rounding: up to 7 days short of the window still counts as full
 HIST_KEYS = ("downside_dev", "max_drawdown")
@@ -1009,6 +1015,19 @@ def _synthetic_raw(i, n_fy=5, ebitda_neg=False, no_interest_no_debt=False, loss=
             "px": px}
 
 
+def penalty_sensitivity(ranked_by_k, n=10):
+    """ranked_by_k: {k: ranked results (already filtered like the page's table)}. Top n by rank at each k.
+    -> {"rows": [{"rank": 1, k1: "TICK (Overall)", ...}], "top": {k: [tickers]},
+        "changes": [(k_a, k_b, how many of k_a's top n are not in k_b's top n), ...] for each neighbouring pair and first vs last}."""
+    ks = sorted(ranked_by_k)
+    top = {k: [r for r in ranked_by_k[k] if r.get("rank") is not None][:n] for k in ks}
+    rows = [{"rank": i + 1, **{k: (f"{top[k][i]['ticker']} ({top[k][i]['overall']:.1f})" if i < len(top[k]) else "") for k in ks}}
+            for i in range(max((len(v) for v in top.values()), default=0))]
+    names = {k: [r["ticker"] for r in v] for k, v in top.items()}
+    pairs = list(zip(ks, ks[1:])) + ([(ks[0], ks[-1])] if len(ks) > 2 else [])
+    return {"rows": rows, "top": names, "changes": [(a, b, len(set(names[a]) - set(names[b]))) for a, b in pairs]}
+
+
 def run_self_tests():
     results = []
 
@@ -1183,8 +1202,18 @@ def run_self_tests():
           f"position {pos + 1} of {len(pt)}")
     # 24 Laura default weights: total 100, six category totals (the ETF suite checks they match the ETF model)
     ct = category_totals(METRICS)
-    check("24. Default weights total 100; every metric has a category; category totals = Risk 25 / Cost/valuation 20 / Quality 20 / "
-          "Growth 13 / Safety 17 / Income 5",
+    check(f"24. Default weights total 100; every metric has a category; category totals = {category_text(' / ')}",
           sum(DEFAULT_WEIGHTS.values()) == 100 and all(m.get("category") in CATEGORIES for m in METRICS) and ct == LAURA_CATEGORY_TOTALS,
           f"total {sum(DEFAULT_WEIGHTS.values())}; {ct}")
+    # 25 penalty sensitivity: top 10 at k = 0.2 / 0.4 / 0.6, counts of names that leave the top 10
+    pk = prepare_industry([_synthetic_raw(i) for i in range(14)])
+    by_k = {k: finalize(pk, penalty=k)["results"] for k in SENSITIVITY_KS}
+    sens = penalty_sensitivity(by_k)
+    exp_top = {k: [r["ticker"] for r in v if r["rank"] is not None][:10] for k, v in by_k.items()}
+    exp_ch = [(a, b, len(set(exp_top[a]) - set(exp_top[b]))) for a, b in ((0.2, 0.4), (0.4, 0.6), (0.2, 0.6))]
+    mid = {r["ticker"]: r for r in by_k[0.4]}
+    check("25. Penalty sensitivity: top 10 at k = 0.2 / 0.4 / 0.6 match finalize at each k; change counts = names leaving the top 10",
+          sens["top"] == exp_top and sens["changes"] == exp_ch and len(sens["rows"]) == 10
+          and all(sens["rows"][i][0.4].startswith(t) and f"({mid[t]['overall']:.1f})" in sens["rows"][i][0.4] for i, t in enumerate(exp_top[0.4])),
+          f"changes {sens['changes']}")
     return results

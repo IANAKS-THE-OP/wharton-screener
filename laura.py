@@ -111,3 +111,89 @@ def default_limits(bench, metrics):
             if v is not None and np.isfinite(v):
                 out[m["key"]] = float(v)
     return out
+
+
+# ------------------------------------------------------------------ Laura standards = the session default
+# Bump LAURA_VERSION whenever the default weights, LAURA_TIERS or the default penalty strength change, and paste the
+# new laura.fingerprint() into LAURA_FINGERPRINT (the ETF self-tests fail until both are done). Every open session whose
+# saved version differs is then reset to Laura standards on its next run (app.py calls ensure_current first thing).
+LAURA_VERSION = 2
+LAURA_FINGERPRINT = "c144ab2a8dca"
+VERSION_KEY = "laura_version"
+# session keys that hold weights, Laura limits and penalty strength on both pages (what "Laura standards" restores)
+RESET_PREFIXES = ("s2w|", "etf2w|", "s2_penalty", "etf2_penalty", "stklim|", "stkext|", "etflim|", "etfext|",
+                  "stkcmp__rmode", "etfcmp_|morningstar_rmode")  # + Compare's limit mode (Laura / Industry average)
+
+
+def session_defaults(asset):
+    """Laura-standard session values for one page: {"s2w|roic": 7.0, ..., "s2_penalty": 0.4} (stocks) or the etf2 keys.
+    The pages seed their weight and penalty widgets from this; limits are seeded per group by range_ui.seed_laura."""
+    import etf_scoring
+    import scoring2
+    if asset == "stock":
+        d = {f"s2w|{m['key']}": float(m["weight"]) for m in scoring2.METRICS}
+        d["s2_penalty"] = scoring2.DEFAULT_PENALTY
+    else:
+        d = {f"etf2w|{m['key']}": float(m["weight"]) for m in etf_scoring.METRICS if m["key"] != "n_holdings"}
+        d["etf2_penalty"] = etf_scoring.DEFAULT_PENALTY
+    return d
+
+
+def fingerprint():
+    """Hash of everything the Laura defaults depend on: both weight sets, LAURA_TIERS and both default penalties."""
+    import hashlib
+    import json
+    blob = json.dumps({"stock": session_defaults("stock"), "etf": session_defaults("etf"), "tiers": LAURA_TIERS},
+                      sort_keys=True, default=list)
+    return hashlib.sha1(blob.encode()).hexdigest()[:12]
+
+
+def ensure_current(state, version=LAURA_VERSION):
+    """First load, or the defaults changed since this session saved its settings: drop every saved weight, Laura limit
+    and penalty strength, so the pages re-seed them with Laura standards this run. Returns True if it reset.
+    state: st.session_state (or any dict, for the self-tests)."""
+    if state.get(VERSION_KEY) == version:
+        return False
+    for k in [k for k in list(state.keys()) if str(k).startswith(RESET_PREFIXES)]:
+        del state[k]
+    state[VERSION_KEY] = version
+    return True
+
+
+def run_self_tests():
+    results = []
+
+    def check(name, ok, detail=""):
+        results.append({"test": name, "passed": bool(ok), "detail": str(detail)})
+
+    def page_seed(state):  # what the pages do before their widgets: seed only keys that are missing
+        for asset in ("stock", "etf"):
+            for k, v in session_defaults(asset).items():
+                state.setdefault(k, v)
+
+    # 1 first load: empty session -> version stored, then the pages seed Laura weights and k = 0.4
+    s = {}
+    first = ensure_current(s)
+    page_seed(s)
+    exp = {**session_defaults("stock"), **session_defaults("etf")}
+    check("1. First load: Laura standards (version stored; every weight and both penalty strengths = Laura defaults)",
+          first and s[VERSION_KEY] == LAURA_VERSION and all(s[k] == v for k, v in exp.items()) and s["s2_penalty"] == 0.4,
+          f"reset={first}, version={s.get(VERSION_KEY)}")
+    # 2 same version: custom settings are kept
+    s["s2w|roic"], s["etf2_penalty"], s["stklim|Gold|roic"] = 20.0, 0.9, 1.23
+    again = ensure_current(s)
+    check("2. Same weights-version: custom weights / limits / k are kept", not again and s["s2w|roic"] == 20.0 and s["stklim|Gold|roic"] == 1.23)
+    # 3 a session saved under an older version is reset to Laura standards; other keys survive
+    s[VERSION_KEY], s["industry_choice"], s["s2h|Gold|roic"] = LAURA_VERSION - 1, "Gold", True
+    reset = ensure_current(s)
+    gone = not any(str(k).startswith(RESET_PREFIXES) for k in s)
+    page_seed(s)
+    check("3. Changed weights-version: weights, Laura limits and k reset to Laura standards; other settings kept",
+          reset and gone and s["s2w|roic"] == exp["s2w|roic"] and s["etf2_penalty"] == exp["etf2_penalty"]
+          and "stklim|Gold|roic" not in s and s["industry_choice"] == "Gold" and s["s2h|Gold|roic"] is True and s[VERSION_KEY] == LAURA_VERSION,
+          f"reset={reset}")
+    # 4 the version was bumped for the current defaults
+    fp = fingerprint()
+    check(f"4. LAURA_VERSION matches the current defaults (fingerprint {fp}; if it changed, bump LAURA_VERSION and update LAURA_FINGERPRINT)",
+          fp == LAURA_FINGERPRINT, f"code {fp} vs recorded {LAURA_FINGERPRINT}")
+    return results

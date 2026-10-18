@@ -13,6 +13,8 @@ The per-page prefix matters: ETF groups can share names with stock industries, s
 "Semiconductors / max drawdown" on one page would overwrite the other page's limit.
 """
 
+import math
+
 import streamlit as st
 
 import laura
@@ -120,7 +122,54 @@ def category_table(metrics, current, page):
     st.dataframe(df, hide_index=True, width="stretch",
                  column_config={c: st.column_config.NumberColumn(format="%g") for c in ("Stocks (Laura)", "ETFs (Laura)", f"{page} now")})
     if stk == etf:
-        st.caption("✓ Laura's default category totals are identical for stocks and ETFs (Risk 25 · Cost/valuation 20 · Quality 20 · "
-                   "Growth 13 · Safety 17 · Income 5). The *now* column changes as you move the weight sliders.")
+        st.caption(f"✓ Laura's default category totals are identical for stocks and ETFs ({sc.category_text()}). "
+                   "The *now* column changes as you move the weight sliders.")
     else:
         st.warning("Stock and ETF default category totals differ - check scoring2.py / etf_scoring.py.")
+
+
+# ------------------------------------------------------------------ "Laura standards (default)" badge
+def is_laura(prefix, ns, info, weight_defaults, penalty_key, penalty_default):
+    """True when this page's weights, penalty strength and this group's limits are exactly Laura standards
+    (what the Laura standards button restores). Unset keys count as Laura: they are seeded with her values."""
+    same = lambda a, b: math.isclose(float(a), float(b), rel_tol=1e-9, abs_tol=1e-12)
+    ss = st.session_state
+    return (all(same(ss.get(k, v), v) for k, v in weight_defaults.items())
+            and same(ss.get(penalty_key, penalty_default), penalty_default)
+            and all(same(ss.get(keys(prefix, ns, k)[0], x["limit"]), x["limit"]) for k, x in info.items() if x["limit"] is not None))
+
+
+def reset_laura(prefix, groups, weight_defaults, penalty_key, penalty_default, cmp_key=None):
+    """on_click callback (runs before the next run, so it may change widget values): Laura weights + penalty strength,
+    and the limits of `groups` (page namespaces) cleared so they are re-seeded with Laura's; Compare back to Laura limits."""
+    for g in groups:
+        clear(prefix, g)
+    for k, v in weight_defaults.items():
+        st.session_state[k] = v
+    st.session_state[penalty_key] = penalty_default
+    if cmp_key:
+        st.session_state[f"{cmp_key}_rmode"] = "laura"
+
+
+def laura_badge(default, key, reset_args):
+    """'Laura standards (default)', or 'Custom settings' + a Reset to Laura standards button. reset_args -> reset_laura."""
+    if default:
+        st.badge("Laura standards (default)", icon=":material/check_circle:", color="green")
+        return
+    c1, c2 = st.columns([1, 3], vertical_alignment="center")
+    c1.badge("Custom settings", icon=":material/tune:", color="orange")
+    c2.button("Reset to Laura standards", key=key, on_click=reset_laura, args=reset_args,
+              help="Laura's weights, penalty strength k = 0.4 and Laura limits (this group).")
+
+
+# ------------------------------------------------------------------ penalty strength sensitivity
+def sensitivity_table(sens, k_now, k_default, word):
+    """Under the ranked table: top 10 at each k (scoring2.penalty_sensitivity) and how many names change."""
+    import pandas as pd
+    st.markdown(f"**Penalty strength sensitivity**: top 10 {word}s at k = " + " / ".join(f"{k:g}" for k in sens["top"])
+                + " (same weights and limits; Overall in brackets)")
+    lbl = lambda k: f"k = {k:g}" + (" (default)" if math.isclose(k, k_default) else "") + (" ← now" if math.isclose(k, k_now) else "")
+    df = pd.DataFrame(sens["rows"]).rename(columns={k: lbl(k) for k in sens["top"]})
+    st.dataframe(df, hide_index=True, width="stretch")
+    st.caption(" · ".join(f"k {a:g} vs {b:g}: **{n}** of the top 10 change" for a, b, n in sens["changes"])
+               + f". Each Fit point lost costs k Overall points (k = {k_default:g} by default).")

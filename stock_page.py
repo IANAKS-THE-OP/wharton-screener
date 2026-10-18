@@ -140,8 +140,10 @@ def render(group, directory_fn):
     # ------------------------------------------------------------------ Tune
     weights, limits, hard = {}, {}, {}
     with tab_tune:
-        wdef = {f"s2w|{m['key']}": float(m["weight"]) for m in sc.METRICS}
-        ru.seed({"s2_penalty": sc.DEFAULT_PENALTY, **wdef})  # Laura weights + penalty strength are the default
+        wdef = {k: v for k, v in laura.session_defaults("stock").items() if k != "s2_penalty"}
+        ru.seed(laura.session_defaults("stock"))  # Laura weights + penalty strength are the default
+        ru.laura_badge(ru.is_laura(PREFIX, ns, linfo, wdef, "s2_penalty", sc.DEFAULT_PENALTY), f"s2_badge|tune|{ns}",
+                       (PREFIX, [ns], wdef, "s2_penalty", sc.DEFAULT_PENALTY))
         t1, t2, t3 = st.columns([2, 1, 1])
         ru.buttons((t2, t3), PREFIX, ns, bench, sc.METRICS, wdef, "s2_penalty", sc.DEFAULT_PENALTY)  # before the slider: it resets it
         penalty = t1.slider("Laura penalty strength k: Overall = Composite − k × (100 − Fit)", 0.0, 1.0, step=0.05, key="s2_penalty",
@@ -186,6 +188,8 @@ def render(group, directory_fn):
 
     # ------------------------------------------------------------- Results
     with tab_res:
+        ru.laura_badge(ru.is_laura(PREFIX, ns, linfo, wdef, "s2_penalty", sc.DEFAULT_PENALTY), f"s2_badge|res|{ns}",
+                       (PREFIX, [ns], wdef, "s2_penalty", sc.DEFAULT_PENALTY))
         display = results
         if any(hard.values()):
             passing = [r for r in results if not r["hard_limit_failed"]]
@@ -221,6 +225,12 @@ def render(group, directory_fn):
         n_new = sum(bool(r.get("too_new")) for r in display)
         if n_new:
             st.caption(f"{n_new} too new for the {settings['window']}-yr window (listed after the fully scored companies).")
+
+        def shown_at(k):  # the ranked table at penalty strength k (same weights, limits and hard-limit filter)
+            res = sc.finalize(prep, weights=weights, limits=limits, penalty=k, hard_limits=hard)["results"]
+            keep = [r for r in res if not r["hard_limit_failed"]] if any(hard.values()) else res
+            return sc.rank([dict(r) for r in keep]) if keep and keep is not res else res
+        ru.sensitivity_table(sc.penalty_sensitivity({k: shown_at(k) for k in sc.SENSITIVITY_KS}), penalty, sc.DEFAULT_PENALTY, "company")
         _foreign_list(final["foreign"])
         _flag_key(FLAG_KEY)
         export = sc.export_rows(final, settings, group)
@@ -265,7 +275,7 @@ def _compare_tab(settings):
 
     compare_ui.render(key="stkcmp_", asset="stock", metrics=sc.METRICS, options=options,
                       counts={g: f"{n} companies" for g, (n, _) in counts.items()}, run=run,
-                      weight_defaults={f"s2w|{m['key']}": float(m["weight"]) for m in sc.METRICS},
+                      weight_defaults={k: v for k, v in laura.session_defaults("stock").items() if k != "s2_penalty"},
                       fmt=fmt, icons=_icons, word="industry", name_word="company", page_prefix=PREFIX, ns_fn=lambda g: g,
                       hard_prefix="s2h|", meta_extra={"settings": settings, "laura_penalty_k": penalty},
                       penalty_key="s2_penalty", penalty_default=sc.DEFAULT_PENALTY)
@@ -375,9 +385,9 @@ For each of the 14 metrics a company gets two numbers, both 0–100 where **100 
 * **Composite (percentile).** Rank the company among its industry peers that have a valid value for that metric. Sort ascending, rank 1 = lowest, ties share the average rank. **p = (rank − 1) ÷ (n − 1) × 100** (n = 1 → 50). *Higher-is-better* metrics use p; *lower-is-better* use 100 − p.
 * **Fit (one Laura limit per metric).** Each metric has ONE limit in its own units: a **ceiling** for lower-is-better metrics, a **floor** for higher-is-better. Only the bad side counts: distance = max(0, value − ceiling) or max(0, floor − value), and **Fit = 100 × max(0, 1 − (distance ÷ spread) ÷ 2)**, spread = industry 75th − 25th value (moving the limit does **not** change the spread). So anything on the good side of the limit scores **100**, one spread past it **50**, two spreads past **0**. **Default = Laura standards, per industry**: risk metrics (downside deviation, max drawdown, net debt/EBITDA, Sloan, interest coverage) at the **industry median**, consistency metrics (ROIC, gross profitability, Δ ROIC, Δ operating margin) at the **40th percentile**, the rest (revenue growth, FCF yield, earnings yield, Lynch, shareholder yield) at the **25th percentile** (floor). *Industry average* sets every limit to the worse quartile (75th for a ceiling, 25th for a floor). *Must be inside* (optional, per metric) removes companies that miss that limit.
 
-Each is a **weighted average** over the metrics (default weights add to 100 and are Laura Gao's standards: moderate risk, no big drops, steady growth). The weights are set by **six categories, the same totals as the ETF model**: **Risk 25** (max drawdown 13, downside deviation 12) · **Cost/valuation 20** (earnings yield 7, FCF yield 7, Lynch 6) · **Quality 20** (ROIC 8, Sloan 7, gross profitability 5) · **Growth 13** (revenue growth 5, Δ ROIC 5, Δ operating margin 3) · **Safety 17** (net debt/EBITDA 9, interest coverage 8) · **Income 5** (shareholder yield 5). Excluded metrics drop out and the denominator shrinks - a company missing a weight-13 metric is divided by 87, not 100.
+Each is a **weighted average** over the metrics (default weights add to 100 and are Laura Gao's standards: moderate risk, no big drops, steady growth). The weights are set by **six categories, the same totals as the ETF model**: **Risk 30** (max drawdown 16, downside deviation 14) · **Cost/valuation 18** (earnings yield 6, FCF yield 6, Lynch 6) · **Quality 17** (ROIC 7, Sloan 6, gross profitability 4) · **Growth 13** (revenue growth 5, Δ ROIC 5, Δ operating margin 3) · **Safety 17** (net debt/EBITDA 9, interest coverage 8) · **Income 5** (shareholder yield 5). Excluded metrics drop out and the denominator shrinks - a company missing a weight-16 metric is divided by 84, not 100.
 
-**Overall = max(0, Composite − k × (100 − Fit))**, k = the *Laura penalty strength* slider (default **0.4**; *Laura standards* resets it; k = 0 → pure Composite). A company that meets every limit keeps its Composite. The **Laura penalty** column = Composite − Overall; **why not higher** lists each missed limit and the points it costs: k × weight × (100 − Fit) ÷ total weight. Weights change both scores; limits change only Fit.
+**Overall = max(0, Composite − k × (100 − Fit))**, k = the *Laura penalty strength* slider (default **0.4**; *Laura standards* resets it; k = 0 → pure Composite). **What k = 0.4 means:** each Fit point lost costs 0.4 Overall points (Fit 90 → −4, Fit 75 → −10); a company that meets every limit keeps its Composite. The table under the ranked results shows the top 10 at k = 0.2 / 0.4 / 0.6 and how many names change. **Laura standards are the default**: the badge at the top of Tune scoring, the ranked table and Compare says *Laura standards (default)* or *Custom settings* with a reset button, and the app resets to Laura standards on first load and whenever the default weights or limits change. The **Laura penalty** column = Composite − Overall; **why not higher** lists each missed limit and the points it costs: k × weight × (100 − Fit) ÷ total weight. Weights change both scores; limits change only Fit.
 
 ### History window
 **Downside deviation** and **max drawdown** use the sidebar's *History window* (3, 5 or 10 years; default 5) for every company, ending on the same date. A company with less price history than the window is **too new for this window**: both metrics are excluded (never measured over a shorter period) and it is listed after the fully scored companies. Prices that end more than 7 days before the rest of the industry are excluded the same way. 3 years starts in late 2023 and leaves out the 2022 decline, so risk numbers look better than over a full market cycle.
@@ -408,7 +418,7 @@ Fully scored companies first, then **too new for this window**, then **low data*
         st.markdown(f"**Overall** = max(0, Composite {chosen['composite']:.2f} − {final['penalty']:.2f} × (100 − Fit {chosen['fit']:.2f})) = **{chosen['overall']:.2f}** "
                     f"(Laura penalty {chosen['penalty']:.2f}).")
     with st.expander("Self-tests (debug)"):
-        tests = sc.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
+        tests = sc.run_self_tests() + laura.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")
         st.dataframe(pd.DataFrame([{"result": "PASS" if t["passed"] else "FAIL", "test": t["test"], "detail": t["detail"]} for t in tests]),
                      hide_index=True, width="stretch")

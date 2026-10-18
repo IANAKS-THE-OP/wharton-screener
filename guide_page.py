@@ -74,8 +74,10 @@ def _status():
     st.subheader("Run every self-test")
     if st.button("Run all self-tests", key="guide_tests"):
         import etf_scoring
+        import laura
         import scoring2
-        for name, fn in (("Stock scoring", scoring2.run_self_tests), ("Equity-ETF scoring", etf_scoring.run_self_tests)):
+        for name, fn in (("Stock scoring", scoring2.run_self_tests), ("Equity-ETF scoring", etf_scoring.run_self_tests),
+                         ("Laura standards default", laura.run_self_tests)):
             res = fn()
             ok = sum(1 for r in res if r["passed"])
             (st.success if ok == len(res) else st.error)(f"{name}: {ok} / {len(res)} passed")

@@ -18,20 +18,21 @@ import numpy as np
 import pandas as pd
 
 import laura
-from scoring2 import (CATEGORIES, DEFAULT_PENALTY, LAURA_CATEGORY_TOTALS, WINDOWS, category_totals,  # noqa: F401
-                      composite_score, downside_deviation, max_drawdown, metric_fit, overall_score, penalty_breakdown, percentile_scores, why_text)
+from scoring2 import (CATEGORIES, DEFAULT_PENALTY, LAURA_CATEGORY_TOTALS, SENSITIVITY_KS, WINDOWS, category_totals,  # noqa: F401
+                      composite_score, downside_deviation, max_drawdown, metric_fit, overall_score, penalty_breakdown,
+                      penalty_sensitivity, percentile_scores, why_text)
 
 log = logging.getLogger(__name__)
 
 METRICS = [
-    {"key": "expense_ratio", "label": "Expense ratio", "units": "%", "direction": "lower", "weight": 20, "group": "Cost", "category": "Cost/valuation"},
-    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 10, "group": "Risk", "category": "Risk"},
-    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 15, "group": "Risk", "category": "Risk"},
+    {"key": "expense_ratio", "label": "Expense ratio", "units": "%", "direction": "lower", "weight": 18, "group": "Cost", "category": "Cost/valuation"},
+    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
+    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 18, "group": "Risk", "category": "Risk"},
     {"key": "n_holdings", "label": "Number of holdings", "units": "", "direction": "higher", "weight": 0, "group": "Diversification", "category": "Quality"},
     {"key": "top10_weight", "label": "Top-10 weight", "units": "%", "direction": "lower", "weight": 8, "group": "Diversification", "category": "Quality"},
     {"key": "aum", "label": "AUM", "units": "$M", "direction": "higher", "weight": 12, "group": "Size & liquidity", "category": "Safety"},
     {"key": "dollar_volume", "label": "Avg daily dollar volume", "units": "$M", "direction": "higher", "weight": 5, "group": "Size & liquidity", "category": "Safety"},
-    {"key": "holdings_quality", "label": "Holdings quality", "units": "/100", "direction": "higher", "weight": 12, "group": "Holdings", "category": "Quality"},
+    {"key": "holdings_quality", "label": "Holdings quality", "units": "/100", "direction": "higher", "weight": 9, "group": "Holdings", "category": "Quality"},
     {"key": "dividend_yield", "label": "Dividend yield (TTM)", "units": "%", "direction": "higher", "weight": 5, "group": "Return", "category": "Income"},
     {"key": "long_run_return", "label": "Long-run return (annualized)", "units": "%", "direction": "higher", "weight": 13, "group": "Return", "category": "Growth"},
 ]
@@ -714,8 +715,8 @@ def run_self_tests():
     # 19 Laura default weights: total 100, and the same six category totals as the stock model
     import scoring2
     ct, cs = category_totals(METRICS), category_totals(scoring2.METRICS)
-    check("19. Default weights total 100 (stocks and ETFs); category totals equal across both models (Risk 25 / Cost/valuation 20 / "
-          "Quality 20 / Growth 13 / Safety 17 / Income 5); number of holdings stays 0",
+    check(f"19. Default weights total 100 (stocks and ETFs); category totals equal across both models ({scoring2.category_text(' / ')}); "
+          "number of holdings stays 0",
           sum(DEFAULT_WEIGHTS.values()) == 100 and sum(scoring2.DEFAULT_WEIGHTS.values()) == 100
           and all(m.get("category") in CATEGORIES for m in METRICS) and ct == cs == LAURA_CATEGORY_TOTALS and DEFAULT_WEIGHTS["n_holdings"] == 0,
           f"ETF {ct}; stock {cs}")

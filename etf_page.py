@@ -167,11 +167,13 @@ def render():
     # --------------------------------------------------------------------------- Tune
     weights, hard, limits_by_cat = {}, {}, {}
     with tab_tune:
-        wdef = {f"etf2w|{m['key']}": float(m["weight"]) for m in es.METRICS if m["key"] != "n_holdings"}
-        ru.seed({"etf2_penalty": es.DEFAULT_PENALTY, **wdef})  # Laura weights + penalty strength are the default
-        t1, t2, t3 = st.columns([2, 1, 1])
+        wdef = {k: v for k, v in laura.session_defaults("etf").items() if k != "etf2_penalty"}
+        ru.seed(laura.session_defaults("etf"))  # Laura weights + penalty strength are the default
         bench_cat = prep["bench"][group]
         linfo = laura.laura_info(bench_cat, "etf", es.METRICS)
+        ru.laura_badge(ru.is_laura(PREFIX, ns, linfo, wdef, "etf2_penalty", es.DEFAULT_PENALTY), f"etf2_badge|tune|{ns}",
+                       (PREFIX, [ns], wdef, "etf2_penalty", es.DEFAULT_PENALTY))
+        t1, t2, t3 = st.columns([2, 1, 1])
         ru.buttons((t2, t3), PREFIX, ns, bench_cat, es.METRICS, wdef, "etf2_penalty", es.DEFAULT_PENALTY)  # before the slider: it resets it
         penalty = t1.slider("Laura penalty strength k: Overall = Composite − k × (100 − Fit)", 0.0, 1.0, step=0.05, key="etf2_penalty",
                             help="0 = pure Composite (peer percentiles). Each Fit point below 100 costs k Overall points.")
@@ -230,6 +232,8 @@ def render():
 
     # ------------------------------------------------------------------------ Results
     with tab_res:
+        ru.laura_badge(ru.is_laura(PREFIX, ns, linfo, wdef, "etf2_penalty", es.DEFAULT_PENALTY), f"etf2_badge|res|{ns}",
+                       (PREFIX, [ns], wdef, "etf2_penalty", es.DEFAULT_PENALTY))
         display = results
         if any(hard.values()):
             passing = [r for r in results if not r["hard_limit_failed"]]
@@ -269,6 +273,13 @@ def render():
         fits = [r["fit"] for r in display if r["fit"] is not None]
         st.caption(f"**{len({r.get('tier') for r in display})} tiers** for {len(display)} funds · Fit ≥ 97: **{sum(f >= 97 for f in fits)}** of {len(fits)} · "
                    f"{n_new} too new for the {window}-yr window (listed after the fully scored funds)")
+
+        def shown_at(k):  # the ranked table at penalty strength k (same weights, limits and hard-limit filter)
+            res = es.finalize(prep, weights=weights, limits_by_cat=limits_by_cat, penalty=k, hard_limits=hard,
+                              hard_ranges={k_: v for k_, v in laura.LAURA_HARD_LIMITS.items() if laura_hard})["results"]
+            keep = [r for r in res if not r["hard_limit_failed"]] if any(hard.values()) else res
+            return es.rank([dict(r) for r in keep]) if keep and keep is not res else res
+        ru.sensitivity_table(es.penalty_sensitivity({k: shown_at(k) for k in es.SENSITIVITY_KS}), penalty, es.DEFAULT_PENALTY, "fund")
         _flag_key(FLAG_KEY)
         _history_diagnostic(raws, settings, hq_scores, hq_skips, weights, penalty, group)
         export = es.export_rows(final, settings, group)
@@ -362,7 +373,7 @@ def _compare_tab(mem, got, counts, settings, hq_scores, hq_skips):
 
     compare_ui.render(key="etfcmp_|morningstar", asset="etf", metrics=[m for m in es.METRICS if m["key"] != "n_holdings"],
                       options=options, counts={g: f"{got.get(g, 0)} of {counts.get(g, 0)} downloaded" for g in options}, run=run,
-                      weight_defaults={f"etf2w|{m['key']}": float(m["weight"]) for m in es.METRICS if m["key"] != "n_holdings"},
+                      weight_defaults={k: v for k, v in laura.session_defaults("etf").items() if k != "etf2_penalty"},
                       fmt=fmt, icons=_icons, word="group", name_word="fund",
                       page_prefix=PREFIX, ns_fn=eg.ns,
                       extra_note="Groups = Morningstar categories and themes (ESG, low volatility, dividend, quality, equal weight).", hard_prefix="etf2h|",
@@ -469,12 +480,12 @@ Each fund is compared with the other funds in its **peer group**: its **Mornings
 * **Composite (percentile).** Rank the fund among peers with a valid value: sort ascending, ties share the average rank, **p = (rank − 1) ÷ (n − 1) × 100** (n = 1 → 50). Higher-is-better metrics score p; lower-is-better (expense ratio, downside deviation, max drawdown, top-10 weight) score 100 − p. If a group has fewer than 10 valid values for a metric, that metric is ranked against **all scored equity ETFs** and flagged.
 * **Fit (one Laura limit per metric).** A **ceiling** for lower-is-better metrics, a **floor** for higher-is-better, in the metric's units. Only the bad side counts: distance = max(0, value − ceiling) or max(0, floor − value), **Fit = 100 × max(0, 1 − (distance ÷ spread) ÷ 2)**, spread = group 75th − 25th (moving the limit never changes the spread). On the good side of the limit → **100**; one spread past → **50**; two spreads past → **0**. **Default limits = Laura standards, per group**: the group **median** for expense ratio, downside deviation, max drawdown, top-10 weight, AUM and dollar volume, the **40th percentile** for holdings quality, the **25th** (floor) for dividend yield and long-run return. *Industry average* sets every limit to the worse quartile (75th for a ceiling, 25th for a floor). *Must be inside* (optional) removes funds that miss a limit; the optional **Laura hard limits** checkbox (off by default) uses absolute cut-offs instead: expense ≤ 0.20%, max drawdown ≤ 30%, AUM ≥ $1B, top-10 weight ≤ 40%.
 
-Each is a **weighted average** over the metrics the fund has (default weights are Laura Gao's standards, total 100; excluded metrics drop out and the denominator shrinks). **Overall = max(0, Composite − k × (100 − Fit))**, k = the *Laura penalty strength* slider (default **0.4**; *Laura standards* resets it; k = 0 → pure Composite). A fund that meets every limit keeps its Composite. Weights change both scores; limits change only Fit.
+Each is a **weighted average** over the metrics the fund has (default weights are Laura Gao's standards, total 100; excluded metrics drop out and the denominator shrinks). **Overall = max(0, Composite − k × (100 − Fit))**, k = the *Laura penalty strength* slider (default **0.4**; *Laura standards* resets it; k = 0 → pure Composite). **What k = 0.4 means:** each Fit point lost costs 0.4 Overall points (Fit 90 → −4, Fit 75 → −10); a fund that meets every limit keeps its Composite. The table under the ranked results shows the top 10 at k = 0.2 / 0.4 / 0.6 and how many names change. **Laura standards are the default**: the badge at the top of Tune scoring, the ranked table and Compare says *Laura standards (default)* or *Custom settings* with a reset button, and the app resets to Laura standards on first load and whenever the default weights or limits change. Weights change both scores; limits change only Fit.
 
 ### The ten metrics
-Six categories, **the same totals as the stock model**: **Risk 25** (max drawdown 15, downside deviation 10) · **Cost/valuation 20** (expense ratio 20) · **Quality 20** (holdings quality 12, top-10 weight 8; number of holdings 0, always excluded) · **Growth 13** (long-run return 13) · **Safety 17** (AUM 12, dollar volume 5) · **Income 5** (dividend yield 5). Why: Laura is a moderate-risk client who needs no big drops and steady growth; sharing the category totals means stocks and ETFs are judged on the same priorities.
+Six categories, **the same totals as the stock model**: **Risk 30** (max drawdown 18, downside deviation 12) · **Cost/valuation 18** (expense ratio 18) · **Quality 17** (holdings quality 9, top-10 weight 8; number of holdings 0, always excluded) · **Growth 13** (long-run return 13) · **Safety 17** (AUM 12, dollar volume 5) · **Income 5** (dividend yield 5). Why: Laura is a moderate-risk client who needs no big drops and steady growth; sharing the category totals means stocks and ETFs are judged on the same priorities.
 
-**Holdings quality** = Σ(weight × stock Composite) ÷ Σ(weights of scored holdings) over the fund's top-10 holdings, where each holding is scored by the stock model against **its own stock industry**. Foreign listings and foreign filers (20-F / 40-F) are skipped. Under 15% coverage it is excluded and flagged. Its **weight is always 12**: low coverage instead pulls its score toward average. **trust = min(1, coverage ÷ 50%)**; adjusted percentile = trust × percentile + (1 − trust) × 50; adjusted Fit = trust × Fit + (1 − trust) × 100 (USMV at 15% coverage: 0.3 × score + 0.7 × 50). Coverage and trust are shown in the Breakdown.
+**Holdings quality** = Σ(weight × stock Composite) ÷ Σ(weights of scored holdings) over the fund's top-10 holdings, where each holding is scored by the stock model against **its own stock industry**. Foreign listings and foreign filers (20-F / 40-F) are skipped. Under 15% coverage it is excluded and flagged. Its **weight is always 9**: low coverage instead pulls its score toward average. **trust = min(1, coverage ÷ 50%)**; adjusted percentile = trust × percentile + (1 − trust) × 50; adjusted Fit = trust × Fit + (1 − trust) × 100 (USMV at 15% coverage: 0.3 × score + 0.7 × 50). Coverage and trust are shown in the Breakdown.
 
 **History window** (sidebar: 3, 5 or 10 years; default 5) drives downside deviation, max drawdown and long-run return. Every fund is measured over the **same window ending on the same date** (7 days of slack for listing-date rounding); the window is never shortened for a fund. A fund with less history than the window is **too new for this window**: those three metrics are excluded and it is listed after every fully scored fund. A fund whose prices stop more than 7 days before the rest of its group is excluded the same way. 3 years starts in late 2023 and leaves out the 2022 decline, so risk numbers look better than over a full market cycle. The *History-window diagnostic* under the ranked table shows how the old rule (a fund with 5–10 years used whatever it had) changed the top 10 / top 30.
 
@@ -501,7 +512,7 @@ The CSV export has, for every metric, the raw value, percentile score, Laura lim
                     f"**Overall** = max(0, {chosen['composite']:.2f} − {final['penalty']:.2f} × (100 − Fit {chosen['fit']:.2f})) = **{chosen['overall']:.2f}** "
                     f"(Laura penalty {chosen['penalty']:.2f}).")
     with st.expander("Self-tests (debug)"):
-        tests = es.run_self_tests() + eg.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
+        tests = es.run_self_tests() + laura.run_self_tests() + eg.run_self_tests() + compare.run_self_tests() + snapshots.run_self_tests()
         st.markdown(f"**{sum(t['passed'] for t in tests)} / {len(tests)} passed**")
         st.dataframe(pd.DataFrame([{"result": "PASS" if t["passed"] else "FAIL", "test": t["test"], "detail": t["detail"]} for t in tests]),
                      hide_index=True, width="stretch")

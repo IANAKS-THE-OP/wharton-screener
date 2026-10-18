@@ -23,23 +23,23 @@ Default Laura limits, weights and penalty strength (k = 0.4) on both pages are *
 * **Bank/insurer:** SIC 6000-6399, or industry name containing Bank, Insurance, Credit Services, Capital Markets, Mortgage Finance.
 
 ## B. The 14 metrics (default weights = Laura Gao's standards; total 100)
-Default weights are **Laura Gao's standards**: a moderate-risk client who must fund ten fixed payments, so no big drops, steady and consistent growth, and nothing heavy. Both models use the **same six category totals** (each model sums to 100): **Risk 25 · Cost/valuation 20 · Quality 20 · Growth 13 · Safety 17 · Income 5**. Every metric carries a category label, and both Tune scoring tabs show a table of the six totals for stocks and ETFs side by side (plus this page's current weights). Every weight is still adjustable in Tune scoring. Category per metric: Risk = downside deviation 12, max drawdown 13; Cost/valuation = earnings yield 7, FCF yield 7, Lynch 6; Quality = ROIC 8, Sloan 7, gross profitability 5; Growth = revenue growth 5, Δ ROIC 5, Δ operating margin 3; Safety = net debt/EBITDA 9, interest coverage 8; Income = shareholder yield 5 (`scoring2.CATEGORIES`, `LAURA_CATEGORY_TOTALS`).
+Default weights are **Laura Gao's standards**: a moderate-risk client who must fund ten fixed payments, so no big drops, steady and consistent growth, and nothing heavy. Both models use the **same six category totals** (each model sums to 100): **Risk 30 · Cost/valuation 18 · Quality 17 · Growth 13 · Safety 17 · Income 5**. Every metric carries a category label, and both Tune scoring tabs show a table of the six totals for stocks and ETFs side by side (plus this page's current weights). Every weight is still adjustable in Tune scoring. Category per metric: Risk = max drawdown 16, downside deviation 14; Cost/valuation = earnings yield 6, FCF yield 6, Lynch 6; Quality = ROIC 7, Sloan 6, gross profitability 4; Growth = revenue growth 5, Δ ROIC 5, Δ operating margin 3; Safety = net debt/EBITDA 9, interest coverage 8; Income = shareholder yield 5 (`scoring2.CATEGORIES`, `LAURA_CATEGORY_TOTALS`).
 
 | # | Metric | Formula | Better | Wt |
 |---|---|---|---|---|
-| 1 | ROIC % | EBIT x (1 - tax) / avg invested capital (IC <= 0 or bank: excluded) | higher | 8 |
-| 2 | Gross profitability % | gross profit / avg total assets (bank / no COGS: excluded) | higher | 5 |
-| 3 | Earnings yield % | EBIT / EV (EV <= 0: excluded; EBIT <= 0: scored 0; bank: excluded) | higher | 7 |
-| 4 | FCF yield % | (OCF - capex) / market cap | higher | 7 |
+| 1 | ROIC % | EBIT x (1 - tax) / avg invested capital (IC <= 0 or bank: excluded) | higher | 7 |
+| 2 | Gross profitability % | gross profit / avg total assets (bank / no COGS: excluded) | higher | 4 |
+| 3 | Earnings yield % | EBIT / EV (EV <= 0: excluded; EBIT <= 0: scored 0; bank: excluded) | higher | 6 |
+| 4 | FCF yield % | (OCF - capex) / market cap | higher | 6 |
 | 5 | Lynch ratio x | (3-yr EPS CAGR % + dividend yield %) / P/E (EPS <= 0: scored 0; start EPS <= 0: excluded) | higher | 6 |
 | 6 | Revenue growth % | 3-yr revenue CAGR (fewer years: longest >= 1, labelled) | higher | 5 |
 | 7 | Net debt / EBITDA x | (debt - cash) / EBITDA (EBITDA <= 0: scored 0; net cash is valid and best) | lower | 9 |
 | 8 | Interest coverage x | EBIT / interest (interest 0, or missing with no debt: scored 100; EBIT <= 0: scored 0; missing with debt: excluded) | higher | 8 |
 | 9 | Δ ROIC pp/yr | average year-over-year ROIC change, last 3 years | higher | 5 |
 | 10 | Δ Operating margin pp/yr | same, for EBIT / revenue | higher | 3 |
-| 11 | Sloan accrual % | (net income - OCF) / avg total assets | lower | 7 |
-| 12 | Downside deviation % | sqrt(mean(min(0, r - MAR)^2)) x sqrt(12), the last window x 12 monthly returns (window = 3 / 5 / 10 yrs, default 5), MAR = (1 + T-bill)^(1/12) - 1; less history than the window: excluded (too new) | lower | 12 |
-| 13 | Max drawdown % | max over days of (1 - price / running peak), last window years (3 / 5 / 10, default 5); less history than the window: excluded (too new) | lower | 13 |
+| 11 | Sloan accrual % | (net income - OCF) / avg total assets | lower | 6 |
+| 12 | Downside deviation % | sqrt(mean(min(0, r - MAR)^2)) x sqrt(12), the last window x 12 monthly returns (window = 3 / 5 / 10 yrs, default 5), MAR = (1 + T-bill)^(1/12) - 1; less history than the window: excluded (too new) | lower | 14 |
+| 13 | Max drawdown % | max over days of (1 - price / running peak), last window years (3 / 5 / 10, default 5); less history than the window: excluded (too new) | lower | 16 |
 | 14 | Shareholder yield % | 3-yr avg (dividends + buybacks - stock issued) / market cap | higher | 5 |
 
 "Scored 0 / 100" metrics are forced to worst / best and are **not** in that metric's ranking pool. "Excluded" metrics
@@ -81,7 +81,8 @@ Cost of debt = interest / average debt. WACC = E/V x ke + D/V x kd x (1 - tax). 
 
 ## G. Overall and rank
 `Overall = max(0, Composite - k x (100 - Fit))`, k = the Laura penalty strength (default 0.4; 0 = pure Composite). A company that
-meets every limit (Fit 100) keeps its Composite. **Laura penalty** = Composite - Overall; **why not higher** = each missed limit and its
+meets every limit (Fit 100) keeps its Composite; with k = 0.4 **each Fit point lost costs 0.4 Overall points**. A sensitivity table under
+the ranked results shows the top 10 at k = 0.2 / 0.4 / 0.6 and how many names change (`scoring2.penalty_sensitivity`). **Laura penalty** = Composite - Overall; **why not higher** = each missed limit and its
 cost `k x w x (100 - metric fit) / sum(w)` (scaled down only if Overall hits 0, so they always add up to the penalty).
 Optional per-metric hard limits ("Must be inside": a value past the Laura limit, a missing or forced-worst value fails). If limits remove
 everyone, the full list is shown with a warning. Order: fully scored, then too new for the window, then low data (> 30% of weight
@@ -91,11 +92,13 @@ tie-breakers Composite desc, fewer red flags, less excluded weight, ticker A-Z.
 ## H-I. Display, export, tests
 Ranked table, per-company breakdown, "How scoring works" tab with a live worked example, full CSV export (every raw value,
 score, Laura limit and limit used, distance past it, Fit, Laura penalty, why not higher, flag and setting incl. k and the history window,
-timestamped), and 26 self-tests (shown in the app's debug area) covering percentiles, ties, forced scores, exclusion rescaling, simple Fit
+timestamped), and 28 self-tests (shown in the app's debug area) covering percentiles, ties, forced scores, exclusion rescaling, simple Fit
 (good side 100, one spread 50, two spreads 0), limit/weight independence, downside deviation, drawdown, ranking, fallbacks, Laura's
 limits (max-drawdown ceiling = each industry's median and differs between industries; tiers; Industry average; unchanged spread),
 Overall = Composite at Fit 100 (k = 0.4), k = 0 ranking = Composite ranking, the 3 / 5 / 10 windows (a 4-year-old stock is scored at
-3 and too new at 5), too-new ordering and foreign filers out of scope.
+3 and too new at 5), too-new ordering, foreign filers out of scope, weights total 100 with the six category totals, and the k = 0.2 / 0.4 / 0.6
+sensitivity table. `laura.run_self_tests` (4) covers the default: first load = Laura standards, an older weights-version resets, the
+version matches the current defaults.
 
 ## Equity ETFs (10 metrics, `etf_scoring.py`)
 Same framework as the stock system. Bonds and bond ETFs are not part of this tool (the old Bond ETF page was retired);
@@ -109,12 +112,12 @@ name contains 2x / 3x / Ultra / UltraPro / Inverse / Short / Bear / -1x..-3x; fu
 (miner stocks) stays. The page shows "X funds found, Y removed (reasons), Z scored". Peer group = the fund's **Morningstar category** (yfinance) or a **theme** from the fund name (ESG / sustainable, low / min volatility, dividend / income, quality, equal weight); a fund is in its category and every matching theme. No industry grouping for ETFs (the industry tagger is in `_retired/`). Universe = `results/etf_universe.csv` (`etf_groups.build_universe`): the rules above, single-stock funds (top holding >= 50%) out, uncategorized funds only if listed in `results/etf_uncategorized_keep.csv`;
 a metric with < 10 valid values in the group is ranked against all scored equity ETFs and flagged. 
 
-**Metrics (B), default weight (Laura Gao's standards, total 100), same six category totals as the stocks.** max drawdown 15 + downside deviation 10 (Risk 25) · expense ratio 20 (Cost/valuation 20) · holdings quality 12 + top-10 weight 8 (Quality 20; number of holdings 0, still excluded) · long-run return 13 (Growth 13) · AUM 12 + dollar volume 5 (Safety 17) · dividend yield 5 (Income 5).
-Max drawdown % (lower, 15) · downside deviation % (lower, 10) · expense ratio % (lower, 20) · holdings quality /100 (higher, 12) · top-10 weight % (lower, 8) · long-run annualized return % (higher, 13) · AUM $M (higher, 12) · average daily dollar volume $M (higher, 5) · trailing-12-month dividend yield % (higher, 5; computed from the dividend history, a real 0% is valid) · number of holdings (higher, 0; **not available from yfinance**, always excluded unless `results/etf_holdings_override.csv` supplies `ticker,n_holdings`, and even then its weight is 0).
+**Metrics (B), default weight (Laura Gao's standards, total 100), same six category totals as the stocks.** max drawdown 18 + downside deviation 12 (Risk 30) · expense ratio 18 (Cost/valuation 18) · holdings quality 9 + top-10 weight 8 (Quality 17; number of holdings 0, still excluded) · long-run return 13 (Growth 13) · AUM 12 + dollar volume 5 (Safety 17) · dividend yield 5 (Income 5).
+Max drawdown % (lower, 18) · downside deviation % (lower, 12) · expense ratio % (lower, 18) · holdings quality /100 (higher, 9) · top-10 weight % (lower, 8) · long-run annualized return % (higher, 13) · AUM $M (higher, 12) · average daily dollar volume $M (higher, 5) · trailing-12-month dividend yield % (higher, 5; computed from the dividend history, a real 0% is valid) · number of holdings (higher, 0; **not available from yfinance**, always excluded unless `results/etf_holdings_override.csv` supplies `ticker,n_holdings`, and even then its weight is 0).
 Holdings quality = sum(weight x stock Composite) / sum(weights of scored holdings) over the top-10 holdings; each holding is
 scored by the stock model (default weights and settings, 5-yr window) against its own stock industry, cached in `holding_scores.db`.
 Foreign (non-US-ticker) holdings, foreign filers (20-F / 40-F) and stocks outside the tradeable stock universe are skipped; under 15%
-coverage the metric is excluded and flagged. Its **weight never changes** (12 by default). Low coverage shrinks the score instead:
+coverage the metric is excluded and flagged. Its **weight never changes** (9 by default). Low coverage shrinks the score instead:
 `trust = min(1, coverage / 50%)`, `adjusted percentile = trust x percentile + (1 - trust) x 50`,
 `adjusted Fit = trust x Fit + (1 - trust) x 100` (USMV, 15%: trust 0.3, so 0.3 x score + 0.7 x 50). Coverage and trust are in the Breakdown.
 
@@ -144,7 +147,7 @@ percentile, Laura limit, limit used, distance past it, Fit, weight; Laura penalt
 (expense ratio, downside deviation, max drawdown, top-10 weight: ceilings; AUM, dollar volume: floors), P40 floor for holdings quality,
 P25 floor for dividend yield and long-run return. Fit-only; no hard limit is ticked by default.
 Two buttons on both pages: *Laura standards* (Laura limits + Laura weights + k = 0.4) and *Industry average* (P75 ceilings / P25 floors;
-weights and k unchanged).
+weights and k unchanged). **Laura standards are always the default.** On first load, and whenever the default weights or limits change (`laura.LAURA_VERSION`, stored in the session as `laura_version`), the app resets the weights, Laura limits, penalty strength and Compare's limit mode to Laura standards. A badge at the top of Tune scoring, the ranked table and Compare says **Laura standards (default)**, or **Custom settings** with a **Reset to Laura standards** button.
 **Laura hard limits** (optional checkbox, off by default): Laura's old absolute numbers - expense <= 0.20%, max drawdown <= 30%,
 AUM >= $1B, top-10 weight <= 40% - become *must be inside* limits for those four metrics (checked against the absolute values, not the Laura limit).
 

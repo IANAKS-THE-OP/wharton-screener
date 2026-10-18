@@ -103,6 +103,13 @@ def render(*, key, asset, metrics, options, counts, run, weight_defaults, fmt, i
         st.rerun()
     c3.caption("Limits only, Compare only: every limit = the peer group's 75th (ceiling) / 25th (floor). Weights and Tune scoring unchanged.")
     rmode = st.session_state[k_rm]
+    if penalty_key:  # Laura standards here = Laura weights + k (shared with Tune scoring) + Laura limits (not Industry average)
+        import range_ui as ru
+        same = all(abs(float(st.session_state.get(k, v)) - v) < 1e-9 for k, v in weight_defaults.items())
+        same &= abs(float(st.session_state.get(penalty_key, penalty_default)) - penalty_default) < 1e-9 and rmode == "laura"
+        with banner:
+            ru.laura_badge(same, f"cmpbadge|{key}", (page_prefix, [ns_fn(g) for g in sel] if page_prefix else [], weight_defaults,
+                                                     penalty_key, penalty_default, key))
     if not sel:
         st.info(f"Pick at least one {word} above.")
         return

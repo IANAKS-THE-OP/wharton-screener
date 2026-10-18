@@ -13,6 +13,9 @@ import os
 import re
 import sys
 from streamlit.testing.v1 import AppTest
+
+import scoring2 as sc
+
 APP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.py")
 
 def cmp_table(at):
@@ -42,8 +45,19 @@ def cat_table():
     return next((d.value for d in at.dataframe if "Stocks (Laura)" in d.value.columns), None)
 
 
+def badges():
+    """-> (number of 'Laura standards (default)' badges, number of 'Custom settings' badges) on the page."""
+    v = [m.value for m in at.markdown]
+    return (sum(x.startswith(":green-badge[") and "Laura standards (default)" in x for x in v),
+            sum(x.startswith(":orange-badge[") and "Custom settings" in x for x in v))
+
+
+def sens_table():
+    return next((d.value for d in at.dataframe if any(str(c).startswith("k = 0.4") for c in d.value.columns)), None)
+
+
 def cat_ok(df, page):
-    want = [25, 20, 20, 13, 17, 5, 100]
+    want = [sc.LAURA_CATEGORY_TOTALS[c] for c in sc.CATEGORIES] + [100]
     return (df is not None and list(df["Category"]) == ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income", "Total"]
             and list(df["Stocks (Laura)"]) == want and list(df["ETFs (Laura)"]) == want and list(df[f"{page} now"]) == want)
 
@@ -56,7 +70,25 @@ at.sidebar.selectbox(key="industry_choice").set_value("Semiconductors").run()
 semi5 = at.dataframe[0].value
 chk("Stocks table has Laura penalty + why not higher next to Fit / Composite", {"Laura penalty", "why not higher", "fit", "composite"} <= set(semi5.columns)
     and list(semi5.columns).index("Laura penalty") == list(semi5.columns).index("fit") + 1, str(list(semi5.columns)[:9]))
-chk("Stocks Tune scoring: six-category table, Laura totals equal for stocks and ETFs (25/20/20/13/17/5)", cat_ok(cat_table(), "Stocks"),
+st0 = sens_table()
+chk("Stocks first load: 'Laura standards (default)' badge on Tune scoring, Ranked results and Compare (no Custom badge)", badges() == (3, 0),
+    badges())
+chk("Stocks: penalty sensitivity table (top 10 at k = 0.2 / 0.4 / 0.6) under the ranked results", st0 is not None and len(st0) == 10
+    and list(st0.columns) == ["rank", "k = 0.2", "k = 0.4 (default) ← now", "k = 0.6"], None if st0 is None else list(st0.columns))
+at.session_state["s2w|roic"] = 15.0
+at.run()
+custom = badges()
+at.button(key="s2_badge|res|Semiconductors").click().run()
+chk("Changing a weight shows 'Custom settings'; its Reset button restores Laura weights and the default badge",
+    custom == (0, 3) and at.session_state["s2w|roic"] == sc.DEFAULT_WEIGHTS["roic"] and badges() == (3, 0), f"{custom} -> {badges()}")
+import laura  # noqa: E402
+at.session_state["s2w|roic"], at.session_state["s2_penalty"] = 15.0, 0.9
+at.session_state[laura.VERSION_KEY] = laura.LAURA_VERSION - 1  # a session saved under the previous defaults
+at.run()
+chk("Older weights-version in the session: weights and k reset to Laura standards on the next run",
+    at.session_state["s2w|roic"] == sc.DEFAULT_WEIGHTS["roic"] and at.session_state["s2_penalty"] == sc.DEFAULT_PENALTY
+    and at.session_state[laura.VERSION_KEY] == laura.LAURA_VERSION and badges() == (3, 0), badges())
+chk(f"Stocks Tune scoring: six-category table, Laura totals equal for stocks and ETFs ({sc.category_text('/')})", cat_ok(cat_table(), "Stocks"),
     "" if cat_table() is None else cat_table().to_dict("list"))
 pen_ok = all(abs(o - max(0, c - 0.4 * (100 - f))) < 1e-6 for o, c, f in zip(semi5.overall, semi5.composite, semi5.fit) if o == o and f == f)
 chk("Stocks: Overall = max(0, Composite − 0.4 × (100 − Fit)) on every row", pen_ok)
@@ -102,7 +134,9 @@ chk("Gold page unchanged after pooled compare", page_scores(at) == pages["Gold"]
 # ======================= ETFs
 at.sidebar.radio(key="asset_type").set_value("ETFs").run()
 chk("ETF page no exception", not at.exception, [e.value for e in at.exception][:1])
-chk("ETF Tune scoring: six-category table, Laura totals equal for stocks and ETFs (25/20/20/13/17/5)", cat_ok(cat_table(), "ETFs"),
+chk("ETF first load: 'Laura standards (default)' badge on Tune scoring, Ranked results and Compare; penalty sensitivity table",
+    badges() == (3, 0) and sens_table() is not None and len(sens_table()) == 10, badges())
+chk(f"ETF Tune scoring: six-category table, Laura totals equal for stocks and ETFs ({sc.category_text('/')})", cat_ok(cat_table(), "ETFs"),
     "" if cat_table() is None else cat_table().to_dict("list"))
 chk("no industry grouping widgets on the ETF page", not any(w.key in ("etf2_groupby", "etf2_industry", "etf2_only_with") for w in list(at.sidebar.radio) + list(at.sidebar.selectbox) + list(at.sidebar.checkbox)),
     [w.key for w in at.sidebar.selectbox])

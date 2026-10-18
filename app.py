@@ -45,6 +45,7 @@ def _reload_on_new_commit():
 _reload_on_new_commit()
 
 import industry_universe as iu  # noqa: E402  (local modules are imported after the reload guard)
+import laura
 import stock_data as sd
 import version_info
 
@@ -52,6 +53,9 @@ DIRECTORY_PATH = "results/industry_directory.csv"
 SHORTLIST_PATH = "results/industry_shortlist.csv"
 
 st.set_page_config(page_title="Wharton Investment Screener", layout="wide")
+# Laura standards are the default: on first load, and whenever LAURA_VERSION changes (new default weights / limits),
+# drop the saved weights, Laura limits and penalty strength so both pages re-seed Laura's this run.
+laura.ensure_current(st.session_state)
 version_info.data_banner()  # red banner if the committed caches are older than this code
 
 # Streamlit deletes a widget's value whenever that widget isn't drawn in a run (e.g. the stock industry
