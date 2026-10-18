@@ -31,17 +31,17 @@ import laura
 # Default weights = Laura Gao's standards (moderate risk, no big drops, steady growth, nothing heavy); total 100.
 # "category" = one of the six CATEGORIES; the ETF model (etf_scoring.py) uses the same six category totals.
 METRICS = [
-    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 7, "group": "Quality", "category": "Quality"},
-    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 4, "group": "Quality", "category": "Quality"},
-    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 5, "group": "Momentum of quality", "category": "Growth"},
-    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 3, "group": "Momentum of quality", "category": "Growth"},
+    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "group": "Quality", "category": "Quality"},
+    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 5, "group": "Quality", "category": "Quality"},
+    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 4, "group": "Momentum of quality", "category": "Growth"},
+    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 2, "group": "Momentum of quality", "category": "Growth"},
     {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
     {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
     {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
-    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 5, "group": "Valuation & growth", "category": "Growth"},
+    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 4, "group": "Valuation & growth", "category": "Growth"},
     {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 9, "group": "Balance sheet", "category": "Safety"},
     {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 8, "group": "Balance sheet", "category": "Safety"},
-    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 6, "group": "Earnings quality", "category": "Quality"},
+    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 7, "group": "Earnings quality", "category": "Quality"},
     {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 14, "group": "Risk", "category": "Risk"},
     {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 16, "group": "Risk", "category": "Risk"},
     {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 5, "group": "Shareholder returns", "category": "Income"},
@@ -52,7 +52,7 @@ DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 # Laura's six category totals, shared by the stock and ETF models (each sums to 100)
 CATEGORIES = ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income"]
-LAURA_CATEGORY_TOTALS = {"Risk": 30, "Cost/valuation": 18, "Quality": 17, "Growth": 13, "Safety": 17, "Income": 5}
+LAURA_CATEGORY_TOTALS = {"Risk": 30, "Cost/valuation": 18, "Quality": 20, "Growth": 10, "Safety": 17, "Income": 5}
 
 
 def category_totals(metrics, weights=None):

@@ -29,12 +29,12 @@ METRICS = [
     {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
     {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 18, "group": "Risk", "category": "Risk"},
     {"key": "n_holdings", "label": "Number of holdings", "units": "", "direction": "higher", "weight": 0, "group": "Diversification", "category": "Quality"},
-    {"key": "top10_weight", "label": "Top-10 weight", "units": "%", "direction": "lower", "weight": 8, "group": "Diversification", "category": "Quality"},
+    {"key": "top10_weight", "label": "Top-10 weight", "units": "%", "direction": "lower", "weight": 12, "group": "Diversification", "category": "Quality"},
     {"key": "aum", "label": "AUM", "units": "$M", "direction": "higher", "weight": 12, "group": "Size & liquidity", "category": "Safety"},
     {"key": "dollar_volume", "label": "Avg daily dollar volume", "units": "$M", "direction": "higher", "weight": 5, "group": "Size & liquidity", "category": "Safety"},
-    {"key": "holdings_quality", "label": "Holdings quality", "units": "/100", "direction": "higher", "weight": 9, "group": "Holdings", "category": "Quality"},
+    {"key": "holdings_quality", "label": "Holdings quality", "units": "/100", "direction": "higher", "weight": 8, "group": "Holdings", "category": "Quality"},
     {"key": "dividend_yield", "label": "Dividend yield (TTM)", "units": "%", "direction": "higher", "weight": 5, "group": "Return", "category": "Income"},
-    {"key": "long_run_return", "label": "Long-run return (annualized)", "units": "%", "direction": "higher", "weight": 13, "group": "Return", "category": "Growth"},
+    {"key": "long_run_return", "label": "Long-run return (annualized)", "units": "%", "direction": "higher", "weight": 10, "group": "Return", "category": "Growth"},
 ]
 METRIC_BY_KEY = {m["key"]: m for m in METRICS}
 KEYS = [m["key"] for m in METRICS]
