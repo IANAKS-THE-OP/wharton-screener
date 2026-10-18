@@ -14,6 +14,7 @@ import re
 import sys
 from streamlit.testing.v1 import AppTest
 
+import etf_scoring as es
 import scoring2 as sc
 
 APP = os.path.join(os.path.dirname(os.path.abspath(__file__)), "app.py")
@@ -42,7 +43,7 @@ def chk(name, cond, detail=""):
 
 def cat_table():
     """The six-category weight table on Tune scoring (range_ui.category_table) -> DataFrame or None."""
-    return next((d.value for d in at.dataframe if "Stocks (Laura)" in d.value.columns), None)
+    return next((d.value for d in at.dataframe if "Stocks: growth driver" in d.value.columns), None)
 
 
 def badges():
@@ -57,9 +58,11 @@ def sens_table():
 
 
 def cat_ok(df, page):
-    want = [sc.LAURA_CATEGORY_TOTALS[c] for c in sc.CATEGORIES] + [100]
+    stk = [sc.LAURA_CATEGORY_TOTALS[c] for c in sc.CATEGORIES] + [100]
+    etf = [es.LAURA_CATEGORY_TOTALS[c] for c in sc.CATEGORIES] + [100]
     return (df is not None and list(df["Category"]) == ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income", "Total"]
-            and list(df["Stocks (Laura)"]) == want and list(df["ETFs (Laura)"]) == want and list(df[f"{page} now"]) == want)
+            and list(df["Stocks: growth driver"]) == stk and list(df["ETFs: stability core"]) == etf
+            and list(df[f"{page} now"]) == (stk if page == "Stocks" else etf))
 
 
 at = AppTest.from_file(APP, default_timeout=600); at.run()
@@ -88,7 +91,7 @@ at.run()
 chk("Older weights-version in the session: weights and k reset to Laura standards on the next run",
     at.session_state["s2w|roic"] == sc.DEFAULT_WEIGHTS["roic"] and at.session_state["s2_penalty"] == sc.DEFAULT_PENALTY
     and at.session_state[laura.VERSION_KEY] == laura.LAURA_VERSION and badges() == (3, 0), badges())
-chk(f"Stocks Tune scoring: six-category table, Laura totals equal for stocks and ETFs ({sc.category_text('/')})", cat_ok(cat_table(), "Stocks"),
+chk(f"Stocks Tune scoring: side-by-side category table, stocks {sc.category_text(sep='/')} vs ETFs {sc.category_text(es.LAURA_CATEGORY_TOTALS, '/')}", cat_ok(cat_table(), "Stocks"),
     "" if cat_table() is None else cat_table().to_dict("list"))
 pen_ok = all(abs(o - max(0, c - 0.4 * (100 - f))) < 1e-6 for o, c, f in zip(semi5.overall, semi5.composite, semi5.fit) if o == o and f == f)
 chk("Stocks: Overall = max(0, Composite − 0.4 × (100 − Fit)) on every row", pen_ok)
@@ -136,7 +139,7 @@ at.sidebar.radio(key="asset_type").set_value("ETFs").run()
 chk("ETF page no exception", not at.exception, [e.value for e in at.exception][:1])
 chk("ETF first load: 'Laura standards (default)' badge on Tune scoring, Ranked results and Compare; penalty sensitivity table",
     badges() == (3, 0) and sens_table() is not None and len(sens_table()) == 10, badges())
-chk(f"ETF Tune scoring: six-category table, Laura totals equal for stocks and ETFs ({sc.category_text('/')})", cat_ok(cat_table(), "ETFs"),
+chk(f"ETF Tune scoring: side-by-side category table, both models' totals (each sums to 100)", cat_ok(cat_table(), "ETFs"),
     "" if cat_table() is None else cat_table().to_dict("list"))
 chk("no industry grouping widgets on the ETF page", not any(w.key in ("etf2_groupby", "etf2_industry", "etf2_only_with") for w in list(at.sidebar.radio) + list(at.sidebar.selectbox) + list(at.sidebar.checkbox)),
     [w.key for w in at.sidebar.selectbox])

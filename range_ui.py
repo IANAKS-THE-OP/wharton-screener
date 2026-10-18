@@ -106,26 +106,21 @@ def laura_caption(info, direction, fmt_fn):
 
 
 def category_table(metrics, current, page):
-    """Laura's six category totals for stocks and ETFs side by side, plus this page's current weights per category.
-    metrics: this page's METRICS; current: {metric key: weight now}; page: "Stocks" or "ETFs"."""
+    """Laura's six category totals for both models side by side (role-based: they differ on purpose), plus this page's
+    current weights per category. metrics: this page's METRICS; current: {metric key: weight now}; page: "Stocks" or "ETFs"."""
     import pandas as pd
 
     import etf_scoring as es
     import scoring2 as sc
 
     stk, etf, now = sc.category_totals(sc.METRICS), sc.category_totals(es.METRICS), sc.category_totals(metrics, current)
-    df = pd.DataFrame({"Category": sc.CATEGORIES,
-                       "Metrics (this page)": [", ".join(m["label"] for m in metrics if m["category"] == c and m["weight"]) for c in sc.CATEGORIES],
-                       "Stocks (Laura)": [stk[c] for c in sc.CATEGORIES], "ETFs (Laura)": [etf[c] for c in sc.CATEGORIES],
-                       f"{page} now": [now[c] for c in sc.CATEGORIES]})
-    df.loc[len(df)] = ["Total", "", sum(stk.values()), sum(etf.values()), sum(now.values())]
-    st.dataframe(df, hide_index=True, width="stretch",
-                 column_config={c: st.column_config.NumberColumn(format="%g") for c in ("Stocks (Laura)", "ETFs (Laura)", f"{page} now")})
-    if stk == etf:
-        st.caption(f"✓ Laura's default category totals are identical for stocks and ETFs ({sc.category_text()}). "
-                   "The *now* column changes as you move the weight sliders.")
-    else:
-        st.warning("Stock and ETF default category totals differ - check scoring2.py / etf_scoring.py.")
+    cols = ("Stocks: growth driver", "ETFs: stability core", f"{page} now")
+    df = pd.DataFrame({"Category": sc.CATEGORIES, cols[0]: [stk[c] for c in sc.CATEGORIES], cols[1]: [etf[c] for c in sc.CATEGORIES],
+                       cols[2]: [now[c] for c in sc.CATEGORIES],
+                       "Metrics (this page)": [", ".join(m["label"] for m in metrics if m["category"] == c and m["weight"]) for c in sc.CATEGORIES]})
+    df.loc[len(df)] = ["Total", sum(stk.values()), sum(etf.values()), sum(now.values()), ""]
+    st.dataframe(df, hide_index=True, width="stretch", column_config={c: st.column_config.NumberColumn(format="%g") for c in cols})
+    st.caption(sc.ROLE_NOTE + " The *now* column changes as you move the weight sliders.")
 
 
 # ------------------------------------------------------------------ "Laura standards (default)" badge

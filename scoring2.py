@@ -29,30 +29,33 @@ import laura
 # ========================================================================
 
 # Default weights = Laura Gao's standards (moderate risk, no big drops, steady growth, nothing heavy); total 100.
-# "category" = one of the six CATEGORIES; the ETF model (etf_scoring.py) uses the same six category totals.
+# "category" = one of the six CATEGORIES. Role-based totals: stocks are the growth driver (LAURA_CATEGORY_TOTALS below);
+# the ETF model (etf_scoring.py) is the stability core, with its own LAURA_CATEGORY_TOTALS.
 METRICS = [
     {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "group": "Quality", "category": "Quality"},
     {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 5, "group": "Quality", "category": "Quality"},
-    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 4, "group": "Momentum of quality", "category": "Growth"},
-    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 2, "group": "Momentum of quality", "category": "Growth"},
+    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 7, "group": "Momentum of quality", "category": "Growth"},
+    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 5, "group": "Momentum of quality", "category": "Growth"},
     {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
     {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
     {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
-    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 4, "group": "Valuation & growth", "category": "Growth"},
-    {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 9, "group": "Balance sheet", "category": "Safety"},
-    {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 8, "group": "Balance sheet", "category": "Safety"},
+    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 8, "group": "Valuation & growth", "category": "Growth"},
+    {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 8, "group": "Balance sheet", "category": "Safety"},
+    {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 7, "group": "Balance sheet", "category": "Safety"},
     {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 7, "group": "Earnings quality", "category": "Quality"},
-    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 14, "group": "Risk", "category": "Risk"},
-    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 16, "group": "Risk", "category": "Risk"},
+    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 10, "group": "Risk", "category": "Risk"},
+    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
     {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 5, "group": "Shareholder returns", "category": "Income"},
 ]
 METRIC_BY_KEY = {m["key"]: m for m in METRICS}
 KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
-# Laura's six category totals, shared by the stock and ETF models (each sums to 100)
+# Laura's six categories. Same categories in both models, different totals by role (each model sums to 100).
 CATEGORIES = ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income"]
-LAURA_CATEGORY_TOTALS = {"Risk": 30, "Cost/valuation": 18, "Quality": 20, "Growth": 10, "Safety": 17, "Income": 5}
+LAURA_CATEGORY_TOTALS = {"Risk": 22, "Cost/valuation": 18, "Quality": 20, "Growth": 20, "Safety": 15, "Income": 5}  # growth driver
+ROLE_NOTE = ("Stocks are the growth driver (more growth, less risk weight); ETFs are the stability core (more risk and "
+             "diversification weight); bonds guarantee the payments.")
 
 
 def category_totals(metrics, weights=None):
@@ -63,9 +66,10 @@ def category_totals(metrics, weights=None):
     return out
 
 
-def category_text(sep=" · "):
-    """'Risk 30 · Cost/valuation 18 · ...' from LAURA_CATEGORY_TOTALS (for captions and test names)."""
-    return sep.join(f"{c} {LAURA_CATEGORY_TOTALS[c]:g}" for c in CATEGORIES)
+def category_text(totals=None, sep=" · "):
+    """'Risk 22 · Cost/valuation 18 · ...' from a model's category totals (default: the stock model's), for test names."""
+    totals = totals or LAURA_CATEGORY_TOTALS
+    return sep.join(f"{c} {totals[c]:g}" for c in CATEGORIES)
 
 WINDOWS = (3, 5, 10)  # history-window choices (years) for downside deviation and max drawdown
 DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05, "window": 5}
@@ -1200,9 +1204,9 @@ def run_self_tests():
     pos = [x["ticker"] for x in pt].index("T71")
     check("23. Too-new stock is listed after every fully scored stock (not low data)", pt[pos]["too_new"] and not pt[pos]["low_data"] and pos == len(pt) - 1,
           f"position {pos + 1} of {len(pt)}")
-    # 24 Laura default weights: total 100, six category totals (the ETF suite checks they match the ETF model)
+    # 24 Laura default weights: total 100, the stock model's own six category totals (growth driver)
     ct = category_totals(METRICS)
-    check(f"24. Default weights total 100; every metric has a category; category totals = {category_text(' / ')}",
+    check(f"24. Stock default weights total 100; every metric has a category; category totals = {category_text(sep=' / ')}",
           sum(DEFAULT_WEIGHTS.values()) == 100 and all(m.get("category") in CATEGORIES for m in METRICS) and ct == LAURA_CATEGORY_TOTALS,
           f"total {sum(DEFAULT_WEIGHTS.values())}; {ct}")
     # 25 penalty sensitivity: top 10 at k = 0.2 / 0.4 / 0.6, counts of names that leave the top 10

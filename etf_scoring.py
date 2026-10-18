@@ -5,8 +5,8 @@ Same framework as the stock engine (scoring2.py, which it imports helpers
 from and does not modify): percentile Composite within a peer group (the
 Morningstar category or theme), one-sided Fit against each metric's Laura limit,
 Overall = Composite - k x (100 - Fit), red flags, tie-breakers, tiers and low-data
-handling. Ten metrics, weights total 100, with the same six category totals as the
-stock model (scoring2.CATEGORIES / LAURA_CATEGORY_TOTALS).
+handling. Ten metrics, weights total 100, in the same six categories as the stock model
+(scoring2.CATEGORIES) but with its own totals (LAURA_CATEGORY_TOTALS: the stability core).
 """
 
 import math
@@ -18,7 +18,7 @@ import numpy as np
 import pandas as pd
 
 import laura
-from scoring2 import (CATEGORIES, DEFAULT_PENALTY, LAURA_CATEGORY_TOTALS, SENSITIVITY_KS, WINDOWS, category_totals,  # noqa: F401
+from scoring2 import (CATEGORIES, DEFAULT_PENALTY, SENSITIVITY_KS, WINDOWS, category_totals,  # noqa: F401
                       composite_score, downside_deviation, max_drawdown, metric_fit, overall_score, penalty_breakdown,
                       penalty_sensitivity, percentile_scores, why_text)
 
@@ -40,6 +40,7 @@ METRIC_BY_KEY = {m["key"]: m for m in METRICS}
 KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
 GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
+LAURA_CATEGORY_TOTALS = {"Risk": 30, "Cost/valuation": 18, "Quality": 20, "Growth": 10, "Safety": 17, "Income": 5}  # stability core
 DEFAULT_SETTINGS = {"tbill": 0.03, "window": 5}  # 5 yrs by default so most funds share the same full window
 PREP_VERSION = 4  # bump when prepare_funds' output changes, so cached preps in a session are rebuilt
 MIN_POOL = 10
@@ -712,12 +713,12 @@ def run_self_tests():
           and all(abs(e0[w]["max_drawdown"]["value"] - _fake_fund(0)["px"][f"mdd_{w}"] * 100) < 1e-9 for w in WINDOWS)
           and all(abs(e0[w]["long_run_return"]["value"] - _fake_fund(0)["px"][f"cagr_{w}"] * 100) < 1e-9 for w in WINDOWS),
           f"4-yr fund: 3-yr statuses {[r4_3['metrics'][k]['status'] for k in HIST_KEYS]}, 5-yr too new {r4_5['history']['too_new']}")
-    # 19 Laura default weights: total 100, and the same six category totals as the stock model
+    # 19 Laura default weights: total 100 in both models; the ETF model's own six category totals (stability core)
     import scoring2
-    ct, cs = category_totals(METRICS), category_totals(scoring2.METRICS)
-    check(f"19. Default weights total 100 (stocks and ETFs); category totals equal across both models ({scoring2.category_text(' / ')}); "
+    ct = category_totals(METRICS)
+    check(f"19. Default weights total 100 (stocks and ETFs); ETF category totals = {scoring2.category_text(LAURA_CATEGORY_TOTALS, ' / ')}; "
           "number of holdings stays 0",
           sum(DEFAULT_WEIGHTS.values()) == 100 and sum(scoring2.DEFAULT_WEIGHTS.values()) == 100
-          and all(m.get("category") in CATEGORIES for m in METRICS) and ct == cs == LAURA_CATEGORY_TOTALS and DEFAULT_WEIGHTS["n_holdings"] == 0,
-          f"ETF {ct}; stock {cs}")
+          and all(m.get("category") in CATEGORIES for m in METRICS) and ct == LAURA_CATEGORY_TOTALS and DEFAULT_WEIGHTS["n_holdings"] == 0,
+          f"ETF {ct}")
     return results

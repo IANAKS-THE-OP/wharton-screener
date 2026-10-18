@@ -46,8 +46,8 @@ Use the same steps every time.
 - [ ] Stocks → *Entertainment*: NFLX and IMAX have max drawdown values (about 49.9% / 75.9% / 75.9% and 27.6% / 44.2% / 79.4%).
 - [ ] In a fresh browser session: the green **Laura standards (default)** badge shows at the top of Tune scoring, above the
       ranked table and on Compare.
-- [ ] Tune scoring shows the six-category table with matching Stocks / ETFs totals (Risk 30 · Cost/valuation 18 · Quality 20 ·
-      Growth 10 · Safety 17 · Income 5).
+- [ ] Tune scoring shows the side-by-side category table: Stocks (growth driver) Risk 22 · Cost/valuation 18 · Quality 20 ·
+      Growth 20 · Safety 15 · Income 5; ETFs (stability core) Risk 30 · 18 · 20 · 10 · 17 · 5; each total 100.
 - [ ] Under the ranked table: **Penalty strength sensitivity** (top 10 at k = 0.2 / 0.4 / 0.6).
 
 ## 5. If the deploy is broken: roll back

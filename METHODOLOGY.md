@@ -23,7 +23,7 @@ Default Laura limits, weights and penalty strength (k = 0.4) on both pages are *
 * **Bank/insurer:** SIC 6000-6399, or industry name containing Bank, Insurance, Credit Services, Capital Markets, Mortgage Finance.
 
 ## B. The 14 metrics (default weights = Laura Gao's standards; total 100)
-Default weights are **Laura Gao's standards**: a moderate-risk client who must fund ten fixed payments, so no big drops, steady and consistent growth, and nothing heavy. Both models use the **same six category totals** (each model sums to 100): **Risk 30 · Cost/valuation 18 · Quality 20 · Growth 10 · Safety 17 · Income 5**. Every metric carries a category label, and both Tune scoring tabs show a table of the six totals for stocks and ETFs side by side (plus this page's current weights). Every weight is still adjustable in Tune scoring. Category per metric: Risk = max drawdown 16, downside deviation 14; Cost/valuation = earnings yield 6, FCF yield 6, Lynch 6; Quality = ROIC 8, Sloan 7, gross profitability 5; Growth = revenue growth 4, Δ ROIC 4, Δ operating margin 2; Safety = net debt/EBITDA 9, interest coverage 8; Income = shareholder yield 5 (`scoring2.CATEGORIES`, `LAURA_CATEGORY_TOTALS`).
+Default weights are **Laura Gao's standards**: a moderate-risk client who must fund ten fixed payments, so no big drops, steady and consistent growth, and nothing heavy. Both models use the **same six categories with role-based totals** (each model sums to 100): **stocks, the growth driver: Risk 22 · Cost/valuation 18 · Quality 20 · Growth 20 · Safety 15 · Income 5**; **ETFs, the stability core: Risk 30 · Cost/valuation 18 · Quality 20 · Growth 10 · Safety 17 · Income 5**. Stocks are the growth driver (more growth, less risk weight); ETFs are the stability core (more risk and diversification weight); bonds guarantee the payments. Every metric carries a category label, and both Tune scoring tabs show the two models' category totals side by side (plus this page's current weights). Every weight is still adjustable in Tune scoring. Category per metric: Risk = max drawdown 12, downside deviation 10; Cost/valuation = earnings yield 6, FCF yield 6, Lynch 6; Quality = ROIC 8, Sloan 7, gross profitability 5; Growth = revenue growth 8, Δ ROIC 7, Δ operating margin 5; Safety = net debt/EBITDA 8, interest coverage 7; Income = shareholder yield 5 (`scoring2.CATEGORIES`, `LAURA_CATEGORY_TOTALS`).
 
 | # | Metric | Formula | Better | Wt |
 |---|---|---|---|---|
@@ -32,14 +32,14 @@ Default weights are **Laura Gao's standards**: a moderate-risk client who must f
 | 3 | Earnings yield % | EBIT / EV (EV <= 0: excluded; EBIT <= 0: scored 0; bank: excluded) | higher | 6 |
 | 4 | FCF yield % | (OCF - capex) / market cap | higher | 6 |
 | 5 | Lynch ratio x | (3-yr EPS CAGR % + dividend yield %) / P/E (EPS <= 0: scored 0; start EPS <= 0: excluded) | higher | 6 |
-| 6 | Revenue growth % | 3-yr revenue CAGR (fewer years: longest >= 1, labelled) | higher | 4 |
-| 7 | Net debt / EBITDA x | (debt - cash) / EBITDA (EBITDA <= 0: scored 0; net cash is valid and best) | lower | 9 |
-| 8 | Interest coverage x | EBIT / interest (interest 0, or missing with no debt: scored 100; EBIT <= 0: scored 0; missing with debt: excluded) | higher | 8 |
-| 9 | Δ ROIC pp/yr | average year-over-year ROIC change, last 3 years | higher | 4 |
-| 10 | Δ Operating margin pp/yr | same, for EBIT / revenue | higher | 2 |
+| 6 | Revenue growth % | 3-yr revenue CAGR (fewer years: longest >= 1, labelled) | higher | 8 |
+| 7 | Net debt / EBITDA x | (debt - cash) / EBITDA (EBITDA <= 0: scored 0; net cash is valid and best) | lower | 8 |
+| 8 | Interest coverage x | EBIT / interest (interest 0, or missing with no debt: scored 100; EBIT <= 0: scored 0; missing with debt: excluded) | higher | 7 |
+| 9 | Δ ROIC pp/yr | average year-over-year ROIC change, last 3 years | higher | 7 |
+| 10 | Δ Operating margin pp/yr | same, for EBIT / revenue | higher | 5 |
 | 11 | Sloan accrual % | (net income - OCF) / avg total assets | lower | 7 |
-| 12 | Downside deviation % | sqrt(mean(min(0, r - MAR)^2)) x sqrt(12), the last window x 12 monthly returns (window = 3 / 5 / 10 yrs, default 5), MAR = (1 + T-bill)^(1/12) - 1; less history than the window: excluded (too new) | lower | 14 |
-| 13 | Max drawdown % | max over days of (1 - price / running peak), last window years (3 / 5 / 10, default 5); less history than the window: excluded (too new) | lower | 16 |
+| 12 | Downside deviation % | sqrt(mean(min(0, r - MAR)^2)) x sqrt(12), the last window x 12 monthly returns (window = 3 / 5 / 10 yrs, default 5), MAR = (1 + T-bill)^(1/12) - 1; less history than the window: excluded (too new) | lower | 10 |
+| 13 | Max drawdown % | max over days of (1 - price / running peak), last window years (3 / 5 / 10, default 5); less history than the window: excluded (too new) | lower | 12 |
 | 14 | Shareholder yield % | 3-yr avg (dividends + buybacks - stock issued) / market cap | higher | 5 |
 
 "Scored 0 / 100" metrics are forced to worst / best and are **not** in that metric's ranking pool. "Excluded" metrics
@@ -96,7 +96,7 @@ timestamped), and 28 self-tests (shown in the app's debug area) covering percent
 (good side 100, one spread 50, two spreads 0), limit/weight independence, downside deviation, drawdown, ranking, fallbacks, Laura's
 limits (max-drawdown ceiling = each industry's median and differs between industries; tiers; Industry average; unchanged spread),
 Overall = Composite at Fit 100 (k = 0.4), k = 0 ranking = Composite ranking, the 3 / 5 / 10 windows (a 4-year-old stock is scored at
-3 and too new at 5), too-new ordering, foreign filers out of scope, weights total 100 with the six category totals, and the k = 0.2 / 0.4 / 0.6
+3 and too new at 5), too-new ordering, foreign filers out of scope, weights total 100 with each model's role-based category totals, and the k = 0.2 / 0.4 / 0.6
 sensitivity table. `laura.run_self_tests` (4) covers the default: first load = Laura standards, an older weights-version resets, the
 version matches the current defaults.
 
@@ -112,7 +112,7 @@ name contains 2x / 3x / Ultra / UltraPro / Inverse / Short / Bear / -1x..-3x; fu
 (miner stocks) stays. The page shows "X funds found, Y removed (reasons), Z scored". Peer group = the fund's **Morningstar category** (yfinance) or a **theme** from the fund name (ESG / sustainable, low / min volatility, dividend / income, quality, equal weight); a fund is in its category and every matching theme. No industry grouping for ETFs (the industry tagger is in `_retired/`). Universe = `results/etf_universe.csv` (`etf_groups.build_universe`): the rules above, single-stock funds (top holding >= 50%) out, uncategorized funds only if listed in `results/etf_uncategorized_keep.csv`;
 a metric with < 10 valid values in the group is ranked against all scored equity ETFs and flagged. 
 
-**Metrics (B), default weight (Laura Gao's standards, total 100), same six category totals as the stocks.** max drawdown 18 + downside deviation 12 (Risk 30) · expense ratio 18 (Cost/valuation 18) · holdings quality 8 + top-10 weight 12 (Quality 20; number of holdings 0, still excluded) · long-run return 10 (Growth 10) · AUM 12 + dollar volume 5 (Safety 17) · dividend yield 5 (Income 5).
+**Metrics (B), default weight (Laura Gao's standards, total 100), the stability core: same six categories as the stocks, more risk and diversification weight.** max drawdown 18 + downside deviation 12 (Risk 30) · expense ratio 18 (Cost/valuation 18) · holdings quality 8 + top-10 weight 12 (Quality 20; number of holdings 0, still excluded) · long-run return 10 (Growth 10) · AUM 12 + dollar volume 5 (Safety 17) · dividend yield 5 (Income 5).
 Max drawdown % (lower, 18) · downside deviation % (lower, 12) · expense ratio % (lower, 18) · holdings quality /100 (higher, 8) · top-10 weight % (lower, 12) · long-run annualized return % (higher, 10) · AUM $M (higher, 12) · average daily dollar volume $M (higher, 5) · trailing-12-month dividend yield % (higher, 5; computed from the dividend history, a real 0% is valid) · number of holdings (higher, 0; **not available from yfinance**, always excluded unless `results/etf_holdings_override.csv` supplies `ticker,n_holdings`, and even then its weight is 0).
 Holdings quality = sum(weight x stock Composite) / sum(weights of scored holdings) over the top-10 holdings; each holding is
 scored by the stock model (default weights and settings, 5-yr window) against its own stock industry, cached in `holding_scores.db`.

@@ -117,8 +117,8 @@ def default_limits(bench, metrics):
 # Bump LAURA_VERSION whenever the default weights, LAURA_TIERS or the default penalty strength change, and paste the
 # new laura.fingerprint() into LAURA_FINGERPRINT (the ETF self-tests fail until both are done). Every open session whose
 # saved version differs is then reset to Laura standards on its next run (app.py calls ensure_current first thing).
-LAURA_VERSION = 3
-LAURA_FINGERPRINT = "87fec91d075d"
+LAURA_VERSION = 4
+LAURA_FINGERPRINT = "c3878b20978d"
 VERSION_KEY = "laura_version"
 # session keys that hold weights, Laura limits and penalty strength on both pages (what "Laura standards" restores)
 RESET_PREFIXES = ("s2w|", "etf2w|", "s2_penalty", "etf2_penalty", "stklim|", "stkext|", "etflim|", "etfext|",
