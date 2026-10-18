@@ -16,11 +16,35 @@ Default Laura limits and weights on both pages are Laura Gao's standards (laura.
 """
 
 import os
+import subprocess
+import sys
 
 import pandas as pd
 import streamlit as st
 
-import industry_universe as iu
+
+def _reload_on_new_commit():
+    """Streamlit Cloud pulls a push into the running process but can keep stale copies of helper modules
+    (2026-10-18: new etf_page.py + old range_ui.py -> AttributeError). When the checkout's commit differs from the one
+    our modules were imported under (or on the first run of this code), drop them all so this run imports one version."""
+    here = os.path.dirname(os.path.abspath(__file__))
+    try:
+        head = subprocess.run(["git", "rev-parse", "HEAD"], cwd=here, capture_output=True, text=True, timeout=5).stdout.strip()
+    except Exception:  # no git: nothing to compare against
+        return
+    if getattr(sys, "_screener_commit", None) == head:
+        return
+    venv = os.path.join(here, "venv")
+    for name, mod in list(sys.modules.items()):
+        f = getattr(mod, "__file__", None) or ""
+        if name != "__main__" and f.startswith(here) and not f.startswith(venv):
+            del sys.modules[name]
+    sys._screener_commit = head
+
+
+_reload_on_new_commit()
+
+import industry_universe as iu  # noqa: E402  (local modules are imported after the reload guard)
 import stock_data as sd
 import version_info
 
