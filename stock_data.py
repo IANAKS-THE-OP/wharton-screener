@@ -57,6 +57,11 @@ DURATION_TAGS = {
 }
 EPS_TAGS = ["EarningsPerShareDiluted", "EarningsPerShareBasicAndDiluted"]
 SHARES_TAGS = ["WeightedAverageNumberOfDilutedSharesOutstanding"]
+# SEC per-share values and share counts are NOT split-adjusted: each is on the share basis of the 10-K it came from
+# (later 10-Ks restate the years they report). We keep each value's filing date + the yfinance split history, and
+# scoring2 converts them to today's share basis (scoring2._Co.basis_factor).
+SHARE_BASIS_FIELDS = ("eps_diluted", "diluted_shares")
+SPLITS_START = "2015-01-01"  # older splits predate every fiscal year we keep (MAX_FY)
 
 INSTANT_TAGS = {
     "cash": ["CashAndCashEquivalentsAtCarryingValue",
@@ -106,6 +111,7 @@ def fetch_sec_annual(ticker, config_path="config.yaml"):
 
     annual = {e: {} for e in fy_ends}
     tags = {}
+    filed = {e: {} for e in fy_ends}  # per-share / share-count values: filing date = the share basis they are on
 
     def put_duration(field, series, tag):
         tags[field] = tag
@@ -113,6 +119,8 @@ def fetch_sec_annual(ticker, config_path="config.yaml"):
             m = _near_fy(e["end"], fy_ends)
             if m is not None:
                 annual[m][field] = e["val"]
+                if field in SHARE_BASIS_FIELDS:
+                    filed[m][field] = e["filed"]
 
     for field, cands in DURATION_TAGS.items():
         series, tag = sec.best_annual_series(facts, cands)
@@ -171,6 +179,7 @@ def fetch_sec_annual(ticker, config_path="config.yaml"):
         tags["total_debt"] = max(recipes, key=recipes.get)
 
     info = {
+        "filed": {e: f for e, f in filed.items() if f},
         "cik": cik, "sic": int(submissions["sic"]) if submissions.get("sic") else None,
         "sic_desc": submissions.get("sicDescription"), "latest_10k": sec.latest_10k_info(submissions),
         "annual_form": annual_form(submissions),
@@ -198,11 +207,154 @@ def fetch_market(ticker):
         "yf_industry": info.get("industry"),
     }
 
+    try:
+        market_splits = _split_list(t.splits)
+    except Exception:  # keep going: scoring treats a missing split history as "no splits"
+        market_splits = []
     # Adjusted (dividends + splits) closes, 10 years back: the history window (3 / 5 / 10 yrs) is chosen on the page
     start = date.today() - timedelta(days=3665)
     hist = t.history(start=start.isoformat(), auto_adjust=True)
     px = price_block(hist["Close"] if not hist.empty else pd.Series(dtype=float))
+    market["_splits"] = market_splits
     return market, px
+
+
+def _split_list(series):
+    """yfinance split Series (date -> ratio, 0 = none) -> [["YYYY-MM-DD", ratio], ...] since SPLITS_START, oldest first."""
+    if series is None or len(series) == 0:
+        return []
+    out = []
+    for d, r in series.items():
+        d = str(pd.Timestamp(d).date())
+        if d >= SPLITS_START and r and float(r) > 0 and float(r) != 1.0:
+            out.append([d, float(r)])
+    return sorted(out)
+
+
+def _clean_ratio(r):
+    """A ratio a board would declare: n-for-m (or its reverse) with m <= 4, e.g. 10, 3/2, 5/4, 1/20, 2/5."""
+    from fractions import Fraction
+    return any(abs(float(Fraction(x).limit_denominator(4)) - x) < 1e-6 * max(1.0, x) for x in (r, 1 / r))
+
+
+def verify_splits(splits, facts, tags):
+    """Keep only the yfinance 'splits' that really changed the share count. yfinance also books spin-offs as fractional
+    splits (GE 1.281 GE HealthCare, CMCSA 1.067 Versant) to adjust old prices; the share count didn't change, so they
+    must not touch EPS. Test: SEC restates every period in filings after a real split, so a period (10-K or 10-Q
+    comparative) reported both before and after the split date shows the diluted share count (or EPS, inverted) change
+    by the split ratio. Only filing pairs with no other split between them count; the tightest pair wins.
+    -> (kept [[date, ratio]], dropped [[date, ratio, reason]])."""
+    def by_period(tag, unit):
+        out = {}
+        for e in ((facts or {}).get("facts", {}).get("us-gaap", {}).get(tag, {}).get("units", {}).get(unit, [])):
+            if e.get("start") and e.get("end") and e.get("filed") and e.get("val"):
+                out.setdefault((e["start"], e["end"]), []).append((e["filed"], e["val"]))
+        return out
+    series = [(by_period(t, u), inv) for t, u, inv in
+              ((tags.get("diluted_shares") or SHARES_TAGS[0], "shares", False), (tags.get("eps_diluted") or EPS_TAGS[0], "USD/shares", True))]
+    dates = [d for d, _ in splits]
+    kept, dropped = [], []
+    for d, r in splits:
+        obs = None
+        for per, inv in series:
+            best = None
+            for vals in per.values():
+                x = sorted(vals)
+                b = next(((f, v) for f, v in reversed(x) if f < d), None)  # last value filed before the split
+                a = next(((f, v) for f, v in x if f > d), None)            # first value filed after it
+                if not (b and a) or b[1] * a[1] <= 0 or any(b[0] < o < a[0] for o in dates if o != d):
+                    continue
+                span = (date.fromisoformat(a[0]) - date.fromisoformat(b[0])).days
+                if best is None or span < best[0]:
+                    best = (span, (b[1] / a[1]) if inv else (a[1] / b[1]))
+            if best is not None:
+                obs = best[1]
+                break
+        if obs is not None and abs(obs / r - 1) < 0.1:
+            kept.append([d, r])
+        elif obs is not None:
+            dropped.append([d, r, f"SEC restatement ratio {obs:.3f}, not {r:g}: not a share split (spin-off adjustment?)"])
+        elif _clean_ratio(r):
+            kept.append([d, r])  # no filing on both sides yet (e.g. a split after the latest 10-Q): trust a clean ratio
+        else:
+            dropped.append([d, r, f"unverified fractional ratio {r:g} (yfinance spin-off adjustment?)"])
+    return kept, dropped
+
+
+def fetch_splits(tickers, chunk=100):
+    """{ticker: [[date, ratio], ...]} from batched yfinance downloads (actions=True). A ticker whose download failed
+    is left out (callers keep what they had), so 'no splits' ([]) is never confused with 'unknown'."""
+    import yfinance.shared as yfs
+    out = {}
+    for i in range(0, len(tickers), chunk):
+        part = tickers[i:i + chunk]
+        try:
+            data = yf.download(part, start=SPLITS_START, auto_adjust=True, actions=True, progress=False,
+                               threads=True, group_by="column")
+        except Exception:
+            continue
+        errs = dict(getattr(yfs, "_ERRORS", {}) or {})
+        for t in part:
+            if t in errs:
+                continue
+            try:
+                close = data["Close"] if len(part) == 1 else data["Close"][t]
+                sp = (data["Stock Splits"] if len(part) == 1 else data["Stock Splits"][t]) if "Stock Splits" in data else None
+            except (KeyError, IndexError, TypeError):
+                continue
+            if isinstance(close, pd.DataFrame):
+                close, sp = close.iloc[:, 0], (sp.iloc[:, 0] if isinstance(sp, pd.DataFrame) else sp)
+            if close.dropna().empty:
+                continue
+            out[t] = _split_list(sp.dropna() if sp is not None else None)
+    return out
+
+
+def backfill_share_basis(db_path=DB_PATH, cache_dir="sec_cache", splits=None):
+    """Add the split history ("splits") and each per-share value's filing date ("filed") to every cached company
+    without a full refresh. Filing dates come from the local SEC companyfacts cache, matched on the tag, fiscal year
+    and the cached VALUE (a value that no longer matches is left without a date: scoring then uses the fiscal year end).
+    splits: {ticker: list} (default: fetch_splits for every cached ticker). Returns a summary dict."""
+    conn = _conn(db_path)
+    rows = sorted(conn.execute("SELECT ticker, industry, json FROM raw_stock").fetchall())  # a ticker's rows adjacent
+    tickers = sorted({t for t, _, _ in rows})
+    splits = fetch_splits(tickers) if splits is None else splits
+    facts_cache, n_dated, n_vals, n_split = {}, 0, 0, 0
+    for t, ind, js in rows:
+        r = json.loads(js)
+        yf_splits = splits.get(t, r.get("splits_yf", r.get("splits")))
+        filed = {}
+        cik = r.get("cik")
+        facts = None
+        if cik:
+            if cik not in facts_cache:
+                p = os.path.join(cache_dir, f"companyfacts_{str(cik).zfill(10)}.json")
+                facts_cache.clear()  # one company at a time (files are large)
+                facts_cache[cik] = json.load(open(p)) if os.path.exists(p) else None
+            facts = facts_cache[cik]
+        if yf_splits is not None:
+            r["splits_yf"] = yf_splits
+            r["splits"], r["splits_dropped"] = verify_splits(yf_splits, facts, r.get("tags") or {})
+        n_split += bool(r.get("splits"))
+        if cik and r.get("annual"):
+            ends = sorted(r["annual"])
+            for field, unit in (("eps_diluted", "USD/shares"), ("diluted_shares", "shares")):
+                tag = (r.get("tags") or {}).get(field)
+                series = sec.annual_duration_series(facts, tag, unit) if (facts and tag) else []
+                for e in series:
+                    m = _near_fy(e["end"], ends)
+                    if m is None or field not in r["annual"][m]:
+                        continue
+                    if abs(e["val"] - r["annual"][m][field]) <= 1e-9 * max(1.0, abs(e["val"])):
+                        filed.setdefault(m, {})[field] = e["filed"]
+            n_vals += sum(field in a for a in r["annual"].values() for field in SHARE_BASIS_FIELDS)
+            n_dated += sum(len(v) for v in filed.values())
+        r["filed"] = filed
+        conn.execute("UPDATE raw_stock SET json = ? WHERE ticker = ? AND industry = ?", (json.dumps(r), t, ind))
+    conn.commit()
+    conn.close()
+    return {"rows": len(rows), "tickers": len(tickers), "splits_fetched": len(splits), "rows_with_splits": n_split,
+            "share_values": n_vals, "dated": n_dated}
 
 
 PX_WINDOWS = (3, 5, 10)  # history-window choices (years); the same list as etf_data.WINDOWS
@@ -262,11 +414,22 @@ def backfill_annual_forms(db_path=DB_PATH, cache_dir="sec_cache"):
     return counts
 
 
+def _verified(splits_yf, info, tags, config_path):
+    if not splits_yf:
+        return [], []
+    try:
+        facts = sec.fetch_companyfacts(info["cik"], config_path) if info.get("cik") else None
+    except Exception:
+        facts = None
+    return verify_splits(splits_yf, facts, tags)
+
+
 def fetch_company(ticker_info, config_path="config.yaml"):
     """ticker_info: dict from industry_universe (ticker, name, price, ...)."""
     ticker = ticker_info["ticker"]
     errors = []
     market, px = fetch_market(ticker)
+    splits_yf = market.pop("_splits", [])
     try:
         sec_result = fetch_sec_annual(ticker, config_path)
     except Exception as e:  # keep going: market-only metrics still work
@@ -289,6 +452,7 @@ def fetch_company(ticker_info, config_path="config.yaml"):
         "sic": info["sic"], "sic_desc": info["sic_desc"], "cik": info["cik"],
         "latest_10k": info["latest_10k"], "annual_form": info.get("annual_form"), "fy_ends": fy_ends, "fye": fy_ends[-1] if fy_ends else None,
         "annual": annual, "tags": tags, "market": market, "px": px,
+        "splits_yf": splits_yf, **dict(zip(("splits", "splits_dropped"), _verified(splits_yf, info, tags, config_path))), "filed": {e: f for e, f in (info.get("filed") or {}).items() if e in annual},
         "errors": errors, "fetched": datetime.now().isoformat(timespec="seconds"),
     }
 

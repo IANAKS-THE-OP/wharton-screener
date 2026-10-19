@@ -16,6 +16,7 @@ Two stages so the UI stays fast:
   finalize(...)          depends on weights / limits / penalty strength / hard limits
 """
 
+import json
 import math
 from datetime import datetime
 
@@ -78,7 +79,7 @@ WINDOWS = (3, 5, 10)  # history-window choices (years) for downside deviation an
 DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05, "window": 5}
 DEFAULT_PENALTY = 0.4  # k in Overall = max(0, Composite - k x (100 - Fit)); 0 = pure Composite
 SENSITIVITY_KS = (0.2, 0.4, 0.6)  # penalty strengths compared under the ranked results (both pages)
-PREP_VERSION = 3  # bump when prepare_industry's Composite inputs change. NOTE: part of etf_holdings.model_hash(), so a bump wipes holding_scores.db
+PREP_VERSION = 4  # 4: split-adjusted EPS in the Lynch ratio. Bump when prepare_industry's Composite inputs change. NOTE: part of etf_holdings.model_hash(), so a bump wipes holding_scores.db
 WINDOW_SLACK_YEARS = 7 / 365.25  # listing-date / weekend rounding: up to 7 days short of the window still counts as full
 HIST_KEYS = ("downside_dev", "max_drawdown")
 FOREIGN_FORMS = ("20-F", "40-F")
@@ -202,6 +203,17 @@ def _skip_altman(raw):
     return is_financial(raw) or sic == 6798 or "reit" in names or (sic is not None and 4900 <= sic <= 4999)
 
 
+def split_factor(splits, after, upto=None):
+    """Product of the split ratios (new shares per old share: 10 for a 10-for-1, 1.5 for 3-for-2, 0.1 for a 1-for-10
+    reverse split) of the splits dated after `after` and, when given, on or before `upto` ('YYYY-MM-DD' strings).
+    splits: [[date, ratio], ...] from yfinance (stock_data.fetch_splits)."""
+    f = 1.0
+    for d, r in splits or []:
+        if d > after and (upto is None or d <= upto) and _num(r) and r > 0:
+            f *= r
+    return f
+
+
 class _Co:
     """Convenience wrapper over one raw dict: ordered fiscal years + getters."""
 
@@ -229,6 +241,38 @@ class _Co:
             if beg is not None:
                 return (beg + end) / 2, True
         return end, False
+
+    def basis_factor(self, i, field):
+        """Split factor that puts year i's share count (multiply) or per-share value (divide) on TODAY's share basis.
+        SEC values are not split-adjusted, but every 10-K filed after a split restates the years it reports, so a value's
+        basis is the filing it came from (raw["filed"][fy_end][field]; the fiscal year end when unknown). Only splits up
+        to the market-data fetch count, since the price and market cap are on that day's basis."""
+        end = self.ends[i]
+        filed = ((self.raw.get("filed") or {}).get(end) or {}).get(field) or end
+        return split_factor(self.raw.get("splits"), filed, upto=(self.raw.get("fetched") or "")[:10] or None)
+
+    def shares_adj(self, i):
+        """Diluted share count for year i on today's share basis (splits removed; dilution and buybacks kept)."""
+        sh = self.v(i, "diluted_shares")
+        return None if sh is None else sh * self.basis_factor(i, "diluted_shares")
+
+    def _shares_plausible(self, sh):
+        """A today's-basis share count within 4x of market cap ÷ price. Some XBRL share counts are mis-scaled
+        (MCD, SR, LINC report diluted shares ~10^6 too small); those years use SEC EPS ÷ split factor instead."""
+        m = self.raw.get("market") or {}
+        mcap, price = m.get("market_cap"), m.get("price")
+        if not (_num(mcap) and _num(price) and mcap > 0 and price > 0):
+            return True
+        return 0.25 <= sh / (mcap / price) <= 4
+
+    def eps_adj(self, i):
+        """(split-adjusted diluted EPS, source) for year i: net income ÷ today's-basis diluted shares; when either is
+        missing or the share count is implausible, SEC diluted EPS ÷ the split factor. Per share on purpose: dilution and buybacks still count."""
+        ni, sh = self.v(i, "net_income"), self.shares_adj(i)
+        if ni is not None and sh and self._shares_plausible(sh):
+            return ni / sh, "net income ÷ diluted shares"
+        eps = self.v(i, "eps_diluted")
+        return (None, None) if eps is None else (eps / self.basis_factor(i, "eps_diluted"), "SEC diluted EPS")
 
     def tax_rate(self, i):
         tax, pre = self.v(i, "tax_expense"), self.v(i, "pretax_income")
@@ -407,16 +451,17 @@ def compute_metrics(raw, settings=None, industry_median_beta=None):
         setm("fcf_yield", (ocf - abs(capex)) / mcap * 100, OK, "(OCF − capex) ÷ market cap")
 
     # 5. Lynch ratio -------------------------------------------------------
-    eps = co.v(last, "eps_diluted") if n else None
-    derived["eps"] = eps
+    # split-adjusted per-share earnings (SEC EPS / share counts are on each filing's old share basis: NFLX 10-for-1 2025)
+    eps, eps_src = co.eps_adj(last) if n else (None, None)
+    derived.update({"eps": eps, "eps_source": eps_src})
     if eps is None or not _num(price):
-        setm("lynch", None, EXCL, "diluted EPS or price missing")
+        setm("lynch", None, EXCL, "split-adjusted EPS (net income ÷ diluted shares, or diluted EPS) or price missing")
     elif eps <= 0:
         setm("lynch", None, ZERO, "EPS ≤ 0 (P/E not meaningful) → scored 0")
     else:
         pe = price / eps
         derived["pe"] = pe
-        eps_hist = [co.v(i, "eps_diluted") for i in range(max(0, n - 4), n)]
+        eps_hist = [co.eps_adj(i)[0] for i in range(max(0, n - 4), n)]
         if any(v is None for v in eps_hist) or len(eps_hist) < 3:
             # use the longest all-present trailing run
             run = []
@@ -435,7 +480,7 @@ def compute_metrics(raw, settings=None, industry_median_beta=None):
                 paid = co.v(last, "dividends_paid")
                 dy, dy_note = (abs(paid) / mcap, "; dividend yield from SEC dividends ÷ market cap") if (paid and mcap) else (0.0, "; no dividend data → 0")
             derived.update({"eps_growth_pct": g * 100, "div_yield_pct": dy * 100})
-            lbl = f"{yrs}-yr EPS CAGR"
+            lbl = f"{yrs}-yr split-adjusted EPS CAGR"
             setm("lynch", (g * 100 + dy * 100) / pe, OK, f"({lbl} {g:.1%} + dividend yield {dy:.1%}) ÷ P/E {pe:.1f}{dy_note}")
 
     # 6. Revenue growth ----------------------------------------------------
@@ -626,7 +671,7 @@ def _red_flags(co, raw, fin, derived, mcap):
         lev_p = ratio((co.debt(p)[0]), ta_p)
         cr_t = ratio(co.v(t, "current_assets"), co.v(t, "current_liabilities"))
         cr_p = ratio(co.v(p, "current_assets"), co.v(p, "current_liabilities"))
-        sh_t, sh_p = co.v(t, "diluted_shares"), co.v(p, "diluted_shares")
+        sh_t, sh_p = co.shares_adj(t), co.shares_adj(p)  # today's share basis: a split is not dilution
         gm_t = ratio(co.v(t, "gross_profit") if co.v(t, "gross_profit") is not None else (
             co.v(t, "revenue") - co.v(t, "cogs") if co.v(t, "revenue") is not None and co.v(t, "cogs") is not None else None), co.v(t, "revenue"))
         gm_p = ratio(co.v(p, "gross_profit") if co.v(p, "gross_profit") is not None else (
@@ -1062,7 +1107,7 @@ def run_self_tests():
     for e in raw["annual"]:
         pass
     last = sorted(raw["annual"])[-1]
-    raw["annual"][last].update({"eps_diluted": -0.5, "ebit": -1e8})
+    raw["annual"][last].update({"eps_diluted": -0.5, "ebit": -1e8, "net_income": -5e8})
     r = compute_metrics(raw)["metrics"]
     check("5c. Loss-making → Lynch zero and earnings yield zero",
           r["lynch"]["status"] == ZERO and r["earnings_yield"]["status"] == ZERO, f"{r['lynch']['status']}/{r['earnings_yield']['status']}")
@@ -1223,4 +1268,52 @@ def run_self_tests():
           sens["top"] == exp_top and sens["changes"] == exp_ch and len(sens["rows"]) == 10
           and all(sens["rows"][i][0.4].startswith(t) and f"({mid[t]['overall']:.1f})" in sens["rows"][i][0.4] for i, t in enumerate(exp_top[0.4])),
           f"changes {sens['changes']}")
+    # 26-28 stock splits: SEC per-share values / share counts are on each filing's share basis (split-adjusted EPS)
+    def split_pair(ratio, split_date="2023-06-01", drop_ni=None):
+        """(no-split company, the identical company that split `ratio`-for-1 on split_date) as SEC would report them:
+        a value filed before the split is on the old basis (shares ÷ ratio, EPS × ratio); 10-Ks filed after restate."""
+        base = _synthetic_raw(5)
+        base["fetched"] = "2026-10-14T00:00:00"
+        base["filed"] = {e: {"eps_diluted": f"{int(e[:4]) + 1}-02-20", "diluted_shares": f"{int(e[:4]) + 1}-02-20"} for e in base["annual"]}
+        base["splits"] = []
+        if drop_ni:
+            base["annual"][drop_ni].pop("net_income")
+        sp = json.loads(json.dumps(base))
+        sp["splits"] = [[split_date, ratio]]
+        for e, a in sp["annual"].items():
+            if sp["filed"][e]["diluted_shares"] < split_date:  # filed before the split: old share basis
+                a["diluted_shares"] /= ratio
+                a["eps_diluted"] *= ratio
+        return base, sp
+
+    def same_split(ratio, drop_ni=None):
+        base, sp = split_pair(ratio, drop_ni=drop_ni)
+        mb, ms = compute_metrics(base), compute_metrics(sp)
+        keys = ("lynch", "earnings_yield")
+        same = all(abs((mb["metrics"][k]["value"] or 0) - (ms["metrics"][k]["value"] or 0)) < 1e-9 for k in keys) and \
+            abs(mb["derived"]["eps_growth_pct"] - ms["derived"]["eps_growth_pct"]) < 1e-9 and \
+            mb["piotroski"]["tests"].get("No share dilution") == ms["piotroski"]["tests"].get("No share dilution")
+        raw_eps = [sp["annual"][e]["eps_diluted"] for e in sorted(sp["annual"])][-4:]
+        distorted = abs(_cagr(raw_eps)[0] * 100 - mb["derived"]["eps_growth_pct"]) > 1  # the unadjusted series really is off
+        return same and distorted and ms["metrics"]["lynch"]["status"] == OK and "split-adjusted" in ms["metrics"]["lynch"]["note"], \
+            (f"{ratio:g}-for-1: Lynch {mb['metrics']['lynch']['value']:.4f} vs {ms['metrics']['lynch']['value']:.4f}, EPS CAGR "
+             f"{mb['derived']['eps_growth_pct']:.2f}% vs {ms['derived']['eps_growth_pct']:.2f}% (unadjusted {_cagr(raw_eps)[0] * 100:.1f}%)")
+
+    ok26, d26 = same_split(10.0)
+    ok26b, d26b = same_split(10.0, drop_ni="2022-12-31")  # a pre-split year falls back to SEC EPS ÷ split factor
+    check("26. 10-for-1 split mid-history: same Lynch ratio, EPS CAGR, earnings yield (and Piotroski dilution test) as the "
+          "identical company with no split; also when a year has no net income (SEC EPS ÷ split factor fallback)", ok26 and ok26b, f"{d26}; {d26b}")
+    ok27a, d27a = same_split(1.5)
+    ok27b, d27b = same_split(0.1)
+    check("27. 3-for-2 split and 1-for-10 reverse split: same Lynch ratio, EPS CAGR and earnings yield as with no split",
+          ok27a and ok27b, f"{d27a}; {d27b}")
+    dil = _synthetic_raw(5)
+    for j, e in enumerate(sorted(dil["annual"])):
+        dil["annual"][e]["diluted_shares"] = 1e9 * 1.1 ** j  # really issuing 10% more shares a year, no split
+    dm = compute_metrics(dil)
+    ni = [dil["annual"][e]["net_income"] for e in sorted(dil["annual"])][-4:]
+    ni_g = _cagr(ni)[0] * 100
+    check("28. Real dilution (shares +10%/yr, no split) still shows: per-share EPS growth is below net income growth; Piotroski dilution test fails",
+          dm["derived"]["eps_growth_pct"] < ni_g - 5 and dm["piotroski"]["tests"]["No share dilution"] is False,
+          f"EPS CAGR {dm['derived']['eps_growth_pct']:.1f}% vs net income CAGR {ni_g:.1f}%")
     return results

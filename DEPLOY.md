@@ -16,6 +16,12 @@ Use the same steps every time.
       `check_app_flows.py` (the first ETF page load clears a stale cache, and the rebuild only rescores what is still in it;
       if it was already cleared, `git checkout holding_scores.db` first):
       `./venv/bin/python3 -c "import etf_holdings as eh; print(eh.rebuild_from_cache())"`, then commit `holding_scores.db`.
+- [ ] **Changed how prepared metrics are computed (`scoring2.PREP_VERSION` bumped)?** That also changes the holdings
+      model hash: rebuild `holding_scores.db` as in the step above before running the app.
+- [ ] **Refreshed or added stocks without a full refresh?** A full industry refresh stores each company's split history
+      (`splits`) and each per-share value's 10-K filing date (`filed`), which the split-adjusted Lynch ratio needs. For
+      caches built before 2026-10-18, run once (yfinance + the local `sec_cache/`, a few minutes) and commit `stock_raw.db`:
+      `./venv/bin/python3 -c "import stock_data as sd; print(sd.backfill_share_basis())"`.
 - [ ] Optional, about 3 minutes: `./venv/bin/python3 check_app_flows.py` prints **ALL OK**.
 
 ## 2. Push
@@ -51,6 +57,8 @@ Use the same steps every time.
 - [ ] Tune scoring on both pages shows six sections in the same order, each with its total and Laura's question:
       Stocks Risk — 22 · Cost — 18 · Quality — 20 · Growth — 20 · Safety — 15 · Income — 5; ETFs Risk — 30 · Cost — 18 ·
       Quality — 20 · Growth — 10 · Safety — 17 · Income — 5 (number of holdings under Quality, info only).
+- [ ] Stocks → *Entertainment* → **NFLX**: the Lynch ratio is positive and its detail says "split-adjusted EPS CAGR"
+      (it was −1.33 before the 2026-10-18 split fix).
 - [ ] Under the ranked table: **Penalty strength sensitivity** (top 10 at k = 0.2 / 0.4 / 0.6).
 
 ## 5. If the deploy is broken: roll back

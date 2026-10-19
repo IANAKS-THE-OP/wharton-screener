@@ -1,0 +1,330 @@
+ticker,industry,verified splits (last 6 yrs),eps_cagr_before_pct,eps_cagr_after_pct,lynch_before,lynch_after,lynch_status_before,lynch_status_after,eps_source_after
+AAON,Building Products & Equipment,2023-08-17 1.5-for-1,1.3264144791027999,1.5304704885178877,0.027652313520835296,0.03092212465146423,ok,ok,net income ÷ diluted shares
+ABTC,Capital Markets,2022-11-08 1-for-20; 2026-07-06 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+ACET,Biotechnology,2025-12-30 1-for-16,,,,,zero,zero,net income ÷ diluted shares
+ACMR,Semiconductor Equipment & Materials,2022-03-24 3-for-1,32.42079325982101,32.49553131292517,0.7155870270010438,0.7317086155777247,ok,ok,net income ÷ diluted shares
+ACR,REIT—Mortgage,2021-02-17 1-for-3,,,,,excluded,excluded,net income ÷ diluted shares
+ADAM,REIT—Mortgage,2023-03-09 1-for-4,,,,,excluded,excluded,net income ÷ diluted shares
+ADV,Advertising Agencies,2026-03-27 1-for-25,,,,,excluded,zero,net income ÷ diluted shares
+ADVB,Diagnostics & Research,2026-02-20 1-for-20,,,,,excluded,excluded,net income ÷ diluted shares
+AEMD,Medical Devices,2023-10-05 1-for-10; 2025-06-09 1-for-8; 2025-10-20 1-for-10; 2026-08-04 1-for-5,,,,,zero,zero,SEC diluted EPS
+AERT,Consulting Services,2026-06-12 1-for-8,-76.55963845307522,-74.62873342668442,-0.6037826376425491,-5.516104553048093,ok,ok,net income ÷ diluted shares
+AEVA,Software—Infrastructure,2024-03-19 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+AGEN,Biotechnology,2023-04-26 1.019-for-1,,,,,zero,zero,net income ÷ diluted shares
+AGL,Medical Care Facilities,2026-03-31 1-for-25,,,,,excluded,zero,net income ÷ diluted shares
+AGPU,Software—Infrastructure,2023-04-24 1-for-20; 2025-09-30 1-for-15,,,,,excluded,zero,net income ÷ diluted shares
+AKA,Apparel Retail,2023-10-02 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+ALGS,Biotechnology,2024-08-19 1-for-25,,,,,zero,zero,net income ÷ diluted shares
+ALNT,Electronic Components,2021-05-03 1.5-for-1,6.589840193938312,6.500815247987091,0.08587855645541362,0.08454376379655078,ok,ok,net income ÷ diluted shares
+ALOY,Other Industrial Metals & Mining,2023-04-11 1-for-4,,,,,excluded,excluded,
+AMCR,Packaging & Containers,2026-01-15 1-for-5,50.01313255128406,-12.42237750342814,3.185785657511451,-0.35207071063243645,ok,ok,net income ÷ diluted shares
+AMWL,Health Information Services,2024-07-11 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+AMZN,Internet Retail,2022-06-06 20-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+ANET,Computer Hardware,2021-11-18 4-for-1; 2024-12-04 4-for-1,36.97762715526427,37.087010282836474,0.5096527987819909,0.5116302975746437,ok,ok,net income ÷ diluted shares
+ANGI,Internet Content & Information,2025-03-24 1-for-10,,,,,excluded,excluded,net income ÷ diluted shares
+APG,Engineering & Construction,2025-07-01 1.5-for-1,,58.36753015761471,,1.053077160916622,zero,ok,net income ÷ diluted shares
+APH,Electronic Components,2021-03-05 2-for-1; 2024-06-12 2-for-1; 2026-09-03 2-for-1,29.723406718129517,29.71196003295664,1.199992630725622,0.60025462437663,ok,ok,net income ÷ diluted shares
+APLD,Information Technology Services,2022-04-13 1-for-6,,,,,zero,zero,net income ÷ diluted shares
+AROW,Banks—Regional,2022-09-16 1.03-for-1,-2.510027712922558,-2.3585040034388327,0.05614822676816785,0.06752570969427639,ok,ok,net income ÷ diluted shares
+ARR,REIT—Mortgage,2023-10-02 1-for-5,,,,,excluded,excluded,net income ÷ diluted shares
+ASBP,Auto Parts,2026-01-16 1-for-40,,,,,zero,zero,net income ÷ diluted shares
+ASMB,Biotechnology,2024-02-12 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+ASPS,Real Estate Services,2025-05-28 1-for-8,,,,,excluded,excluded,net income ÷ diluted shares
+ASTC,Scientific & Technical Instruments,2022-12-05 1-for-30,,,,,excluded,excluded,
+ATRA,Biotechnology,2024-06-20 1-for-25,,,,,excluded,excluded,net income ÷ diluted shares
+ATRO,Aerospace & Defense,2026-06-15 1.253-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+AVGO,Semiconductors,2024-07-15 10-for-1,21.644039911467992,20.60786726432129,0.30329706257162187,0.28896593985879776,ok,ok,net income ÷ diluted shares
+AVNW,Communication Equipment,2021-04-08 2-for-1,-39.54692685153625,-38.97882964929605,-0.3810302282855927,-0.3852478044101363,ok,ok,net income ÷ diluted shares
+AVTX,Biotechnology,2022-07-08 1-for-12; 2023-12-29 1-for-240,,,,,zero,zero,SEC diluted EPS
+BAFN,Banks—Regional,2021-05-12 1.5-for-1,,,,,zero,zero,SEC diluted EPS
+BARK,Specialty Retail,2026-04-01 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+BBSI,Staffing & Employment Services,2024-06-24 4-for-1,8.244663738267333,8.39813923791941,0.6025979497209669,0.6134438339197295,ok,ok,net income ÷ diluted shares
+BCIC,Asset Management,2021-08-26 1-for-10,,,,,excluded,excluded,net income ÷ diluted shares
+BDSX,Diagnostics & Research,2025-09-15 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+BDX,Medical Instruments & Supplies,2022-04-01 1.025-for-1,-0.3412995832631105,-2.0593456920240394,0.05902537951237186,0.005612292161819873,ok,ok,net income ÷ diluted shares
+BHRB,Banks—Regional,2022-11-15 40-for-1,9.437795270041871,9.7069696438012,1.4129587972834818,1.4547062473289676,ok,ok,net income ÷ diluted shares
+BKKT,Software—Infrastructure,2024-04-29 1-for-25,,,,,zero,zero,net income ÷ diluted shares
+BKNG,Travel Services,2026-04-06 25-for-1,29.436730925723566,29.436730925723566,31.67962518422009,1.2671850073688034,ok,ok,SEC diluted EPS
+BKSY,Specialty Business Services,2024-09-09 1-for-8,,,,,zero,zero,net income ÷ diluted shares
+BKTI,Communication Equipment,2023-04-24 1-for-5,,,,,excluded,excluded,net income ÷ diluted shares
+BNAI,Software—Infrastructure,2025-12-12 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+BNTC,Biotechnology,2023-07-26 1-for-17,,,,,zero,zero,net income ÷ diluted shares
+BOTJ,Banks—Regional,2021-06-24 1.1-for-1,1.3771092077340397,1.3588514094195814,0.20811300598062735,0.2063430007156278,ok,ok,net income ÷ diluted shares
+BRCC,Packaged Foods,2026-08-24 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+BTLN,Software—Infrastructure,2026-09-28 1-for-8,,,,,zero,zero,net income ÷ diluted shares
+BYFC,Banks—Regional,2023-11-01 1-for-8,,,,,zero,zero,net income ÷ diluted shares
+BYND,Packaged Foods,2026-08-14 1-for-30,,,,,zero,excluded,net income ÷ diluted shares
+CBIO,Biotechnology,2025-06-16 1-for-100,,,,,excluded,excluded,
+CBSH,Banks—Regional,2020-12-01 1.05-for-1; 2021-12-01 1.05-for-1; 2024-12-03 1.05-for-1; 2025-12-02 1.05-for-1,4.898941747395824,6.618902225786649,0.5160937437219604,0.6442028943985632,ok,ok,SEC diluted EPS
+CELH,Beverages—Non-Alcoholic,2023-11-15 3-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+CENT,Packaged Foods,2024-02-09 1.277-for-1,4.41527918525042,4.494116127306702,0.27334211999001146,0.278418968051409,ok,ok,net income ÷ diluted shares
+CENTA,Packaged Foods,2024-02-09 1.25-for-1,4.41527918525042,4.494116127306702,0.31724322125636994,0.3231354548897586,ok,ok,net income ÷ diluted shares
+CHDN,Gambling,2023-05-22 2-for-1,,-2.22338438288896,,-0.11221710913609893,excluded,ok,net income ÷ diluted shares
+CHPT,Specialty Retail,2025-07-28 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+CHRN,Information Technology Services,2025-06-02 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+CIM,REIT—Mortgage,2024-05-22 1-for-3,,,,,excluded,excluded,net income ÷ diluted shares
+CLMB,Electronics & Computer Distribution,2026-03-23 4-for-1,60.13263338485881,58.795376930611766,8.393965671051289,2.0849249748266447,ok,ok,net income ÷ diluted shares
+CMCSA,Telecom Services,2026-01-05 1.067-for-1,64.538600212299,68.05103705952497,18.226009665632304,19.13567694866949,ok,ok,net income ÷ diluted shares
+CMG,Restaurants,2024-06-26 50-for-1,21.220189645996967,21.30581323661074,0.8023554294008803,0.8083186804232749,ok,ok,net income ÷ diluted shares
+CNSP,Biotechnology,2022-11-29 1-for-30; 2024-06-05 1-for-50; 2025-02-21 1-for-50; 2025-07-22 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+COGT,Biotechnology,2020-11-09 1-for-4,,,,,zero,zero,net income ÷ diluted shares
+COKE,Beverages—Non-Alcoholic,2025-05-27 10-for-1,,,,,excluded,excluded,
+COO,Medical Instruments & Supplies,2024-02-20 4-for-1,-1.2175123452430547,-1.1492731183811,-0.04200642224362569,-0.0397474623691028,ok,ok,net income ÷ diluted shares
+COOK,"Furnishings, Fixtures & Appliances",2026-03-18 1-for-50,,,,,zero,zero,net income ÷ diluted shares
+CPRT,Specialty Business Services,2022-11-04 2-for-1; 2023-08-22 2-for-1,6.587737291019979,6.6025385209972365,0.39242862417682434,0.3936118466783307,ok,ok,net income ÷ diluted shares
+CRVL,Insurance Brokers,2024-12-26 3-for-1,19.31116217937565,19.342558359454088,0.5217256288835235,0.5219423794512218,ok,ok,net income ÷ diluted shares
+CRWD,Software—Infrastructure,2026-07-02 4-for-1,,,,,zero,zero,net income ÷ diluted shares
+CSGP,Real Estate Services,2021-06-28 10-for-1,-72.19119357371476,-73.83472593778815,-0.04795163970356344,-0.04080143519120305,ok,ok,net income ÷ diluted shares
+CSPI,Information Technology Services,2024-03-21 2-for-1,,,,,zero,zero,net income ÷ diluted shares
+CSX,Railroads,2021-06-29 3-for-1,-7.087710037887507,-7.063271325320208,-0.1904152415032754,-0.18992997304214712,ok,ok,net income ÷ diluted shares
+CTAS,Specialty Business Services,2024-09-12 4-for-1,14.744719961701325,14.734064566666483,0.372108016508904,0.3728894048542966,ok,ok,net income ÷ diluted shares
+CTEV,Health Information Services,2024-09-23 1-for-40,,,,,zero,zero,net income ÷ diluted shares
+CTO,REIT—Diversified,2022-07-01 3-for-1,,22.351083521489045,,0.4484540110389766,excluded,ok,net income ÷ diluted shares
+CUE,Biotechnology,2026-04-24 1-for-30,,,,,zero,zero,net income ÷ diluted shares
+CVEO,Lodging,2020-11-20 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+CVLG,Trucking,2024-12-31 2-for-1; 2025-01-02 2-for-1,-57.430497640888476,-57.484005524989676,-0.4918148957164913,-0.4904895264549996,ok,ok,net income ÷ diluted shares
+CVNA,Auto & Truck Dealerships,2026-05-08 5-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+CZFS,Banks—Regional,2022-06-09 1.01-for-1; 2023-06-08 1.01-for-1; 2024-06-14 1.01-for-1,2.049748456711864,2.066525808716446,0.448381524922567,0.4499449440065689,ok,ok,net income ÷ diluted shares
+DAVE,Software—Application,2023-01-06 1-for-32,,,,,excluded,excluded,net income ÷ diluted shares
+DD,Specialty Chemicals,2026-06-24 1-for-3,,,,,zero,zero,net income ÷ diluted shares
+DEA,REIT—Office,2025-04-28 1-for-2.5,-7.396312150208761,-30.64798693527332,0.0067553420444480166,-0.29599105842832435,ok,ok,net income ÷ diluted shares
+DECK,Footwear & Accessories,2024-09-17 6-for-1,29.532335668926414,29.582377165676597,2.508979745804955,2.5145076874815637,ok,ok,net income ÷ diluted shares
+DFNS,Aerospace & Defense,2024-10-24 1-for-8,,,,,excluded,excluded,net income ÷ diluted shares
+DFTX,Biotechnology,2022-08-29 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+DIT,Food Distribution,2026-03-23 1.5-for-1,-68.19286462226553,-68.16510822663254,-1.0051837188409123,-0.6717030165550076,ok,ok,net income ÷ diluted shares
+DMRA,Biotechnology,2024-08-30 1-for-25,,,,,excluded,excluded,SEC diluted EPS
+DNA,Biotechnology,2024-08-20 1-for-40,,,,,zero,zero,net income ÷ diluted shares
+DRIO,Health Information Services,2025-08-28 1-for-20,58.531510862977385,,108.68603485015248,,ok,zero,net income ÷ diluted shares
+DSGR,Industrial Distribution,2023-09-01 2-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+DTIL,Biotechnology,2024-02-14 1-for-30,,,,,zero,zero,net income ÷ diluted shares
+DXCM,Medical Devices,2022-06-13 4-for-1,36.597938323358605,37.22485427845843,0.9126559013938609,0.9160272724526127,ok,ok,net income ÷ diluted shares
+EAF,Electrical Equipment & Parts,2025-08-29 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+ECOR,Medical Devices,2023-02-15 1-for-15,,,,,zero,zero,SEC diluted EPS
+ETR,Utilities—Regulated Electric,2024-12-13 2-for-1,13.417652596303453,13.859787026678472,0.5954996316898434,0.61670542640707,ok,ok,net income ÷ diluted shares
+EXLS,Information Technology Services,2023-08-02 5-for-1,21.908484308748744,22.27238310915056,0.896838538954627,0.9146403204098539,ok,ok,net income ÷ diluted shares
+FAST,Industrial Distribution,2025-05-22 2-for-1,-16.762013813238276,5.032677320557788,-0.3108444093533076,0.14460235992522844,ok,ok,net income ÷ diluted shares
+FBYD,Conglomerates,2024-12-10 1.2-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+FCEL,Electrical Equipment & Parts,2024-11-11 1-for-30,,,,,zero,zero,net income ÷ diluted shares
+FET,Oil & Gas Equipment & Services,2020-11-10 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+FGC,Asset Management,2024-11-01 1-for-25,,,,,zero,zero,net income ÷ diluted shares
+FGI,"Furnishings, Fixtures & Appliances",2025-07-31 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+FIZZ,Beverages—Non-Alcoholic,2021-02-22 2-for-1,8.843916663480456,8.8846302375154,0.5246391241047729,0.5272003979172588,ok,ok,net income ÷ diluted shares
+FLG,Banks—Regional,2024-07-12 1-for-3,,,,,zero,zero,net income ÷ diluted shares
+FNF,Insurance—Specialty,2022-12-01 1.04-for-1; 2025-12-17 1.037-for-1,-22.072310895547286,-21.092682637885208,-0.9441367060407412,-0.8902934947266054,ok,ok,net income ÷ diluted shares
+FNRN,Banks—Regional,2022-02-25 1.05-for-1; 2023-02-27 1.05-for-1; 2024-02-28 1.05-for-1; 2025-02-28 1.05-for-1; 2026-02-27 1.05-for-1,6.886648709841703,10.521923911054465,0.5234017870436244,0.8028252319800527,ok,ok,net income ÷ diluted shares
+FOA,Credit Services,2024-07-26 1-for-10,,,,,excluded,excluded,net income ÷ diluted shares
+FRPH,Real Estate Services,2024-04-15 2-for-1,-9.143970358393016,-10.210337181415364,-0.08563551844488777,-0.0930324813783115,ok,ok,net income ÷ diluted shares
+FSBW,Banks—Regional,2021-07-15 2-for-1,5.055434355382249,5.028168568420011,0.7385991990237231,0.7484346033391606,ok,ok,net income ÷ diluted shares
+FTH,Biotechnology,2025-06-17 1-for-20,,,,,zero,zero,SEC diluted EPS
+FTK,Oil & Gas Equipment & Services,2023-09-26 1-for-6,,,,,excluded,excluded,net income ÷ diluted shares
+FTNT,Software—Infrastructure,2022-06-23 5-for-1,31.674951451459886,31.558803029096616,0.41373877320954777,0.4129051372685924,ok,ok,net income ÷ diluted shares
+FWDI,Footwear & Accessories,2024-06-18 1-for-10,,,,,zero,zero,SEC diluted EPS
+GCBC,Banks—Regional,2023-03-24 2-for-1,10.013544136867637,10.045083166792779,0.7904005044243068,0.7924258795417098,ok,ok,net income ÷ diluted shares
+GE,Aerospace & Defense,2021-08-02 1-for-8,446.0320482827598,198.90411253656657,11.69099708348339,5.228640603831947,ok,ok,net income ÷ diluted shares
+GECC,Asset Management,2022-02-28 1-for-6,,,,,zero,zero,net income ÷ diluted shares
+GME,Specialty Retail,2022-07-22 4-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+GOLD,Capital Markets,2022-06-07 2-for-1,-21.9021229799764,-21.91424383591889,-1.5162534392216023,-1.5173228693235903,ok,ok,net income ÷ diluted shares
+GOOG,Internet Content & Information,2022-07-18 20-for-1,24.438359642419584,24.426969549964063,0.7616036976615368,0.7610433104427824,ok,ok,net income ÷ diluted shares
+GOOGL,Internet Content & Information,2022-07-18 20-for-1,24.438359642419584,24.426969549964063,0.7523819622360366,0.7518283603607399,ok,ok,net income ÷ diluted shares
+GOSS,Biotechnology,2026-09-11 1-for-80,,,,,zero,zero,net income ÷ diluted shares
+GPMT,REIT—Mortgage,2026-10-06 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+GRML,Other Precious Metals & Mining,2026-08-24 1-for-50,,,,,zero,zero,SEC diluted EPS
+GRNQ,Consulting Services,2022-07-28 1-for-10; 2026-08-06 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+GSAT,Telecom Services,2025-02-11 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+GTBP,Biotechnology,2024-02-05 1-for-30; 2026-09-08 1-for-25,,,,,zero,zero,SEC diluted EPS
+GTE,Oil & Gas E&P,2023-05-05 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+HBIO,Medical Instruments & Supplies,2026-03-16 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+HHH,Real Estate—Development,2024-08-01 1.049-for-1,-15.400758405623904,-15.392147794147792,-0.4844936096288801,-0.48436088537123845,ok,ok,net income ÷ diluted shares
+HIPO,Insurance—Property & Casualty,2022-09-30 1-for-25,,,,,excluded,excluded,net income ÷ diluted shares
+HON,Conglomerates,2025-10-30 1.061-for-1,0.41096352176579476,2.3989413338602494,0.06200021105829694,0.1319371456152108,ok,ok,net income ÷ diluted shares
+HPP,REIT—Office,2025-12-02 1-for-7,,,,,zero,zero,net income ÷ diluted shares
+HUT,Capital Markets,2023-12-04 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+HWBK,Banks—Regional,2022-06-14 1.04-for-1; 2023-06-14 1.04-for-1,5.272659960939663,5.282138328089858,0.6773693234632633,0.6779408084543306,ok,ok,net income ÷ diluted shares
+HWKN,Specialty Chemicals,2021-03-02 2-for-1,10.986521836491603,11.014557944999881,0.3476778007183389,0.3484249036284934,ok,ok,net income ÷ diluted shares
+HYMC,Gold,2023-11-15 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+IBKR,Capital Markets,2025-06-18 4-for-1,-16.033270923831843,118.77124566394323,-0.40912249735832484,13.789991778725295,ok,ok,net income ÷ diluted shares
+IBM,Information Technology Services,2021-11-04 1.046-for-1,83.76390990316042,83.85769101845182,4.187369080767543,4.190434192357056,ok,ok,net income ÷ diluted shares
+IDR,Gold,2021-12-06 1-for-14,255.90260840104372,,13.881940213047338,,ok,excluded,net income ÷ diluted shares
+IESC,Engineering & Construction,2026-08-24 2-for-1,118.4921375723075,108.87099669196729,6.56601762128003,3.044593891269618,ok,ok,net income ÷ diluted shares
+ILMN,Diagnostics & Research,2024-06-25 1.028-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+IMUX,Biotechnology,2026-04-27 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+INKT,Biotechnology,2025-01-28 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+IP,Packaging & Containers,2021-10-01 1.056-for-1,,,,,zero,zero,net income ÷ diluted shares
+ISRG,Medical Instruments & Supplies,2021-10-05 3-for-1,29.189521389942353,29.180335075480635,0.553185959348969,0.5533123504798519,ok,ok,net income ÷ diluted shares
+IVR,REIT—Mortgage,2022-06-06 1-for-10,,,,,excluded,excluded,net income ÷ diluted shares
+IVT,REIT—Retail,2021-08-06 1-for-10,22.63069974472023,22.510291458775477,1.2579002603102496,1.2541032553107143,ok,ok,net income ÷ diluted shares
+J,Engineering & Construction,2025-05-16 1.01-for-1,-21.81636262954282,-21.610164313463265,-0.3524243332027038,-0.3478950315361794,ok,ok,net income ÷ diluted shares
+JEF,Capital Markets,2023-01-17 1.046-for-1,-2.5709795126676482,0.03600511344008517,0.06438688178434421,0.25145832409842367,ok,ok,net income ÷ diluted shares
+JILL,Apparel Retail,2020-11-10 1-for-5,-14.869903831043452,-14.921416382793184,-1.0050618162991585,-1.0079111663929856,ok,ok,net income ÷ diluted shares
+KLAC,Semiconductor Equipment & Materials,2026-06-12 10-for-1,-46.684357143962295,14.865514687919145,-0.9366103180324256,0.3116688113766237,ok,ok,net income ÷ diluted shares
+KNTK,Oil & Gas Midstream,2022-06-09 2-for-1,21.39835574878004,24.615053368112516,1.3034112986741704,1.5766464683199117,ok,ok,net income ÷ diluted shares
+KPLT,Software—Infrastructure,2023-07-28 1-for-25,,,,,zero,zero,SEC diluted EPS
+KRSA,Biotechnology,2023-05-16 1-for-20; 2026-09-09 1-for-7,,,,,zero,zero,SEC diluted EPS
+KYNB,Biotechnology,2025-06-17 1-for-25,,,,,excluded,excluded,net income ÷ diluted shares
+LARK,Banks—Regional,2023-11-30 1.05-for-1; 2024-12-02 1.05-for-1; 2025-12-01 1.05-for-1,21.53856052632768,23.531350131481,2.374449866320319,2.5699087828641107,ok,ok,SEC diluted EPS
+LEE,Publishing,2021-03-15 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+LEN,Residential Construction,2025-01-21 1.033-for-1,,,,,excluded,excluded,
+LEN-B,Residential Construction,2025-01-21 1.052-for-1,,,,,excluded,excluded,
+LFWD,Medical Devices,2024-03-15 1-for-7; 2026-02-24 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+LONA,Biotechnology,2025-09-18 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+LRCX,Semiconductor Equipment & Materials,2024-10-03 10-for-1,20.160427998514162,20.157264962010935,0.40977471862223847,0.4097935001704715,ok,ok,net income ÷ diluted shares
+LVLU,Apparel Retail,2025-07-07 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+LXP,REIT—Industrial,2025-11-11 1-for-5,68.56313394311326,-1.3735000623597005,2.18117142490934,0.1018168422616219,ok,ok,net income ÷ diluted shares
+LXU,Chemicals,2021-10-12 1.3-for-1,-49.75247121326149,-49.73094695530737,-1.6748356646048423,-1.674809234681529,ok,ok,net income ÷ diluted shares
+LYEL,Biotechnology,2025-06-02 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+MAGN,Household & Personal Products,2024-11-04 1-for-13,,,,,zero,zero,net income ÷ diluted shares
+MBBC,Banks—Regional,2025-04-22 1.372-for-1,-5.817051709308241,4.392765572150603,-0.258797042679032,0.19434056507943967,ok,ok,net income ÷ diluted shares
+MBIN,Banks—Regional,2022-01-18 1.5-for-1,-5.4355083564626145,-2.0843141885804495,-0.351640274585759,-0.1156694685462806,ok,ok,net income ÷ diluted shares
+MCHP,Semiconductors,2021-10-13 2-for-1,-62.033647476478926,-52.81328725421124,-0.18155682056544825,-0.2942719454516319,ok,ok,net income ÷ diluted shares
+MDRR,Real Estate Services,2023-05-04 1-for-8; 2024-07-03 1-for-2,,,,,zero,zero,net income ÷ diluted shares
+MFA,REIT—Mortgage,2022-04-05 1-for-4,,,,,excluded,excluded,net income ÷ diluted shares
+MITT,REIT—Mortgage,2021-07-23 1-for-3,,,,,excluded,excluded,net income ÷ diluted shares
+MKC,Packaged Foods,2020-12-01 2-for-1,5.153167622194932,5.0993831086258545,0.6221424333564949,0.6186481610951736,ok,ok,net income ÷ diluted shares
+MKC-V,Packaged Foods,2020-12-01 2-for-1,5.153167622194932,5.0993831086258545,0.5976796764533439,0.5942937738519605,ok,ok,net income ÷ diluted shares
+MKTW,Financial Data & Stock Exchanges,2025-04-03 1-for-20,46.81250196142881,-45.861426254504245,6.379726533834497,-4.828201552199671,ok,ok,net income ÷ diluted shares
+MLI,Metal Fabrication,2023-10-23 2-for-1; 2026-07-01 2-for-1,5.633185583122402,5.6487216263093165,0.7635834527562806,0.3828455201797922,ok,ok,net income ÷ diluted shares
+MNPR,Biotechnology,2024-08-13 1-for-5,,,,,excluded,excluded,
+MNST,Beverages—Non-Alcoholic,2023-03-28 2-for-1; 2026-08-11 2-for-1,,20.097080410132072,,0.4481388496838584,excluded,ok,net income ÷ diluted shares
+MOVE,Software—Infrastructure,2024-10-29 1-for-15; 2025-10-10 1-for-10,,,,,zero,zero,SEC diluted EPS
+MQ,Software—Infrastructure,2026-07-01 1-for-4,,,,,excluded,zero,net income ÷ diluted shares
+MRBK,Banks—Regional,2023-03-21 2-for-1,1.828557372132722,1.899089399352949,0.49161874642332853,0.49943774203597713,ok,ok,net income ÷ diluted shares
+MRDN,Gambling,2026-03-03 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+MRK,Drug Manufacturers—General,2021-06-03 1.048-for-1,8.433903046142621,8.429515633293082,0.5407865910089787,0.5406574264357703,ok,ok,net income ÷ diluted shares
+MSTR,Software—Application,2024-08-08 10-for-1,,,,,zero,zero,net income ÷ diluted shares
+MTH,Residential Construction,2025-01-03 2-for-1,-21.97853405493786,-21.98413696011737,-2.065993576883041,-2.0663998262639303,ok,ok,net income ÷ diluted shares
+MUX,Other Precious Metals & Mining,2022-07-28 1-for-10,,,,,excluded,excluded,net income ÷ diluted shares
+NDAQ,Financial Data & Stock Exchanges,2022-08-29 3-for-1,10.989871033323162,10.997825243708803,0.40270994770853125,0.40300187742030763,ok,ok,net income ÷ diluted shares
+NDLS,Restaurants,2026-02-18 1-for-8,,,,,zero,zero,net income ÷ diluted shares
+NEE,Utilities—Regulated Electric,2020-10-27 4-for-1,16.260329205681433,16.34706340913976,0.8248549300102644,0.8287781132081987,ok,ok,net income ÷ diluted shares
+NEOG,Medical Devices,2021-06-07 2-for-1,,,,,zero,zero,net income ÷ diluted shares
+NFLX,Entertainment,2025-11-17 10-for-1,-36.647200095516986,36.437057309618545,-1.3331217261137522,1.3244193052500837,ok,ok,net income ÷ diluted shares
+NGNE,Biotechnology,2023-09-25 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+NKTR,Biotechnology,2025-06-09 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+NLY,REIT—Mortgage,2022-09-26 1-for-4,-9.350462046721841,-8.963245405578013,1.1528111686989109,1.3159590274047053,ok,ok,net income ÷ diluted shares
+NOW,Software—Application,2025-12-18 5-for-1,1.4375682783742239,73.5732896154514,0.017275853811283083,0.8841738807671253,ok,ok,net income ÷ diluted shares
+NRDY,Software—Application,2026-08-19 1-for-15,,,,,zero,zero,SEC diluted EPS
+NRIM,Banks—Regional,2025-09-23 4-for-1,-18.337295171630508,29.65356386429665,-1.8622960092184535,3.846614412122944,ok,ok,net income ÷ diluted shares
+NSSC,Security & Protection Services,2022-01-05 2-for-1,18.01923502480447,17.816120031556327,0.6658525346217725,0.6583448504664258,ok,ok,net income ÷ diluted shares
+NTRB,Biotechnology,2022-08-12 1.166-for-1,,,,,zero,zero,net income ÷ diluted shares
+NVDA,Semiconductors,2021-07-20 4-for-1; 2024-06-10 10-for-1,206.60722620765335,204.06077211271554,4.5251177895517465,4.467543825428856,ok,ok,net income ÷ diluted shares
+NVNO,Medical Devices,2020-11-30 1-for-25; 2026-01-20 1-for-35,,,,,zero,zero,net income ÷ diluted shares
+NXPL,Software—Application,2026-04-13 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+NXTC,Biotechnology,2025-07-14 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+NXTT,Software—Application,2025-09-16 1-for-200; 2026-08-10 1-for-100,,,,,excluded,excluded,
+O,REIT—Retail,2021-11-15 1.032-for-1,-6.251173723614811,-6.377663182092508,-0.007018807293348958,-0.00966161612508433,ok,ok,net income ÷ diluted shares
+OBT,Banks—Regional,2025-01-13 2-for-1,-8.38102141784729,15.361163234719498,-0.5851175224434829,1.5734848192203972,ok,ok,net income ÷ diluted shares
+OCSL,Asset Management,2023-01-23 1-for-3,-6.687221079568795,-6.443948031819624,0.15843868239299433,0.1683503524856311,ok,ok,net income ÷ diluted shares
+ODC,Specialty Chemicals,2025-01-06 2-for-1,,,,,excluded,excluded,
+ODFL,Trucking,2024-03-28 2-for-1,-7.371914112071876,-7.381982130352083,-0.17884825597384424,-0.17903990306400971,ok,ok,net income ÷ diluted shares
+OESX,Electrical Equipment & Parts,2025-08-22 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+ORC,REIT—Mortgage,2022-08-31 1-for-5,,,,,excluded,excluded,
+ORLY,Auto Parts,2025-06-10 15-for-1,-55.383373805574784,9.972778123367254,-1.9097715105370618,0.343365314523357,ok,ok,net income ÷ diluted shares
+OUST,Electronic Components,2023-04-21 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+OUT,REIT—Specialty,2025-01-17 1-for-1.025,-0.4032301860978138,-1.3057818401108756,0.1003195465841349,0.08005517265111975,ok,ok,net income ÷ diluted shares
+PAMT,Trucking,2021-08-17 2-for-1; 2022-03-30 2-for-1,,,,,zero,zero,net income ÷ diluted shares
+PANW,Software—Infrastructure,2022-09-14 3-for-1; 2024-12-16 2-for-1,-14.501202666165147,-14.476131991838715,-0.015312780006510186,-0.01535633511134115,ok,ok,net income ÷ diluted shares
+PCAR,Farm & Heavy Construction Machinery,2023-02-08 1.5-for-1,-7.777639865294905,-7.799449552585358,-0.27090277997477763,-0.27180710798514696,ok,ok,net income ÷ diluted shares
+PED,Oil & Gas E&P,2026-03-13 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+PEGA,Software—Application,2025-06-23 2-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+PENG,Information Technology Services,2022-02-02 2-for-1,-38.77444458690283,-27.440393395007522,-0.1503093518528699,-0.17742269293152854,ok,ok,net income ÷ diluted shares
+PFE,Drug Manufacturers—General,2020-11-17 1.054-for-1,-37.11932514902995,-37.124110778467056,-1.449328605341593,-1.44979818436183,ok,ok,net income ÷ diluted shares
+PGY,Software—Infrastructure,2024-03-08 1-for-12,,,,,excluded,excluded,net income ÷ diluted shares
+PIPR,Capital Markets,2026-03-24 4-for-1,34.3753559920714,34.345768693541956,9.047891022548876,2.2598716511369914,ok,ok,net income ÷ diluted shares
+PLUS,Software—Application,2021-12-14 2-for-1,3.9353597683915664,3.948362348906853,0.2695932398683761,0.2702673769118866,ok,ok,net income ÷ diluted shares
+PMI,Medical Devices,2026-08-03 1-for-50,,,,,excluded,excluded,
+PMN,Biotechnology,2022-06-28 1-for-60; 2025-11-28 1-for-25,,,,,zero,zero,SEC diluted EPS
+POWL,Electrical Equipment & Parts,2026-04-06 3-for-1,134.66067902037776,134.62252692264144,11.64625709860708,3.879815014481668,ok,ok,net income ÷ diluted shares
+PRAX,Biotechnology,2023-11-29 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+PRHI,Insurance—Property & Casualty,2026-06-02 1-for-7,,,,,zero,zero,net income ÷ diluted shares
+PRPO,Diagnostics & Research,2023-09-22 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+PRTS,Auto Parts,2026-05-26 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+PTHS,Biotechnology,2025-07-02 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+PTN,Biotechnology,2022-08-31 1-for-25; 2025-08-12 1-for-50,,,,,zero,zero,net income ÷ diluted shares
+PVLA,Biotechnology,2024-04-23 1-for-80,,,,,zero,zero,net income ÷ diluted shares
+PW,REIT—Specialty,2026-06-03 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+PXLW,Semiconductors,2025-06-09 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+QXO,Industrial Distribution,2024-06-06 1-for-8,,,,,zero,zero,net income ÷ diluted shares
+REPX,Oil & Gas E&P,2021-03-01 1-for-12,8.211059976022227,8.1779402961349,1.8729657463822562,1.8673393873785558,ok,ok,net income ÷ diluted shares
+REX,Chemicals,2022-08-08 3-for-1; 2025-09-16 2-for-1,16.774169005342433,38.59422417591931,1.0039603187300952,2.6453119001335508,ok,ok,net income ÷ diluted shares
+RGS,Personal Services,2023-11-29 1-for-20,,,,,excluded,excluded,net income ÷ diluted shares
+RIGL,Biotechnology,2024-06-27 1-for-10,,,,,excluded,excluded,net income ÷ diluted shares
+RJF,Asset Management,2021-09-22 1.5-for-1,13.848488040155704,13.817082945321445,1.0103605707984396,1.0116031530918785,ok,ok,net income ÷ diluted shares
+RLI,Insurance—Property & Casualty,2025-01-16 2-for-1,-11.804315566003453,-11.833750523887844,-0.8098182605173126,-0.8112508952131389,ok,ok,net income ÷ diluted shares
+RLYB,Biotechnology,2026-02-06 1-for-8,,,,,zero,zero,net income ÷ diluted shares
+RMTI,Drug Manufacturers—Specialty & Generic,2022-05-13 1-for-11; 2026-07-01 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+RNAC,Biotechnology,2024-04-05 1-for-30,,,,,zero,zero,net income ÷ diluted shares
+ROL,Personal Services,2020-12-11 1.5-for-1,13.271785112236145,13.271812833899975,0.5191708787109224,0.5181730202387322,ok,ok,net income ÷ diluted shares
+ROOT,Insurance—Property & Casualty,2022-08-15 1-for-18,,,,,excluded,excluded,net income ÷ diluted shares
+RPT,REIT—Mortgage,2025-12-31 1-for-6,,,,,zero,excluded,net income ÷ diluted shares
+RTB,Software—Application,2021-02-17 1-for-6; 2023-09-07 1-for-10; 2026-01-02 1-for-35,,,,,zero,zero,SEC diluted EPS
+RUSHA,Auto & Truck Dealerships,2023-08-29 1.5-for-1; 2026-09-01 1.5-for-1,-10.557516224257135,-10.549939548564346,-0.6944467348862684,-0.4622437088917551,ok,ok,net income ÷ diluted shares
+RUSHB,Auto & Truck Dealerships,2023-08-29 1.5-for-1; 2026-09-01 1.5-for-1,-10.557516224257135,-10.549939548564346,-0.5531345470385169,-0.3681910333570379,ok,ok,net income ÷ diluted shares
+RYM,Tobacco,2022-10-18 1-for-10; 2023-07-05 1-for-20; 2024-10-08 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+SBET,Capital Markets,2021-07-28 1-for-2; 2023-04-26 1-for-10; 2025-05-06 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+SBFG,Banks—Regional,2022-01-20 1.05-for-1,7.355331213263905,7.335271230881313,0.7134225498306412,0.7111201373018122,ok,ok,net income ÷ diluted shares
+SCCO,Copper,2024-08-09 1.005-for-1,15.39641122273383,15.374704333881862,0.45753449382944655,0.45874161586368634,ok,ok,net income ÷ diluted shares
+SDOT,Farm Products,2024-10-18 1-for-10; 2025-09-15 1-for-10; 2026-05-27 1-for-20,,,,,excluded,excluded,
+SENS,Medical Devices,2025-10-20 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+SEZL,Credit Services,2025-03-31 6-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+SF,Capital Markets,2020-12-17 1.5-for-1; 2026-02-27 1.5-for-1,3.33374191474316,3.319258564459937,0.45490708476888164,0.3201246181163696,ok,ok,net income ÷ diluted shares
+SFBS,Banks—Regional,2026-08-21 2-for-1,3.1533168657591037,3.1387850286074492,0.680598144939382,0.3393236050942899,ok,ok,net income ÷ diluted shares
+SGI,"Furnishings, Fixtures & Appliances",2020-11-24 4-for-1,-10.071137395478157,-10.105502651580489,-0.2666617151463542,-0.2671051342062718,ok,ok,net income ÷ diluted shares
+SHOE,Apparel Retail,2021-07-20 2-for-1,-21.71363319512295,-21.721333504177952,-2.4327704820405733,-2.4316943689923223,ok,ok,net income ÷ diluted shares
+SHOP,Software—Application,2022-06-29 10-for-1,,,,,excluded,excluded,net income ÷ diluted shares
+SHPH,Drug Manufacturers—Specialty & Generic,2024-08-13 1-for-8; 2025-06-16 1-for-25; 2026-06-11 1-for-10,,,,,zero,zero,SEC diluted EPS
+SHW,Specialty Chemicals,2021-04-01 3-for-1,9.945304600039684,9.954752764723285,0.3497606621248431,0.3499805570292191,ok,ok,net income ÷ diluted shares
+SIRI,Entertainment,2024-09-10 1-for-10,-9.00775421793144,-2.95722399318592,-0.4167513467794943,0.09392452427085793,ok,ok,net income ÷ diluted shares
+SKIL,Education & Training Services,2023-10-02 1-for-20,,,,,excluded,excluded,
+SKIN,Household & Personal Products,2026-10-14 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+SLDB,Biotechnology,2022-10-28 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+SLG,REIT—Office,2021-01-21 1-for-1.03; 2022-01-24 1-for-1.031,,,,,zero,zero,net income ÷ diluted shares
+SMC,Oil & Gas Midstream,2020-11-10 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+SMCI,Computer Hardware,2024-10-01 10-for-1,41.93981981419097,40.8989543613282,3.6837885651155204,3.524570942626506,ok,ok,net income ÷ diluted shares
+SMXT,Solar,2026-08-13 1-for-12,,,,,zero,zero,net income ÷ diluted shares
+SNDA,Medical Care Facilities,2020-12-14 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+SNEX,Capital Markets,2023-11-27 1.5-for-1; 2025-03-24 1.5-for-1; 2026-03-23 1.5-for-1; 2026-07-20 1.5-for-1,-4.060712912189324,9.987161060148031,-0.40265318270698847,0.45603953770523503,ok,ok,net income ÷ diluted shares
+SNFCA,Insurance—Life,2021-07-08 1.05-for-1; 2022-06-30 1.05-for-1; 2023-07-06 1.05-for-1; 2024-07-05 1.05-for-1; 2025-07-11 1.05-for-1; 2026-07-10 1.05-for-1,4.0041911525952045,7.643085077034706,0.554426467282413,1.009200692083873,ok,ok,net income ÷ diluted shares
+SPIR,Specialty Business Services,2023-08-31 1-for-8,,,,,excluded,excluded,net income ÷ diluted shares
+SPRB,Biotechnology,2025-08-05 1-for-75; 2025-08-07 1-for-75,,,,,zero,zero,net income ÷ diluted shares
+SRE,Utilities—Diversified,2023-08-22 2-for-1,-5.991259679106841,-5.979104972923532,-0.09395614242643999,-0.09557646050473019,ok,ok,net income ÷ diluted shares
+SRZN,Biotechnology,2023-12-14 1-for-15,,,,,zero,zero,SEC diluted EPS
+STRO,Biotechnology,2025-12-03 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+SVC,REIT—Hotel & Motel,2026-07-07 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+SYRE,Biotechnology,2023-09-08 1-for-25,,,,,excluded,excluded,
+TECH,Biotechnology,2022-11-30 4-for-1,-12.974116606482456,-13.075562981041532,-0.20057325432741366,-0.2018986026801878,ok,ok,net income ÷ diluted shares
+TIL,Biotechnology,2023-12-08 1-for-20,,,,,zero,zero,net income ÷ diluted shares
+TISI,Specialty Business Services,2022-12-22 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+TNXP,Biotechnology,2022-05-17 1-for-32; 2023-05-10 1-for-6.25; 2025-02-05 1-for-100,,,,,zero,zero,net income ÷ diluted shares
+TOP,Capital Markets,2026-08-03 1-for-5,,,,,zero,zero,SEC diluted EPS
+TPL,Oil & Gas E&P,2024-03-27 3-for-1; 2025-12-23 3-for-1,-28.737864642304732,2.803035175662183,-0.5497680891796236,0.06762252269568772,ok,ok,net income ÷ diluted shares
+TRST,Banks—Regional,2021-05-28 1-for-5,-6.136458366179065,-6.118053046232596,-0.19249051468553832,-0.19159647432443722,ok,ok,net income ÷ diluted shares
+TRT,Semiconductor Equipment & Materials,2026-01-05 2-for-1,,,,,zero,zero,net income ÷ diluted shares
+TSCO,Specialty Retail,2024-12-20 5-for-1,2.020746456075817,1.9873530248109006,0.3099223999850559,0.30774153495952145,ok,ok,net income ÷ diluted shares
+TSLA,Auto Manufacturers,2022-08-25 3-for-1,-33.18021688674605,-33.23368342657882,-0.09705233658610009,-0.09679440363238619,ok,ok,net income ÷ diluted shares
+TTD,Advertising Agencies,2021-06-17 10-for-1,101.50381586419562,103.36915026214055,7.660665348241179,7.785780797422506,ok,ok,net income ÷ diluted shares
+TTEK,Engineering & Construction,2024-09-09 5-for-1,-1.3939100199574228,-1.515979154553715,-0.014699121330977005,-0.018025257230655407,ok,ok,net income ÷ diluted shares
+TVGN,Biotechnology,2026-03-06 1-for-50,,,,,zero,zero,net income ÷ diluted shares
+UAN,Agricultural Inputs,2020-11-24 1-for-10,-29.88712174919481,-29.880671856054775,-1.34685488258338,-1.346982542693138,ok,ok,net income ÷ diluted shares
+UHAL,Rental & Leasing Services,2022-11-10 10-for-1,,,,,excluded,excluded,
+USLM,Building Materials,2024-07-15 5-for-1,42.91099160439846,42.958262197979245,1.920942322583341,1.9243514758253697,ok,ok,net income ÷ diluted shares
+VATE,Engineering & Construction,2024-08-09 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+VEEA,Information Technology Services,2026-08-31 1-for-20,,,,,zero,zero,SEC diluted EPS
+VELO,Computer Hardware,2024-06-13 1-for-35; 2025-07-28 1-for-15,,,,,zero,zero,net income ÷ diluted shares
+VOR,Biotechnology,2025-09-19 1-for-20,,,,,zero,zero,SEC diluted EPS
+VRDN,Biotechnology,2020-11-13 1-for-15,,,,,excluded,excluded,
+VRNS,Software—Infrastructure,2021-03-15 3-for-1,,,,,zero,zero,net income ÷ diluted shares
+VTVT,Biotechnology,2023-11-21 1-for-40,,,,,excluded,excluded,
+WATT,Communication Equipment,2023-08-16 1-for-20; 2025-08-11 1-for-30,,,,,zero,zero,net income ÷ diluted shares
+WFCF,Specialty Business Services,2020-12-01 1-for-4; 2020-12-07 1-for-4,-3.1270693848535758,-3.4488012758910447,-0.06578687345414255,-0.07192328828557525,ok,ok,net income ÷ diluted shares
+WGS,Diagnostics & Research,2023-05-04 1-for-33,,,,,zero,zero,net income ÷ diluted shares
+WMT,Discount Stores,2024-02-26 3-for-1,24.343980975625712,24.212846368651995,0.6012001751655159,0.5978818480853249,ok,ok,net income ÷ diluted shares
+WPC,REIT—Diversified,2023-11-02 1.021-for-1,,-10.9749772309229,,-0.16683496843038895,excluded,ok,net income ÷ diluted shares
+WRB,Insurance—Property & Casualty,2022-03-24 1.5-for-1; 2024-07-11 1.5-for-1,10.591403842179513,10.591850296036043,0.6743550077965943,0.6743902219627413,ok,ok,net income ÷ diluted shares
+WSM,Specialty Retail,2024-07-09 2-for-1,2.7040024624839676,2.6905204369126245,0.14517203920971228,0.1446482354319742,ok,ok,net income ÷ diluted shares
+WYY,Information Technology Services,2020-11-09 1-for-10,,,,,zero,zero,net income ÷ diluted shares
+XLO,Biotechnology,2026-03-16 1-for-14,,,,,zero,zero,SEC diluted EPS
+XMAX,"Furnishings, Fixtures & Appliances",2023-05-24 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+XRN,REIT—Healthcare Facilities,2025-09-22 1-for-5,,,,,zero,zero,net income ÷ diluted shares
+YARW,Biotechnology,2021-02-16 1-for-4; 2023-02-13 1-for-18; 2026-07-27 1-for-50,,,,,zero,zero,SEC diluted EPS
+ZBH,Medical Devices,2022-03-01 1.03-for-1,47.77871617006642,47.743910078441054,1.9063518029230644,1.9042229555530146,ok,ok,net income ÷ diluted shares
+ZVRA,Biotechnology,2020-12-28 1-for-16,,,,,excluded,excluded,net income ÷ diluted shares

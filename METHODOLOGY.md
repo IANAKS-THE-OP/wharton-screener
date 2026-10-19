@@ -44,7 +44,7 @@ Risk is measured identically for both; the other categories use the measure that
 | 2 | Gross profitability % | gross profit / avg total assets (bank / no COGS: excluded) | higher | 5 |
 | 3 | Earnings yield % | EBIT / EV (EV <= 0: excluded; EBIT <= 0: scored 0; bank: excluded) | higher | 6 |
 | 4 | FCF yield % | (OCF - capex) / market cap | higher | 6 |
-| 5 | Lynch ratio x | (3-yr EPS CAGR % + dividend yield %) / P/E (EPS <= 0: scored 0; start EPS <= 0: excluded) | higher | 6 |
+| 5 | Lynch ratio x | (3-yr split-adjusted EPS CAGR % + dividend yield %) / P/E (split-adjusted EPS) (EPS <= 0: scored 0; start EPS <= 0: excluded) | higher | 6 |
 | 6 | Revenue growth % | 3-yr revenue CAGR (fewer years: longest >= 1, labelled) | higher | 8 |
 | 7 | Net debt / EBITDA x | (debt - cash) / EBITDA (EBITDA <= 0: scored 0; net cash is valid and best) | lower | 8 |
 | 8 | Interest coverage x | EBIT / interest (interest 0, or missing with no debt: scored 100; EBIT <= 0: scored 0; missing with debt: excluded) | higher | 7 |
@@ -57,6 +57,8 @@ Risk is measured identically for both; the other categories use the measure that
 
 "Scored 0 / 100" metrics are forced to worst / best and are **not** in that metric's ranking pool. "Excluded" metrics
 drop out and their weight is removed from the denominator.
+
+**Split-adjusted Lynch ratio.** SEC per-share numbers are not split-adjusted: each value is on the share basis of the 10-K it came from (later 10-Ks restate only the years they show). Netflix's 10-for-1 split in November 2025 left 2022 EPS at $9.95 (old shares) next to 2025 EPS at $2.53 (new shares), so the 3-yr EPS CAGR read −36.6% and Lynch −1.33 (0th percentile in Entertainment) although earnings grew. The Lynch ratio (P/E and EPS CAGR) now uses split-adjusted per-share earnings: net income ÷ diluted shares, each year's share count converted to today's basis with the yfinance split history (splits after the filing that reported the value); when net income or shares are missing, or the share count is implausible (more than 4x away from market cap ÷ price), SEC diluted EPS ÷ the same split factor. It stays per share, so dilution and buybacks still count. yfinance also books spin-offs as fractional "splits" (GE, FDX, MMM); a split is used only if SEC's own restated filings show the share count changing by that ratio (or, with no filing on both sides yet, the ratio is a clean n-for-m). NFLX: EPS CAGR +36.4%, Lynch +1.32. Earnings yield, FCF yield and shareholder yield use dollar totals and market cap, so splits never affected them; the Piotroski dilution test uses the same split-adjusted share counts. Full before/after list: `results/split_audit_2026-10-18.csv`.
 
 ## C. Red flags (shown, never scored)
 Altman distress (Z < 1.81 for manufacturers SIC 2000-3999, Z'' < 1.1 otherwise; skipped for banks, REITs, utilities),
@@ -105,11 +107,11 @@ tie-breakers Composite desc, fewer red flags, less excluded weight, ticker A-Z.
 ## H-I. Display, export, tests
 Ranked table, per-company breakdown, "How scoring works" tab with a live worked example, full CSV export (every raw value,
 score, Laura limit and limit used, distance past it, Fit, Laura penalty, why not higher, flag and setting incl. k and the history window,
-timestamped), and 28 self-tests (shown in the app's debug area) covering percentiles, ties, forced scores, exclusion rescaling, simple Fit
+timestamped), and 31 self-tests (shown in the app's debug area) covering percentiles, ties, forced scores, exclusion rescaling, simple Fit
 (good side 100, one spread 50, two spreads 0), limit/weight independence, downside deviation, drawdown, ranking, fallbacks, Laura's
 limits (max-drawdown ceiling = each industry's median and differs between industries; tiers; Industry average; unchanged spread),
 Overall = Composite at Fit 100 (k = 0.4), k = 0 ranking = Composite ranking, the 3 / 5 / 10 windows (a 4-year-old stock is scored at
-3 and too new at 5), too-new ordering, foreign filers out of scope, weights total 100 with each model's role-based category totals, and the k = 0.2 / 0.4 / 0.6
+3 and too new at 5), too-new ordering, foreign filers out of scope, stock splits (10-for-1, 3-for-2, 1-for-10 reverse: same Lynch as no split; real dilution still counts), weights total 100 with each model's role-based category totals, and the k = 0.2 / 0.4 / 0.6
 sensitivity table. `laura.run_self_tests` (4) covers the default: first load = Laura standards, an older weights-version resets, the
 version matches the current defaults.
 

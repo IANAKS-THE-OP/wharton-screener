@@ -126,6 +126,12 @@ k0 = at.dataframe[0].value
 chk("k = 0 → Overall = Composite for every scored company", all(abs(o - c) < 1e-9 for o, c in zip(k0.overall, k0.composite) if o == o))
 at.button(key="stk_btn_laura|Semiconductors").click().run()
 chk("Laura standards resets penalty strength to 0.4", abs(at.session_state["s2_penalty"] - 0.4) < 1e-12)
+at.sidebar.selectbox(key="industry_choice").set_value("Entertainment").run()
+at.selectbox(key="s2_pick|Entertainment").set_value("NFLX").run()
+bd = next((d.value for d in at.dataframe if "metric" in d.value.columns and "note" in d.value.columns), None)
+ly = None if bd is None else bd[bd["metric"].str.startswith("Lynch ratio")].iloc[0]
+chk("Entertainment → NFLX (10-for-1 split, 2025): Lynch ratio positive, detail says split-adjusted",
+    ly is not None and float(str(ly["value"]).rstrip("x% ")) > 0 and "split-adjusted" in ly["note"], None if ly is None else (ly["value"], ly["note"]))
 inds = ["Semiconductors", "Gold"]
 pages = {}
 for g in inds:
