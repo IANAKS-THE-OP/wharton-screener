@@ -32,28 +32,31 @@ import laura
 # "category" = one of the six CATEGORIES. Role-based totals: stocks are the growth driver (LAURA_CATEGORY_TOTALS below);
 # the ETF model (etf_scoring.py) is the stability core, with its own LAURA_CATEGORY_TOTALS.
 METRICS = [
-    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "group": "Quality", "category": "Quality"},
-    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 5, "group": "Quality", "category": "Quality"},
-    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 7, "group": "Momentum of quality", "category": "Growth"},
-    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 5, "group": "Momentum of quality", "category": "Growth"},
-    {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
-    {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
-    {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 6, "group": "Valuation & growth", "category": "Cost/valuation"},
-    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 8, "group": "Valuation & growth", "category": "Growth"},
-    {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 8, "group": "Balance sheet", "category": "Safety"},
-    {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 7, "group": "Balance sheet", "category": "Safety"},
-    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 7, "group": "Earnings quality", "category": "Quality"},
-    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 10, "group": "Risk", "category": "Risk"},
-    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
-    {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 5, "group": "Shareholder returns", "category": "Income"},
+    {"key": "roic", "label": "ROIC", "units": "%", "direction": "higher", "weight": 8, "category": "Quality"},
+    {"key": "gross_profitability", "label": "Gross profitability", "units": "%", "direction": "higher", "weight": 5, "category": "Quality"},
+    {"key": "delta_roic", "label": "Δ ROIC", "units": "pp/yr", "direction": "higher", "weight": 7, "category": "Growth"},
+    {"key": "delta_op_margin", "label": "Δ Operating margin", "units": "pp/yr", "direction": "higher", "weight": 5, "category": "Growth"},
+    {"key": "earnings_yield", "label": "Earnings yield", "units": "%", "direction": "higher", "weight": 6, "category": "Cost/valuation"},
+    {"key": "fcf_yield", "label": "FCF yield", "units": "%", "direction": "higher", "weight": 6, "category": "Cost/valuation"},
+    {"key": "lynch", "label": "Lynch ratio", "units": "x", "direction": "higher", "weight": 6, "category": "Cost/valuation"},
+    {"key": "revenue_growth", "label": "Revenue growth", "units": "%", "direction": "higher", "weight": 8, "category": "Growth"},
+    {"key": "net_debt_ebitda", "label": "Net debt / EBITDA", "units": "x", "direction": "lower", "weight": 8, "category": "Safety"},
+    {"key": "interest_coverage", "label": "Interest coverage", "units": "x", "direction": "higher", "weight": 7, "category": "Safety"},
+    {"key": "sloan", "label": "Sloan accrual ratio", "units": "%", "direction": "lower", "weight": 7, "category": "Quality"},
+    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 10, "category": "Risk"},
+    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 12, "category": "Risk"},
+    {"key": "shareholder_yield", "label": "Shareholder yield", "units": "%", "direction": "higher", "weight": 5, "category": "Income"},
 ]
 METRIC_BY_KEY = {m["key"]: m for m in METRICS}
 KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
-GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 # Laura's six categories. Same categories in both models, different totals by role (each model sums to 100).
 CATEGORIES = ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income"]
 LAURA_CATEGORY_TOTALS = {"Risk": 22, "Cost/valuation": 18, "Quality": 20, "Growth": 20, "Safety": 15, "Income": 5}  # growth driver
+CATEGORY_LABEL = {c: ("Cost" if c == "Cost/valuation" else c) for c in CATEGORIES}  # what the UI and docs show
+CATEGORY_QUESTION = {"Risk": "How much can it drop?", "Cost/valuation": "Are we overpaying?",
+                     "Quality": "Is what we own good and well-built?", "Growth": "Is it growing?",
+                     "Safety": "Could it fail?", "Income": "What does it pay Laura?"}  # Laura's question per category
 ROLE_NOTE = ("Stocks are the growth driver (more growth, less risk weight); ETFs are the stability core (more risk and "
              "diversification weight); bonds guarantee the payments.")
 
@@ -67,9 +70,9 @@ def category_totals(metrics, weights=None):
 
 
 def category_text(totals=None, sep=" · "):
-    """'Risk 22 · Cost/valuation 18 · ...' from a model's category totals (default: the stock model's), for test names."""
+    """'Risk 22 · Cost 18 · ...' from a model's category totals (default: the stock model's), for test names."""
     totals = totals or LAURA_CATEGORY_TOTALS
-    return sep.join(f"{c} {totals[c]:g}" for c in CATEGORIES)
+    return sep.join(f"{CATEGORY_LABEL[c]} {totals[c]:g}" for c in CATEGORIES)
 
 WINDOWS = (3, 5, 10)  # history-window choices (years) for downside deviation and max drawdown
 DEFAULT_SETTINGS = {"tbill": 0.03, "rf": 0.0425, "erp": 0.05, "window": 5}

@@ -60,9 +60,21 @@ def sens_table():
 def cat_ok(df, page):
     stk = [sc.LAURA_CATEGORY_TOTALS[c] for c in sc.CATEGORIES] + [100]
     etf = [es.LAURA_CATEGORY_TOTALS[c] for c in sc.CATEGORIES] + [100]
-    return (df is not None and list(df["Category"]) == ["Risk", "Cost/valuation", "Quality", "Growth", "Safety", "Income", "Total"]
+    return (df is not None and list(df["Category"]) == ["Risk", "Cost", "Quality", "Growth", "Safety", "Income", "Total"]
             and list(df["Stocks: growth driver"]) == stk and list(df["ETFs: stability core"]) == etf
             and list(df[f"{page} now"]) == (stk if page == "Stocks" else etf))
+
+
+def sections():
+    """Tune scoring section headers ('#### Risk — 22') and the question caption under each."""
+    heads = [m.value[5:] for m in at.markdown if m.value.startswith("#### ")]
+    return heads, [c.value for c in at.caption if c.value in sc.CATEGORY_QUESTION.values()]
+
+
+def sections_ok(totals):
+    heads, qs = sections()
+    return (heads == [f"{sc.CATEGORY_LABEL[c]} — {totals[c]:g}" for c in sc.CATEGORIES]
+            and qs == [sc.CATEGORY_QUESTION[c] for c in sc.CATEGORIES])
 
 
 at = AppTest.from_file(APP, default_timeout=600); at.run()
@@ -93,6 +105,13 @@ chk("Older weights-version in the session: weights and k reset to Laura standard
     and at.session_state[laura.VERSION_KEY] == laura.LAURA_VERSION and badges() == (3, 0), badges())
 chk(f"Stocks Tune scoring: side-by-side category table, stocks {sc.category_text(sep='/')} vs ETFs {sc.category_text(es.LAURA_CATEGORY_TOTALS, '/')}", cat_ok(cat_table(), "Stocks"),
     "" if cat_table() is None else cat_table().to_dict("list"))
+chk("Stocks Tune scoring: six sections Risk, Cost, Quality, Growth, Safety, Income with live totals + Laura's question", sections_ok(sc.LAURA_CATEGORY_TOTALS),
+    sections()[0])
+at.session_state["s2w|roic"] = 10.0
+at.run()
+chk("Stocks section header follows the weight slider (ROIC 8 → 10: Quality — 22)", sections()[0][2] == "Quality — 22", sections()[0][2])
+at.session_state["s2w|roic"] = float(sc.DEFAULT_WEIGHTS["roic"])
+at.run()
 pen_ok = all(abs(o - max(0, c - 0.4 * (100 - f))) < 1e-6 for o, c, f in zip(semi5.overall, semi5.composite, semi5.fit) if o == o and f == f)
 chk("Stocks: Overall = max(0, Composite − 0.4 × (100 − Fit)) on every row", pen_ok)
 at.sidebar.selectbox(key="hist_window").set_value(3).run()
@@ -141,6 +160,9 @@ chk("ETF first load: 'Laura standards (default)' badge on Tune scoring, Ranked r
     badges() == (3, 0) and sens_table() is not None and len(sens_table()) == 10, badges())
 chk(f"ETF Tune scoring: side-by-side category table, both models' totals (each sums to 100)", cat_ok(cat_table(), "ETFs"),
     "" if cat_table() is None else cat_table().to_dict("list"))
+chk("ETF Tune scoring: the same six sections in the same order (ETF totals) + Laura's question; number of holdings under Quality, info only",
+    sections_ok(es.LAURA_CATEGORY_TOTALS) and any(m.value.startswith("**Number of holdings**") and "info only (weight 0)" in m.value for m in at.markdown),
+    sections()[0])
 chk("no industry grouping widgets on the ETF page", not any(w.key in ("etf2_groupby", "etf2_industry", "etf2_only_with") for w in list(at.sidebar.radio) + list(at.sidebar.selectbox) + list(at.sidebar.checkbox)),
     [w.key for w in at.sidebar.selectbox])
 chk("ETF picker lists Morningstar categories + themes only", all(not o.startswith(("Whole sector", "Broad US market", "International / global")) for o in at.sidebar.selectbox(key="etf2_mscat").options))

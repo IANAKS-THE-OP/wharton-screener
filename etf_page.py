@@ -193,11 +193,14 @@ def render():
                                  key="etf2_laura_hard", help="Off by default. When on, those four metrics become 'Must be inside' limits with "
                                  "these absolute values (funds outside are removed from the list; never an empty page).")
 
-        for gname in es.GROUPS:
-            with st.expander(gname, expanded=False):
-                for m in [x for x in es.METRICS if x["group"] == gname]:
+        live = {m["key"]: st.session_state.get(f"etf2w|{m['key']}", 0.0) for m in es.METRICS}
+        for cat in es.CATEGORIES:  # the six shared sections, same order on both pages
+            ru.category_header(cat, es.METRICS, live)
+            with st.expander(f"{es.CATEGORY_LABEL[cat]} metrics", expanded=False):
+                for m in [x for x in es.METRICS if x["category"] == cat]:
                     key = m["key"]
-                    st.markdown(f"**{m['label']}** ({m['units'] or 'count'}) · {m['direction']} is better")
+                    st.markdown(f"**{m['label']}** ({m['units'] or 'count'}) · {m['direction']} is better"
+                                + (" · *info only (weight 0)*" if key == "n_holdings" else ""))
                     b = bench_cat[key]
                     if b["q"]:
                         q = b["q"]
@@ -483,7 +486,7 @@ Each fund is compared with the other funds in its **peer group**: its **Mornings
 Each is a **weighted average** over the metrics the fund has (default weights are Laura Gao's standards, total 100; excluded metrics drop out and the denominator shrinks). **Overall = max(0, Composite − k × (100 − Fit))**, k = the *Laura penalty strength* slider (default **0.4**; *Laura standards* resets it; k = 0 → pure Composite). **What k = 0.4 means:** each Fit point lost costs 0.4 Overall points (Fit 90 → −4, Fit 75 → −10); a fund that meets every limit keeps its Composite. The table under the ranked results shows the top 10 at k = 0.2 / 0.4 / 0.6 and how many names change. **Laura standards are the default**: the badge at the top of Tune scoring, the ranked table and Compare says *Laura standards (default)* or *Custom settings* with a reset button, and the app resets to Laura standards on first load and whenever the default weights or limits change. Weights change both scores; limits change only Fit.
 
 ### The ten metrics
-Six categories with role-based totals; **ETFs are the stability core**: **Risk 30** (max drawdown 18, downside deviation 12) · **Cost/valuation 18** (expense ratio 18) · **Quality 20** (holdings quality 8, top-10 weight 12; number of holdings 0, always excluded) · **Growth 10** (long-run return 10) · **Safety 17** (AUM 12, dollar volume 5) · **Income 5** (dividend yield 5). Stocks, the growth driver, carry Risk 22 / Growth 20 / Safety 15 instead. Stocks are the growth driver (more growth, less risk weight); ETFs are the stability core (more risk and diversification weight); bonds guarantee the payments.
+Six categories with role-based totals; **ETFs are the stability core**: **Risk 30** (max drawdown 18, downside deviation 12) · **Cost 18** (expense ratio 18) · **Quality 20** (holdings quality 8, top-10 weight 12; number of holdings 0, always excluded) · **Growth 10** (long-run return 10) · **Safety 17** (AUM 12, dollar volume 5) · **Income 5** (dividend yield 5). Stocks, the growth driver, carry Risk 22 / Growth 20 / Safety 15 instead. Tune scoring shows the same six sections in the same order as the stock page, each headed with its live total and Laura's question; risk is measured identically for both, the other categories use the measure that fits a fund. Stocks are the growth driver (more growth, less risk weight); ETFs are the stability core (more risk and diversification weight); bonds guarantee the payments.
 
 **Holdings quality** = Σ(weight × stock Composite) ÷ Σ(weights of scored holdings) over the fund's top-10 holdings, where each holding is scored by the stock model against **its own stock industry**. Foreign listings and foreign filers (20-F / 40-F) are skipped. Under 15% coverage it is excluded and flagged. Its **weight is always 8**: low coverage instead pulls its score toward average. **trust = min(1, coverage ÷ 50%)**; adjusted percentile = trust × percentile + (1 − trust) × 50; adjusted Fit = trust × Fit + (1 − trust) × 100 (USMV at 15% coverage: 0.3 × score + 0.7 × 50). Coverage and trust are shown in the Breakdown.
 

@@ -18,28 +18,27 @@ import numpy as np
 import pandas as pd
 
 import laura
-from scoring2 import (CATEGORIES, DEFAULT_PENALTY, SENSITIVITY_KS, WINDOWS, category_totals,  # noqa: F401
+from scoring2 import (CATEGORIES, CATEGORY_LABEL, CATEGORY_QUESTION, DEFAULT_PENALTY, SENSITIVITY_KS, WINDOWS, category_totals,  # noqa: F401
                       composite_score, downside_deviation, max_drawdown, metric_fit, overall_score, penalty_breakdown,
                       penalty_sensitivity, percentile_scores, why_text)
 
 log = logging.getLogger(__name__)
 
 METRICS = [
-    {"key": "expense_ratio", "label": "Expense ratio", "units": "%", "direction": "lower", "weight": 18, "group": "Cost", "category": "Cost/valuation"},
-    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 12, "group": "Risk", "category": "Risk"},
-    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 18, "group": "Risk", "category": "Risk"},
-    {"key": "n_holdings", "label": "Number of holdings", "units": "", "direction": "higher", "weight": 0, "group": "Diversification", "category": "Quality"},
-    {"key": "top10_weight", "label": "Top-10 weight", "units": "%", "direction": "lower", "weight": 12, "group": "Diversification", "category": "Quality"},
-    {"key": "aum", "label": "AUM", "units": "$M", "direction": "higher", "weight": 12, "group": "Size & liquidity", "category": "Safety"},
-    {"key": "dollar_volume", "label": "Avg daily dollar volume", "units": "$M", "direction": "higher", "weight": 5, "group": "Size & liquidity", "category": "Safety"},
-    {"key": "holdings_quality", "label": "Holdings quality", "units": "/100", "direction": "higher", "weight": 8, "group": "Holdings", "category": "Quality"},
-    {"key": "dividend_yield", "label": "Dividend yield (TTM)", "units": "%", "direction": "higher", "weight": 5, "group": "Return", "category": "Income"},
-    {"key": "long_run_return", "label": "Long-run return (annualized)", "units": "%", "direction": "higher", "weight": 10, "group": "Return", "category": "Growth"},
+    {"key": "expense_ratio", "label": "Expense ratio", "units": "%", "direction": "lower", "weight": 18, "category": "Cost/valuation"},
+    {"key": "downside_dev", "label": "Downside deviation", "units": "%", "direction": "lower", "weight": 12, "category": "Risk"},
+    {"key": "max_drawdown", "label": "Max drawdown", "units": "%", "direction": "lower", "weight": 18, "category": "Risk"},
+    {"key": "n_holdings", "label": "Number of holdings", "units": "", "direction": "higher", "weight": 0, "category": "Quality"},
+    {"key": "top10_weight", "label": "Top-10 weight", "units": "%", "direction": "lower", "weight": 12, "category": "Quality"},
+    {"key": "aum", "label": "AUM", "units": "$M", "direction": "higher", "weight": 12, "category": "Safety"},
+    {"key": "dollar_volume", "label": "Avg daily dollar volume", "units": "$M", "direction": "higher", "weight": 5, "category": "Safety"},
+    {"key": "holdings_quality", "label": "Holdings quality", "units": "/100", "direction": "higher", "weight": 8, "category": "Quality"},
+    {"key": "dividend_yield", "label": "Dividend yield (TTM)", "units": "%", "direction": "higher", "weight": 5, "category": "Income"},
+    {"key": "long_run_return", "label": "Long-run return (annualized)", "units": "%", "direction": "higher", "weight": 10, "category": "Growth"},
 ]
 METRIC_BY_KEY = {m["key"]: m for m in METRICS}
 KEYS = [m["key"] for m in METRICS]
 DEFAULT_WEIGHTS = {m["key"]: m["weight"] for m in METRICS}
-GROUPS = list(dict.fromkeys(m["group"] for m in METRICS))
 LAURA_CATEGORY_TOTALS = {"Risk": 30, "Cost/valuation": 18, "Quality": 20, "Growth": 10, "Safety": 17, "Income": 5}  # stability core
 DEFAULT_SETTINGS = {"tbill": 0.03, "window": 5}  # 5 yrs by default so most funds share the same full window
 PREP_VERSION = 4  # bump when prepare_funds' output changes, so cached preps in a session are rebuilt

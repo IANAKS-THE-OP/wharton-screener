@@ -115,12 +115,22 @@ def category_table(metrics, current, page):
 
     stk, etf, now = sc.category_totals(sc.METRICS), sc.category_totals(es.METRICS), sc.category_totals(metrics, current)
     cols = ("Stocks: growth driver", "ETFs: stability core", f"{page} now")
-    df = pd.DataFrame({"Category": sc.CATEGORIES, cols[0]: [stk[c] for c in sc.CATEGORIES], cols[1]: [etf[c] for c in sc.CATEGORIES],
+    df = pd.DataFrame({"Category": [sc.CATEGORY_LABEL[c] for c in sc.CATEGORIES], cols[0]: [stk[c] for c in sc.CATEGORIES], cols[1]: [etf[c] for c in sc.CATEGORIES],
                        cols[2]: [now[c] for c in sc.CATEGORIES],
                        "Metrics (this page)": [", ".join(m["label"] for m in metrics if m["category"] == c and m["weight"]) for c in sc.CATEGORIES]})
     df.loc[len(df)] = ["Total", sum(stk.values()), sum(etf.values()), sum(now.values()), ""]
     st.dataframe(df, hide_index=True, width="stretch", column_config={c: st.column_config.NumberColumn(format="%g") for c in cols})
     st.caption(sc.ROLE_NOTE + " The *now* column changes as you move the weight sliders.")
+
+
+def category_header(cat, metrics, current):
+    """Section header on Tune scoring: 'Risk — 22' (this page's LIVE category total, so it follows the sliders) and
+    Laura's question for the category underneath."""
+    import scoring2 as sc
+
+    total = sc.category_totals(metrics, current)[cat]
+    st.markdown(f"#### {sc.CATEGORY_LABEL[cat]} — {total:g}")
+    st.caption(sc.CATEGORY_QUESTION[cat])
 
 
 # ------------------------------------------------------------------ "Laura standards (default)" badge
